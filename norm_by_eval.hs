@@ -7,6 +7,8 @@
 
 module Main where
 
+import Control.Monad.State
+
 newtype Base = In{out :: Term Base}
 
 infixr :->
@@ -32,10 +34,22 @@ reflect (ra :-> rb) expr = reflect rb . App expr . reify ra
 
 -- Exercise 12 - Implement show() for 'Term t'.
 instance Show (Term t) where
-    show (Var str) = str
-    show (App f x) = "App " ++ show f ++ " (" ++ show x ++ ")"
-    show (Fun rf) = "Fun (\x3BB a -> " ++ show (rf (Var "a")) ++ ")"
+    show x = evalState (showTerm x) ['a'..]
 
+showTerm :: Term t -> State [Char] String
+showTerm (Var str) = return str
+showTerm (App f x) = do
+    fStr <- showTerm f
+    xStr <- showTerm x
+    return $ "App " ++ fStr ++ " (" ++ xStr ++ ")"
+showTerm (Fun rf) = do
+    varNames <- get
+    let varName = [head varNames]
+    put $ tail varNames
+    rfStr <- showTerm (rf (Var varName))
+    return $ "Fun (\x3BB" ++ varName ++ " -> " ++ rfStr ++ ")"
+
+-- Hinze's interactive testing repeated, here.
 s :: forall t t1 t2. (t2 -> t1 -> t) -> (t2 -> t1) -> t2 -> t
 s x y z = x z (y z)
 
