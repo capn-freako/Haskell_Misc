@@ -38,6 +38,9 @@ instance Show (Term t) where
 
 showTerm :: Term t -> State [Char] String
 showTerm (Var str) = return str
+showTerm (App f (Var str)) = do
+    fStr <- showTerm f
+    return $ "App " ++ fStr ++ " " ++ str
 showTerm (App f x) = do
     fStr <- showTerm f
     xStr <- showTerm x
