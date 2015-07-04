@@ -36,10 +36,18 @@ instance Show (Term t) where
     show (App f x) = "App " ++ show f ++ " (" ++ show x ++ ")"
     show (Fun rf) = "Fun (\\a -> " ++ show (rf (Var "a")) ++ ")"
 
+s :: forall t t1 t2. (t2 -> t1 -> t) -> (t2 -> t1) -> t2 -> t
 s x y z = x z (y z)
-k x y = x
+
+k :: forall t t1. t1 -> t -> t1
+k x _ = x
+
+i :: forall t. t -> t
 i x = x
+
 e =s (s (k s) (s (k k) i))((s ((s (k s))((s (k k))i)))(k i))
+
+main :: IO ()
 main = do print $ reify (b :-> b) (s k k)
           print $ reify (b :-> (b :-> b)) (s (k k)i)
           print $ reify ((b :-> b) :-> (b :-> b)) e
