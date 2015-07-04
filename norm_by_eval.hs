@@ -34,7 +34,7 @@ reflect (ra :-> rb) expr = reflect rb . App expr . reify ra
 instance Show (Term t) where
     show (Var str) = str
     show (App f x) = "App " ++ show f ++ " (" ++ show x ++ ")"
-    show (Fun rf) = "Fun (\\a -> " ++ show (rf (Var "a")) ++ ")"
+    show (Fun rf) = "Fun (\x3BB a -> " ++ show (rf (Var "a")) ++ ")"
 
 s :: forall t t1 t2. (t2 -> t1 -> t) -> (t2 -> t1) -> t2 -> t
 s x y z = x z (y z)
