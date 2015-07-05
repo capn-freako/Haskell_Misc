@@ -33,10 +33,15 @@ reflect RBase expr = In expr
 reflect (ra :-> rb) expr = reflect rb . App expr . reify ra
 
 -- Exercise 12 - Implement show() for 'Term t'.
-instance Show (Term t) where
-    show x = evalState (showTerm x) ['a'..]
+allNames :: [String]
+--allNames = fold take 26 (repeat '') ++ zip ['a'..'z']
+allNames = concat [map (take n) $ map repeat ['a'..'z'] | n <- [1..]]
 
-showTerm :: Term t -> State [Char] String
+instance Show (Term t) where
+--    show x = evalState (showTerm x) ['a'..]
+    show x = evalState (showTerm x) allNames
+
+showTerm :: Term t -> State [String] String
 showTerm (Var str) = return str
 showTerm (App f (Var str)) = do
     fStr <- showTerm f
@@ -47,7 +52,7 @@ showTerm (App f x) = do
     return $ "App " ++ fStr ++ " (" ++ xStr ++ ")"
 showTerm (Fun rf) = do
     varNames <- get
-    let varName = [head varNames]
+    let varName = head varNames
     put $ tail varNames
     rfStr <- showTerm (rf (Var varName))
     return $ "Fun (\x3BB" ++ varName ++ " -> " ++ rfStr ++ ")"
