@@ -34,11 +34,9 @@ reflect (ra :-> rb) expr = reflect rb . App expr . reify ra
 
 -- Exercise 12 - Implement show() for 'Term t'.
 allNames :: [String]
---allNames = fold take 26 (repeat '') ++ zip ['a'..'z']
 allNames = concat [map (take n) $ map repeat ['a'..'z'] | n <- [1..]]
 
 instance Show (Term t) where
---    show x = evalState (showTerm x) ['a'..]
     show x = evalState (showTerm x) allNames
 
 showTerm :: Term t -> State [String] String
