@@ -34,7 +34,12 @@ reflect (ra :-> rb) expr = reflect rb . App expr . reify ra
 
 -- Exercise 12 - Implement show() for 'Term t'.
 allNames :: [String]
-allNames = concat [map (take n) $ map repeat ['a'..'z'] | n <- [1..]]
+allNames = concat $ map comb [take n (repeat ['a'..'z']) | n <- [1..]] where
+    comb :: [[Char]] -> [String]
+    comb [] = []
+    comb [x] = [[c] | c <- x]
+    comb (x:xs) = concat $ [map (c :) cs | c <- x]
+        where cs = comb xs
 
 instance Show (Term t) where
     show x = evalState (showTerm x) allNames
