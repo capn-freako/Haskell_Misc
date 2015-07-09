@@ -3,6 +3,7 @@
 
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE ParallelListComp #-}
 {-# OPTIONS_GHC -Wall #-}
 
 module Main where
@@ -34,12 +35,8 @@ reflect (ra :-> rb) expr = reflect rb . App expr . reify ra
 
 -- Exercise 12 - Implement show() for 'Term t'.
 allNames :: [String]
-allNames = concat $ map comb [take n (repeat ['a'..'z']) | n <- [1..]] where
-    comb :: [[Char]] -> [String]
-    comb [] = []
-    comb [x] = [[c] | c <- x]
-    comb (x:xs) = concat $ [map (c :) cs | c <- x]
-        where cs = comb xs
+allNames = map reverse $ tail allNames' where
+    allNames' = "" : [suf : base | base <- allNames', suf <- ['a'..'z']]
 
 instance Show (Term t) where
     show x = evalState (showTerm x) allNames
