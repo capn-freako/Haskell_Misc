@@ -12,6 +12,7 @@
 module Main where
 
 import Text.ParserCombinators.Parsec
+import Control.Monad (forM, liftM)
 
 data DottedQuad = DottedQuad {
     first  :: Int
@@ -41,7 +42,7 @@ data ConnectAttempt = ConnectAttempt {
 } deriving (Show)
 
 -- HTTP connection log parser.
-httpAccessLog = endBy connectAttempt eol
+connectAttempt :: Parser ConnectAttempt
 connectAttempt = do remoteAddr <- symbol dottedQuad
                     unknown1   <- symbol (char '-')
                     unknown2   <- symbol (char '-')
@@ -50,13 +51,27 @@ connectAttempt = do remoteAddr <- symbol dottedQuad
                     response   <- symbol httpResponse
                     many (noneOf "\n\r")
                     return $ ConnectAttempt remoteAddr accessTime command response 0
+
+line :: Parser String
+line = do
+    res <- many1 (noneOf "\n\r")
+    skipMany eol
+    return res
+
+eol :: Parser String
 eol = try (string "\n\r")
   <|> try (string "\r\n")
   <|> string "\n"
   <|> string "\r"
   <?> "end of line"
+
+symbol :: Parser a -> Parser a
 symbol p = skipMany space >> p
+
+quotedVal :: Parser String
 quotedVal = between (char '"') (char '"') (many (noneOf "\""))
+
+dottedQuad :: Parser DottedQuad
 dottedQuad = do
     first  <- octet
     char '.'
@@ -66,18 +81,28 @@ dottedQuad = do
     char '.'
     fourth <- octet
     return $ DottedQuad first second third fourth
+    <?> "Dotted quad of octets (i.e. - IP address)"
+
+octet :: Parser Int
 octet = do
     res <- int
     if res < 256 then return res
     else fail "Octet value out of range."
+
+monthDay :: Parser Int
 monthDay = do
     res <- int
     if res < 32 then return res
     else fail "Day of month out of range."
+
+int :: Parser Int
 int = do
     digits <- many1 digit
     return (read digits)
+
 httpResponse = int
+
+dateTime :: Parser DateTime
 dateTime =  do
     char '['
     day <- monthDay
@@ -95,14 +120,19 @@ dateTime =  do
     char ']'
     return $ DateTime year month day hour min sec offset
 
-parseHTTPAccessLog :: String -> Either ParseError [ConnectAttempt]
-parseHTTPAccessLog = parse httpAccessLog "(unknown)"
+parseHTTPAccessLog :: String -> [Either ParseError ConnectAttempt]
+parseHTTPAccessLog input = case parse (many line) "(unknown)" input of
+                               Left e -> error "Whoops!"
+                               Right res -> map (parse connectAttempt "(unknown)") res
 
-main :: IO()
+main :: IO [()]
 main = do
     logEntries <- getContents
-    case parse httpAccessLog "(stdin)" logEntries of
-        Left e  -> do putStrLn "Error parsing input:"
-                      print e
-        Right r -> mapM_ print r
+    forM (parseHTTPAccessLog logEntries) (\x ->
+        case x of
+            Left e -> do
+                putStr "Couldn't parse line: "
+                print e
+            Right ca -> print ca
+        )
 
