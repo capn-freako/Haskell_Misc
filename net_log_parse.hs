@@ -42,8 +42,6 @@ data ConnectAttempt = ConnectAttempt {
 
 -- HTTP connection log parser.
 httpAccessLog = endBy connectAttempt eol
-
-connectAttempt :: Parser ConnectAttempt
 connectAttempt = do remoteAddr <- symbol dottedQuad
                     unknown1   <- symbol (char '-')
                     unknown2   <- symbol (char '-')
@@ -52,31 +50,13 @@ connectAttempt = do remoteAddr <- symbol dottedQuad
                     response   <- symbol httpResponse
                     many (noneOf "\n\r")
                     return $ ConnectAttempt remoteAddr accessTime command response 0
-
--- Parsing atoms/helpers.
-eol :: Parser String
 eol = try (string "\n\r")
   <|> try (string "\r\n")
   <|> string "\n"
   <|> string "\r"
   <?> "end of line"
-
-skipJunk :: Parser ()
-skipJunk = do
-    skipMany space
-    return ()
-
-symbol :: Parser a -> Parser a
-symbol p = skipJunk >> p
-
-quotedVal :: Parser String
-quotedVal = do
-    char '"'
-    res <- many (satisfy (/= '"'))
-    char '"'
-    return res
-
-dottedQuad :: Parser DottedQuad
+symbol p = skipMany space >> p
+quotedVal = between (char '"') (char '"') (many (noneOf "\""))
 dottedQuad = do
     first  <- octet
     char '.'
@@ -86,28 +66,18 @@ dottedQuad = do
     char '.'
     fourth <- octet
     return $ DottedQuad first second third fourth
-
-octet :: Parser Int
 octet = do
     res <- int
     if res < 256 then return res
     else fail "Octet value out of range."
-
-monthDay :: Parser Int
 monthDay = do
     res <- int
     if res < 32 then return res
     else fail "Day of month out of range."
-
-int :: Parser Int
 int = do
     digits <- many1 digit
     return (read digits)
-    
-httpResponse :: Parser Int
 httpResponse = int
-
-dateTime :: Parser DateTime
 dateTime =  do
     char '['
     day <- monthDay
