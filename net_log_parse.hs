@@ -9,27 +9,45 @@
 -- 
 --------------------------------------------------------------------------------
 
-module Main where
+module Main (
+    DottedQuad
+  , DateTime
+  , HttpResp
+  , ConnectAttempt
+  , HitsByHost
+  , parseHTTPAccessLog
+  , hitsByHost
+  , main
+) where
 
 import Text.ParserCombinators.Parsec
-import Control.Monad (forM, liftM)
+import Control.Monad (forM)
+import qualified Data.Map.Strict as Map
+
+--------------------------------------------------------------------------------
+--  Public Interface
 
 data DottedQuad = DottedQuad {
     first  :: Int
   , second :: Int
   , third  :: Int
   , fourth :: Int
-} deriving (Show)
+} deriving (Eq, Ord)
+instance Show DottedQuad where
+    show dq = show (first dq) ++ "." ++ show (second dq) ++ "." ++ show (third dq) ++ "." ++ show (fourth dq)
 
 data DateTime = DateTime {
     year    :: Int
   , month   :: String
   , day     :: Int
   , hour    :: Int
-  , min     :: Int
+  , minute  :: Int
   , sec     :: Int
   , offset  :: String
-} deriving (Show)
+}
+instance Show DateTime where
+    show dt = "[" ++ show (year dt) ++ "/" ++ show (month dt) ++ "/" ++ show (day dt) ++ " " ++
+              show (hour dt) ++ ":" ++ show (minute dt) ++ ":" ++ show (sec dt) ++ " " ++ show (offset dt) ++ "]"
 
 type HttpResp = Int
 
@@ -39,9 +57,31 @@ data ConnectAttempt = ConnectAttempt {
   , command    :: String
   , response   :: HttpResp
   , port       :: Int
-} deriving (Show)
+}
+instance Show ConnectAttempt where
+    show ca = "From: " ++ show (remoteAddr ca) ++ "  At: " ++ show (accessTime ca) ++
+              "  Response: " ++ show (response ca) ++ "  Assigned port: " ++ show (port ca) ++
+              "\n\tCommand: " ++ show (command ca)
 
--- HTTP connection log parser.
+type HitsByHost = Map.Map DottedQuad Int
+
+parseHTTPAccessLog :: String -> [Either ParseError ConnectAttempt]
+parseHTTPAccessLog input = case parse (many line) "(unknown)" input of
+                               Left e -> error "Whoops!"
+                               Right res -> map (parse connectAttempt "(unknown)") res
+
+hitsByHost :: [Either ParseError ConnectAttempt] -> HitsByHost
+hitsByHost = foldl (flip selectiveInsert) Map.empty where
+    selectiveInsert x = case x of
+                          Left _ -> id
+                          Right ca -> Map.insertWith (+) (remoteAddr ca) 1
+    
+--------------------------------------------------------------------------------
+--  HTTP access log parser
+--
+--  Note: I'm not using applicative parsing, because I need to validate
+--  integers against a maximum value, in two places (octet & monthDay).
+
 connectAttempt :: Parser ConnectAttempt
 connectAttempt = do remoteAddr <- symbol dottedQuad
                     unknown1   <- symbol (char '-')
@@ -81,7 +121,7 @@ dottedQuad = do
     char '.'
     fourth <- octet
     return $ DottedQuad first second third fourth
-    <?> "Dotted quad of octets (i.e. - IP address)"
+  <?> "Dotted quad of octets (i.e. - IP address)"
 
 octet :: Parser Int
 octet = do
@@ -119,20 +159,18 @@ dateTime =  do
     offset <- many1 (noneOf "]")
     char ']'
     return $ DateTime year month day hour min sec offset
+  <?> "date/time"
 
-parseHTTPAccessLog :: String -> [Either ParseError ConnectAttempt]
-parseHTTPAccessLog input = case parse (many line) "(unknown)" input of
-                               Left e -> error "Whoops!"
-                               Right res -> map (parse connectAttempt "(unknown)") res
-
+-- Provide some executable behavior, for quick validation.
 main :: IO [()]
 main = do
     logEntries <- getContents
-    forM (parseHTTPAccessLog logEntries) (\x ->
+    forM (parseHTTPAccessLog logEntries) (\x -> do
         case x of
             Left e -> do
                 putStr "Couldn't parse line: "
                 print e
             Right ca -> print ca
+        putStrLn ""
         )
 
