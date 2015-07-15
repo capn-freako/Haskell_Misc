@@ -23,6 +23,10 @@ module Main (
 import Text.ParserCombinators.Parsec
 import Control.Monad (forM)
 import qualified Data.Map.Strict as Map
+import qualified Data.List as List
+
+kNullAddr = DottedQuad 0 0 0 0
+kNullTime = DateTime 0 "" 0 0 0 0 ""
 
 --------------------------------------------------------------------------------
 --  Public Interface
@@ -65,16 +69,15 @@ instance Show ConnectAttempt where
 
 type HitsByHost = Map.Map DottedQuad Int
 
-parseHTTPAccessLog :: String -> [Either ParseError ConnectAttempt]
-parseHTTPAccessLog input = case parse (many line) "(unknown)" input of
-                               Left e -> error "Whoops!"
-                               Right res -> map (parse connectAttempt "(unknown)") res
+parseHTTPAccessLog :: String -> [ConnectAttempt]
+parseHTTPAccessLog input = case parse httpAccessLog "(unknown)" input of
+                               Left e -> error (show e)
+                               Right res -> res
 
-hitsByHost :: [Either ParseError ConnectAttempt] -> HitsByHost
+hitsByHost :: [ConnectAttempt] -> HitsByHost
 hitsByHost = foldl (flip selectiveInsert) Map.empty where
-    selectiveInsert x = case x of
-                          Left _ -> id
-                          Right ca -> Map.insertWith (+) (remoteAddr ca) 1
+    selectiveInsert x = if remoteAddr x == kNullAddr then id
+                        else Map.insertWith (+) (remoteAddr x) 1
     
 --------------------------------------------------------------------------------
 --  HTTP access log parser
@@ -82,15 +85,20 @@ hitsByHost = foldl (flip selectiveInsert) Map.empty where
 --  Note: I'm not using applicative parsing, because I need to validate
 --  integers against a maximum value, in two places (octet & monthDay).
 
+httpAccessLog :: Parser [ConnectAttempt]
+httpAccessLog = connectAttempt `endBy` eol
+
 connectAttempt :: Parser ConnectAttempt
-connectAttempt = do remoteAddr <- symbol dottedQuad
-                    unknown1   <- symbol (char '-')
-                    unknown2   <- symbol (char '-')
-                    accessTime <- symbol dateTime
-                    command    <- symbol quotedVal
-                    response   <- symbol httpResponse
-                    many (noneOf "\n\r")
-                    return $ ConnectAttempt remoteAddr accessTime command response 0
+connectAttempt = try (do remoteAddr <- symbol dottedQuad
+                         unknown1   <- symbol (char '-')
+                         unknown2   <- symbol (char '-')
+                         accessTime <- symbol dateTime
+                         command    <- symbol quotedVal
+                         response   <- symbol httpResponse
+                         many (noneOf "\n\r")
+                         return $ ConnectAttempt remoteAddr accessTime command response 0
+                     ) <|> do many (noneOf "\n\r")
+                              return $ ConnectAttempt kNullAddr kNullTime "" 0 0
 
 line :: Parser String
 line = do
@@ -162,15 +170,14 @@ dateTime =  do
   <?> "date/time"
 
 -- Provide some executable behavior, for quick validation.
-main :: IO [()]
+kPrintResults = False
+main :: IO ()
 main = do
     logEntries <- getContents
-    forM (parseHTTPAccessLog logEntries) (\x -> do
-        case x of
-            Left e -> do
-                putStr "Couldn't parse line: "
-                print e
-            Right ca -> print ca
-        putStrLn ""
-        )
+    let res = parseHTTPAccessLog logEntries
+    if kPrintResults then print res
+    else do
+        let hits = hitsByHost res
+        let sorted = List.sortBy (\(k1, v1) (k2, v2) -> v2 `compare` v1) $ Map.toList hits
+        print $ take 5 sorted
 
