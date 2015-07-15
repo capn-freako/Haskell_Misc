@@ -20,10 +20,11 @@ module Main (
   , main
 ) where
 
-import Text.ParserCombinators.Parsec
 import Control.Monad (forM)
-import qualified Data.Map.Strict as Map
+import Text.ParserCombinators.Parsec
+import Text.Printf (printf)
 import qualified Data.List as List
+import qualified Data.Map.Strict as Map
 
 kNullAddr = DottedQuad 0 0 0 0
 kNullTime = DateTime 0 "" 0 0 0 0 ""
@@ -50,8 +51,8 @@ data DateTime = DateTime {
   , offset  :: String
 }
 instance Show DateTime where
-    show dt = "[" ++ show (year dt) ++ "/" ++ show (month dt) ++ "/" ++ show (day dt) ++ " " ++
-              show (hour dt) ++ ":" ++ show (minute dt) ++ ":" ++ show (sec dt) ++ " " ++ show (offset dt) ++ "]"
+    show dt = printf (month dt) ++ " " ++ show (day dt) ++ ", " ++ show (year dt) ++ " At: " ++
+              printf "%02d" (hour dt) ++ ":" ++ printf "%02d" (minute dt) ++ ":" ++ printf "%02d" (sec dt) ++ " " ++ printf (offset dt)
 
 type HttpResp = Int
 
@@ -63,9 +64,9 @@ data ConnectAttempt = ConnectAttempt {
   , port       :: Int
 }
 instance Show ConnectAttempt where
-    show ca = "From: " ++ show (remoteAddr ca) ++ "  At: " ++ show (accessTime ca) ++
+    show ca = "From: " ++ show (remoteAddr ca) ++ "  On: " ++ show (accessTime ca) ++
               "  Response: " ++ show (response ca) ++ "  Assigned port: " ++ show (port ca) ++
-              "\n\tCommand: " ++ show (command ca)
+              "\n\tCommand: " ++ show (command ca) ++ "\n"
 
 type HitsByHost = Map.Map DottedQuad Int
 
@@ -90,13 +91,14 @@ httpAccessLog = connectAttempt `endBy` eol
 
 connectAttempt :: Parser ConnectAttempt
 connectAttempt = try (do remoteAddr <- symbol dottedQuad
-                         unknown1   <- symbol (char '-')
-                         unknown2   <- symbol (char '-')
+                         symbol (char '-')
+                         symbol (char '-')
                          accessTime <- symbol dateTime
-                         command    <- symbol quotedVal
-                         response   <- symbol httpResponse
+                         request <- symbol quotedVal
+                         response <- symbol httpResponse
+                         port <- option 0 (symbol int)
                          many (noneOf "\n\r")
-                         return $ ConnectAttempt remoteAddr accessTime command response 0
+                         return $ ConnectAttempt remoteAddr accessTime request response port
                      ) <|> do many (noneOf "\n\r")
                               return $ ConnectAttempt kNullAddr kNullTime "" 0 0
 
@@ -170,12 +172,11 @@ dateTime =  do
   <?> "date/time"
 
 -- Provide some executable behavior, for quick validation.
-kPrintResults = False
 main :: IO ()
 main = do
     logEntries <- getContents
     let res = parseHTTPAccessLog logEntries
-    if kPrintResults then print res
+    if length res < 10 then print res
     else do
         let hits = hitsByHost res
         let sorted = List.sortBy (\(k1, v1) (k2, v2) -> v2 `compare` v1) $ Map.toList hits
