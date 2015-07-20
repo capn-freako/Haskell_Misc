@@ -20,7 +20,8 @@ module Main (
   , main
 ) where
 
-import Control.Monad (forM)
+import Control.Monad (forM_)
+import Data.Ord (comparing)
 import Text.ParserCombinators.Parsec
 import Text.Printf (printf)
 import qualified Data.List as List
@@ -172,16 +173,16 @@ dateTime =  do
   <?> "date/time"
 
 -- Provide some executable behavior, for quick validation.
-main :: IO [()]
+main :: IO ()
 main = do
     logEntries <- getContents
     let res = parseHTTPAccessLog logEntries
-    if length res < 10 then mapM print res
+    if length res < 10 then mapM_ print res
     else do
         let hits = hitsByHost res
-        let sorted = List.sortBy (\(k1, v1) (k2, v2) -> v2 `compare` v1) $ Map.toList hits
-        let maxHits = snd $ head sorted
-        forM sorted (printBarGraph maxHits)
+            sorted = List.sortBy (flip (comparing snd)) $ Map.toList hits
+            maxHits = snd $ head sorted
+        forM_ sorted (printBarGraph maxHits)
             where printBarGraph maxVal x =
                       let n = snd x * 56 `div` maxVal in do
                           putStr $ show (fst x)
