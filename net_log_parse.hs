@@ -177,14 +177,13 @@ main :: IO ()
 main = do
     logEntries <- getContents
     let res = parseHTTPAccessLog logEntries
-    if length res < 10 then mapM_ print res
-    else do
-        let hits = hitsByHost res
-            sorted = List.sortBy (flip (comparing snd)) $ Map.toList hits
-            maxHits = snd $ head sorted
-        forM_ sorted (printBarGraph maxHits)
-            where printBarGraph maxVal x =
-                      let n = snd x * 56 `div` maxVal in do
-                          putStr $ show (fst x)
-                          putStrLn $ '\t' : replicate n '*'
+    let to_print = if length res < 10
+                       then map show res
+                       else map printBarGraph sorted
+            where sorted = List.sortBy (flip (comparing snd)) $ Map.toList hits
+                  hits = hitsByHost res
+                  maxHits = snd $ head sorted
+                  printBarGraph x = show (fst x) ++ ('\t' : replicate n '*')
+                      where n = snd x * 56 `div` maxHits
+    mapM_ putStrLn to_print
         
