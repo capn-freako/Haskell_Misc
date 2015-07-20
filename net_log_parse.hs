@@ -174,16 +174,12 @@ dateTime =  do
 
 -- Provide some executable behavior, for quick validation.
 main :: IO ()
-main = do
-    logEntries <- getContents
-    let res = parseHTTPAccessLog logEntries
-    let to_print = if length res < 10
-        then map show res
-        else map printBarGraph sorted
-            where   sorted = List.sortBy (flip (comparing snd)) $ Map.toList hits
-                    hits = hitsByHost res
-                    maxHits = snd $ head sorted
-                    printBarGraph x = show (fst x) ++ ('\t' : replicate n '*')
-                        where n = snd x * 56 `div` maxHits
-    mapM_ putStrLn to_print
+main = interact (unlines . to_print . parseHTTPAccessLog)
+    where to_print res = if length res < 10
+            then map show res
+            else map printBarGraph sorted
+                where   sorted = List.sortBy (flip (comparing snd)) $ Map.toList $ hitsByHost res
+                        maxHits = snd $ head sorted
+                        printBarGraph x = show (fst x) ++ ('\t' : replicate n '*')
+                            where n = snd x * 56 `div` maxHits
         
