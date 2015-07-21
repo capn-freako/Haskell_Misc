@@ -174,10 +174,10 @@ dateTime =  do
 toPrint :: [ConnectAttempt] -> [String]
 toPrint res = if length res < 10
     then map show res
-    else map printBarGraph sorted
-        where   sorted@((_, maxHits):_) = List.sortBy (flip (comparing snd)) $ Map.toList $ hitsByHost res
-                printBarGraph (host, hits) = show host ++ ('\t' : replicate n '*')
-                    where n = hits * 56 `div` maxHits
+    else map printBarGraph sorted where
+        sorted@((_, maxHits):_) = List.sortBy (flip (comparing snd)) $ Map.toList $ hitsByHost res
+        printBarGraph (host, hits) = show host ++ ('\t' : replicate n '*') where
+            n = hits * 56 `div` maxHits
 
 main :: IO ()
 main = interact (unlines . toPrint . parseHTTPAccessLog)
