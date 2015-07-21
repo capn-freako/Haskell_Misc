@@ -20,14 +20,17 @@ module Main (
   , main
 ) where
 
-import Control.Monad (forM_)
+--import Control.Monad (forM_)
 import Data.Ord (comparing)
 import Text.ParserCombinators.Parsec
 import Text.Printf (printf)
 import qualified Data.List as List
 import qualified Data.Map.Strict as Map
 
+kNullAddr :: DottedQuad
 kNullAddr = DottedQuad 0 0 0 0
+
+kNullTime :: DateTime
 kNullTime = DateTime 0 "" 0 0 0 0 ""
 
 --------------------------------------------------------------------------------
@@ -91,23 +94,17 @@ httpAccessLog :: Parser [ConnectAttempt]
 httpAccessLog = connectAttempt `endBy` eol
 
 connectAttempt :: Parser ConnectAttempt
-connectAttempt = try (do remoteAddr <- symbol dottedQuad
-                         symbol (char '-')
-                         symbol (char '-')
-                         accessTime <- symbol dateTime
+connectAttempt = try (do addr <- symbol dottedQuad
+                         _ <- symbol (char '-')
+                         _ <- symbol (char '-')
+                         time <- symbol dateTime
                          request <- symbol quotedVal
-                         response <- symbol httpResponse
-                         port <- option 0 (symbol int)
-                         many (noneOf "\n\r")
-                         return $ ConnectAttempt remoteAddr accessTime request response port
-                     ) <|> do many (noneOf "\n\r")
+                         resp <- symbol httpResponse
+                         portNum <- option 0 (symbol int)
+                         _ <- many (noneOf "\n\r")
+                         return $ ConnectAttempt addr time request resp portNum
+                     ) <|> do _ <- many (noneOf "\n\r")
                               return $ ConnectAttempt kNullAddr kNullTime "" 0 0
-
-line :: Parser String
-line = do
-    res <- many1 (noneOf "\n\r")
-    skipMany eol
-    return res
 
 eol :: Parser String
 eol = try (string "\n\r")
@@ -124,14 +121,14 @@ quotedVal = between (char '"') (char '"') (many (noneOf "\""))
 
 dottedQuad :: Parser DottedQuad
 dottedQuad = do
-    first  <- octet
-    char '.'
-    second <- octet
-    char '.'
-    third  <- octet
-    char '.'
-    fourth <- octet
-    return $ DottedQuad first second third fourth
+    o1  <- octet
+    _ <- char '.'
+    o2 <- octet
+    _ <- char '.'
+    o3  <- octet
+    _ <- char '.'
+    o4 <- octet
+    return $ DottedQuad o1 o2 o3 o4
   <?> "Dotted quad of octets (i.e. - IP address)"
 
 octet :: Parser Int
@@ -151,32 +148,34 @@ int = do
     digits <- many1 digit
     return (read digits)
 
+httpResponse :: Parser Int
 httpResponse = int
 
 dateTime :: Parser DateTime
 dateTime =  do
-    char '['
-    day <- monthDay
-    char '/'
-    month <- many1 letter
-    char '/'
-    year <- int
-    char ':'
-    hour <- int
-    char ':'
-    min <- int
-    char ':'
-    sec <- int
-    offset <- many1 (noneOf "]")
-    char ']'
-    return $ DateTime year month day hour min sec offset
+    _ <- char '['
+    theDay <- monthDay
+    _ <- char '/'
+    theMonth <- many1 letter
+    _ <- char '/'
+    theYear <- int
+    _ <- char ':'
+    theHour <- int
+    _ <- char ':'
+    theMinute <- int
+    _ <- char ':'
+    theSecond <- int
+    theOffset <- many1 (noneOf "]")
+    _ <- char ']'
+    return $ DateTime theYear theMonth theDay theHour theMinute theSecond theOffset
   <?> "date/time"
 
 -- Provide some executable behavior, for quick validation.
+toPrint :: [ConnectAttempt] -> [String]
 toPrint res = if length res < 10
     then map show res
     else map printBarGraph sorted
-        where   sorted@((_, maxHits):xs) = List.sortBy (flip (comparing snd)) $ Map.toList $ hitsByHost res
+        where   sorted@((_, maxHits):_) = List.sortBy (flip (comparing snd)) $ Map.toList $ hitsByHost res
                 printBarGraph (host, hits) = show host ++ ('\t' : replicate n '*')
                     where n = hits * 56 `div` maxHits
 
