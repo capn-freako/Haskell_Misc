@@ -173,13 +173,14 @@ dateTime =  do
   <?> "date/time"
 
 -- Provide some executable behavior, for quick validation.
+toPrint res = if length res < 10
+    then map show res
+    else map printBarGraph sorted
+        where   sorted = List.sortBy (flip (comparing snd)) $ Map.toList $ hitsByHost res
+                maxHits = snd $ head sorted
+                printBarGraph (host, hits) = show host ++ ('\t' : replicate n '*')
+                    where n = hits * 56 `div` maxHits
+
 main :: IO ()
-main = interact (unlines . to_print . parseHTTPAccessLog)
-    where to_print res = if length res < 10
-            then map show res
-            else map printBarGraph sorted
-                where   sorted = List.sortBy (flip (comparing snd)) $ Map.toList $ hitsByHost res
-                        maxHits = snd $ head sorted
-                        printBarGraph x = show (fst x) ++ ('\t' : replicate n '*')
-                            where n = snd x * 56 `div` maxHits
+main = interact (unlines . toPrint . parseHTTPAccessLog)
         
