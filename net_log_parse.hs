@@ -176,8 +176,7 @@ dateTime =  do
 toPrint res = if length res < 10
     then map show res
     else map printBarGraph sorted
-        where   sorted = List.sortBy (flip (comparing snd)) $ Map.toList $ hitsByHost res
-                maxHits = snd $ head sorted
+        where   sorted@((_, maxHits):xs) = List.sortBy (flip (comparing snd)) $ Map.toList $ hitsByHost res
                 printBarGraph (host, hits) = show host ++ ('\t' : replicate n '*')
                     where n = hits * 56 `div` maxHits
 
