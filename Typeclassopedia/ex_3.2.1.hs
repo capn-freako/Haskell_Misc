@@ -1,6 +1,9 @@
--- Typeclassopedia
+-- Typeclassopedia - Sec. 3.2, Exercise 1.
 --
--- 3.2 Exercises
+-- Original author: David Banas <capn.freako@gmail.com>
+-- Original date:   September 19, 2015
+--
+-- Copyright (c) 2015 David Banas; all rights reserved World wide.
 
 {-# LANGUAGE TemplateHaskell #-}
 
