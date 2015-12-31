@@ -26,7 +26,7 @@ instance MyFunctor (Either e) where
 
 -- Functor ((->) e)
 instance MyFunctor ((->) e) where
-    fmap' g f = g . f
+    fmap' g f = g . f  -- \x::e -> g(f(x))
 
 -- Testing Functor law on defined instances.
 prop_either_test testVal = fmap' id testVal == testVal  -- "id testVal" was producing an annoying error.

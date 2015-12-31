@@ -222,6 +222,12 @@ Original date: September 25, 2015</p>
 <li><a href="#4.3.2">Ex. 4.3.2 - ZipList</a></li>
 </ul>
 </li>
+<li><a href="#4.5">Section 4.5 - Alternative Formulation (Monoidal)</a><ul>
+<li><a href="#4.5.1">Ex. 4.5.1 - pure and <*>, via unit and (**)</a></li>
+<li><a href="#4.5.2">Ex. 4.5.2 - Applicative instances providing inverses of Monoidal functions</a></li>
+<li><a href="#4.5.3">Ex. 4.5.3 - Equivalency of Applicative and Monoidal laws</a></li>
+</ul>
+</li>
 </ul>
 
 </div>
@@ -1302,6 +1308,16 @@ g</code></pre>
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to Contents</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="Ex.-4.5.2---Applicative-instances-providing-inverses-of-Monoidal-functions-">Ex. 4.5.2 - Applicative instances providing inverses of Monoidal functions <a name="4.5.2" /><a class="anchor-link" href="#Ex.-4.5.2---Applicative-instances-providing-inverses-of-Monoidal-functions-">&#182;</a></h3><p>Are there any Applicative instances for which there are also functions <code>f () -&gt; ()</code> and <code>f (a,b) -&gt; (f a, f b)</code>, satisfying some "reasonable" laws?</p>
 
 </div>
@@ -1376,6 +1392,16 @@ unit' (Just ()) = (definition of unit')
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to Contents</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="Ex.-4.5.3---Equivalency-of-Applicative-and-Monoidal-laws-">Ex. 4.5.3 - Equivalency of Applicative and Monoidal laws <a name="4.5.3" /><a class="anchor-link" href="#Ex.-4.5.3---Equivalency-of-Applicative-and-Monoidal-laws-">&#182;</a></h3><p>(Tricky) Prove that given your implementations from the previous exercise, the usual Applicative laws and the Monoidal laws stated above are equivalent.</p>
 
 </div>
@@ -1421,6 +1447,16 @@ unit' (Just ()) = (definition of unit')
 <pre><code>pure id &lt;*&gt; v                                    = (implementation of (&lt;*&gt;), via (**))
 fmap (uncurry ($)) (pure id ** v)                = (implementation of pure, via unit)
 fmap (uncurry ($)) ((fmap (const id) unit) ** v) = ()</code></pre>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to Contents</a></p>
 
 </div>
 </div>
