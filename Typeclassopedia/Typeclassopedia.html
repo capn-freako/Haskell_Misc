@@ -52,8 +52,10 @@
 .highlight .err { border: 1px solid #FF0000 } /* Error */
 .highlight .k { color: #008000; font-weight: bold } /* Keyword */
 .highlight .o { color: #666666 } /* Operator */
+.highlight .ch { color: #408080; font-style: italic } /* Comment.Hashbang */
 .highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
 .highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .cpf { color: #408080; font-style: italic } /* Comment.PreprocFile */
 .highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
 .highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
 .highlight .gd { color: #A00000 } /* Generic.Deleted */
@@ -189,6 +191,7 @@ Original date: September 25, 2015</p>
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Additional-Contributors">Additional Contributors<a class="anchor-link" href="#Additional-Contributors">&#182;</a></h2><ul>
 <li>Phil Ruffwind <a href="mailto:rf@rufflewind.com">rf@rufflewind.com</a></li>
+<li>Conal Elliott <a href="mailto:conal@conal.net">conal@conal.net</a></li>
 </ul>
 
 </div>
@@ -228,6 +231,36 @@ Original date: September 25, 2015</p>
 <li><a href="#4.5.3">Ex. 4.5.3 - Equivalency of Applicative and Monoidal laws</a></li>
 </ul>
 </li>
+<li><a href="#10.2">Section 10.2 - *Foldable* - Instances and Examples</a><ul>
+<li><a href="#10.2.1">Ex. 10.2.1 - Type of 'foldMap . foldMap'?</a></li>
+</ul>
+</li>
+<li><a href="#10.3">Section 10.3 - Derived Folds</a><ul>
+<li><a href="#10.3.1">Ex. 10.3.1 - Implement *toList*.</a></li>
+<li><a href="#10.3.2">Ex. 10.3.2 - Implement *concat*, etc.</a><ul>
+<li><a href="#10.3.2.a">Ex. 10.3.2.a - Implement *concat*.</a></li>
+<li><a href="#10.3.2.b">Ex. 10.3.2.b - Implement *concatMap*.</a></li>
+<li><a href="#10.3.2.c">Ex. 10.3.2.c - Implement *and*.</a></li>
+<li><a href="#10.3.2.d">Ex. 10.3.2.d - Implement *or*.</a></li>
+<li><a href="#10.3.2.e">Ex. 10.3.2.e - Implement *any*.</a></li>
+<li><a href="#10.3.2.f">Ex. 10.3.2.f - Implement *all*.</a></li>
+<li><a href="#10.3.2.g">Ex. 10.3.2.g - Implement *sum*.</a></li>
+<li><a href="#10.3.2.h">Ex. 10.3.2.h - Implement *product*.</a></li>
+<li><a href="#10.3.2.i">Ex. 10.3.2.i - Implement *maximum*.</a></li>
+<li><a href="#10.3.2.j">Ex. 10.3.2.j - Implement *minimum*.</a></li>
+<li><a href="#10.3.2.k">Ex. 10.3.2.k - Implement *elem*.</a></li>
+<li><a href="#10.3.2.l">Ex. 10.3.2.l - Implement *notElem*.</a></li>
+<li><a href="#10.3.2.m">Ex. 10.3.2.m - Implement *find*.</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#11.1">Section 11.1 - Traversable Definition</a></li>
+<li><a href="#11.2">Section 11.2 - Traversable Intuiition</a><ul>
+<li><a href="#11.2.1">Ex. 11.2.1 - Tree of list => list of trees.</a></li>
+<li><a href="#11.2.1x">Ex. 11.2.1x - *sequenceA* in terms of *foldMap*.</a></li>
+</ul>
+</li>
 </ul>
 
 </div>
@@ -243,6 +276,9 @@ Original date: September 25, 2015</p>
 <span class="cm"> DeriveFunctor</span>
 <span class="cm"> DatatypeContexts  -- Needs to be included, despite deprecation warning.</span>
 <span class="cm"> ScopedTypeVariables</span>
+<span class="cm"> FlexibleContexts</span>
+<span class="cm"> UndecidableInstances</span>
+<span class="cm"> AllowAmbiguousTypes</span>
 <span class="cm"> #-}</span>
 
 <span class="kr">import</span> <span class="nn">Data.Time</span>
@@ -361,7 +397,7 @@ font-weight: bold;
 
 
 <div class="output_text output_subarea ">
-<pre>2015-12-31 15:29:50.091867 UTC</pre>
+<pre>2016-02-04 15:29:20.91673 UTC</pre>
 </div>
 
 </div>
@@ -764,7 +800,7 @@ font-weight: bold;
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[16]:</div>
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-haskell"><pre><span class="c1">-- Yes: The following code compiles without error.</span>
@@ -1446,10 +1482,1533 @@ unit' (Just ()) = (definition of unit')
 
 <pre><code>pure id &lt;*&gt; v                                    = (implementation of (&lt;*&gt;), via (**))
 fmap (uncurry ($)) (pure id ** v)                = (implementation of pure, via unit)
-fmap (uncurry ($)) ((fmap (const id) unit) ** v) = ()</code></pre>
+fmap (uncurry ($)) ((fmap (const id) unit) ** v) = ()
+
+fmap g (f x ** f y) = fmap g (f (x, y)) = f (g (x, y))
+fmap (uncurry ($)) ((fmap (const id) unit) ** v) = (v = f x)
+fmap (uncurry ($)) f (id, x) = f (id x) = f x = v</code></pre>
 
 </div>
 </div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to Contents</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Section-10.2---Foldable---Instances-and-Examples-">Section 10.2 - <em>Foldable</em> - Instances and Examples <a name="10.2" /><a class="anchor-link" href="#Section-10.2---Foldable---Instances-and-Examples-">&#182;</a></h1>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Ex.-10.2.1---Type-of-'foldMap-.-foldMap'?-">Ex. 10.2.1 - Type of 'foldMap . foldMap'? <a name="10.2.1" /><a class="anchor-link" href="#Ex.-10.2.1---Type-of-'foldMap-.-foldMap'?-">&#182;</a></h3><p>What is the type of 'foldMap . foldMap', or 'foldMap . foldMap . foldMap'? What do they do?</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[15]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span class="kr">import</span> <span class="nn">Data.Foldable</span>
+
+<span class="kt">:</span><span class="n">t</span> <span class="n">foldMap</span> <span class="o">.</span> <span class="n">foldMap</span>
+<span class="kt">:</span><span class="n">t</span> <span class="n">foldMap</span> <span class="o">.</span> <span class="n">foldMap</span> <span class="o">.</span> <span class="n">foldMap</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+
+<div class="output_html rendered_html output_subarea ">
+<style>/* Styles used for the Hoogle display in the pager */
+.hoogle-doc {
+display: block;
+padding-bottom: 1.3em;
+padding-left: 0.4em;
+}
+.hoogle-code {
+display: block;
+font-family: monospace;
+white-space: pre;
+}
+.hoogle-text {
+display: block;
+}
+.hoogle-name {
+color: green;
+font-weight: bold;
+}
+.hoogle-head {
+font-weight: bold;
+}
+.hoogle-sub {
+display: block;
+margin-left: 0.4em;
+}
+.hoogle-package {
+font-weight: bold;
+font-style: italic;
+}
+.hoogle-module {
+font-weight: bold;
+}
+.hoogle-class {
+font-weight: bold;
+}
+.get-type {
+color: green;
+font-weight: bold;
+font-family: monospace;
+display: block;
+white-space: pre-wrap;
+}
+.show-type {
+color: green;
+font-weight: bold;
+font-family: monospace;
+margin-left: 1em;
+}
+.mono {
+font-family: monospace;
+display: block;
+}
+.err-msg {
+color: red;
+font-style: italic;
+font-family: monospace;
+white-space: pre;
+display: block;
+}
+#unshowable {
+color: red;
+font-weight: bold;
+}
+.err-msg.in.collapse {
+padding-top: 0.7em;
+}
+.highlight-code {
+white-space: pre;
+font-family: monospace;
+}
+.suggestion-warning { 
+font-weight: bold;
+color: rgb(200, 130, 0);
+}
+.suggestion-error { 
+font-weight: bold;
+color: red;
+}
+.suggestion-name {
+font-weight: bold;
+}
+</style><span class='get-type'>foldMap . foldMap :: forall (t :: * -> *) m (t1 :: * -> *) a. (Foldable t, Foldable t1, Monoid m) => (a -> m) -> t (t1 a) -> m</span>
+</div>
+
+</div>
+
+<div class="output_area"><div class="prompt"></div>
+
+<div class="output_html rendered_html output_subarea ">
+<style>/* Styles used for the Hoogle display in the pager */
+.hoogle-doc {
+display: block;
+padding-bottom: 1.3em;
+padding-left: 0.4em;
+}
+.hoogle-code {
+display: block;
+font-family: monospace;
+white-space: pre;
+}
+.hoogle-text {
+display: block;
+}
+.hoogle-name {
+color: green;
+font-weight: bold;
+}
+.hoogle-head {
+font-weight: bold;
+}
+.hoogle-sub {
+display: block;
+margin-left: 0.4em;
+}
+.hoogle-package {
+font-weight: bold;
+font-style: italic;
+}
+.hoogle-module {
+font-weight: bold;
+}
+.hoogle-class {
+font-weight: bold;
+}
+.get-type {
+color: green;
+font-weight: bold;
+font-family: monospace;
+display: block;
+white-space: pre-wrap;
+}
+.show-type {
+color: green;
+font-weight: bold;
+font-family: monospace;
+margin-left: 1em;
+}
+.mono {
+font-family: monospace;
+display: block;
+}
+.err-msg {
+color: red;
+font-style: italic;
+font-family: monospace;
+white-space: pre;
+display: block;
+}
+#unshowable {
+color: red;
+font-weight: bold;
+}
+.err-msg.in.collapse {
+padding-top: 0.7em;
+}
+.highlight-code {
+white-space: pre;
+font-family: monospace;
+}
+.suggestion-warning { 
+font-weight: bold;
+color: rgb(200, 130, 0);
+}
+.suggestion-error { 
+font-weight: bold;
+color: red;
+}
+.suggestion-name {
+font-weight: bold;
+}
+</style><span class='get-type'>foldMap . foldMap . foldMap :: forall (t :: * -> *) m (t1 :: * -> *) (t2 :: * -> *) a. (Foldable t, Foldable t1, Foldable t2, Monoid m) => (a -> m) -> t (t1 (t2 a)) -> m</span>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>They allow for the reduction of nested Foldable data structures:</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[16]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span class="kr">import</span> <span class="nn">Data.Monoid</span>
+
+<span class="nf">ls</span> <span class="ow">=</span> <span class="p">[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">],</span> <span class="p">[</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">]]</span>
+<span class="p">(</span><span class="n">foldMap</span> <span class="o">.</span> <span class="n">foldMap</span><span class="p">)</span> <span class="kt">Sum</span> <span class="n">ls</span>
+<span class="p">(</span><span class="n">foldMap</span> <span class="o">.</span> <span class="n">foldMap</span><span class="p">)</span> <span class="kt">Product</span> <span class="n">ls</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+
+
+<div class="output_text output_subarea ">
+<pre>Sum {getSum = 45}</pre>
+</div>
+
+</div>
+
+<div class="output_area"><div class="prompt"></div>
+
+
+<div class="output_text output_subarea ">
+<pre>Product {getProduct = 362880}</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to Contents</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Section-10.3---Derived-folds-">Section 10.3 - Derived folds <a name="10.3" /><a class="anchor-link" href="#Section-10.3---Derived-folds-">&#182;</a></h1>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Ex.-10.3.1---Implement-toList.-">Ex. 10.3.1 - Implement <em>toList</em>. <a name="10.3.1" /><a class="anchor-link" href="#Ex.-10.3.1---Implement-toList.-">&#182;</a></h3><p>Implement toList :: Foldable f =&gt; f a -&gt; [a]</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[17]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span class="nf">toList</span> <span class="ow">::</span> <span class="kt">Foldable</span> <span class="n">f</span> <span class="ow">=&gt;</span> <span class="n">f</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="n">a</span><span class="p">]</span>
+<span class="nf">toList</span> <span class="ow">=</span> <span class="n">foldMap</span> <span class="p">(</span><span class="kt">:</span> <span class="kt">[]</span><span class="p">)</span>
+
+<span class="kr">data</span> <span class="kt">Tree</span> <span class="n">a</span> <span class="ow">=</span> <span class="kt">Empty</span> <span class="o">|</span> <span class="kt">Leaf</span> <span class="n">a</span> <span class="o">|</span> <span class="kt">Node</span> <span class="p">(</span><span class="kt">Tree</span> <span class="n">a</span><span class="p">)</span> <span class="n">a</span> <span class="p">(</span><span class="kt">Tree</span> <span class="n">a</span><span class="p">)</span>
+  <span class="kr">deriving</span> <span class="p">(</span><span class="kt">Show</span><span class="p">,</span> <span class="kt">Functor</span><span class="p">)</span>
+
+<span class="kr">instance</span> <span class="kt">Foldable</span> <span class="kt">Tree</span> <span class="kr">where</span>
+   <span class="n">foldMap</span> <span class="n">f</span> <span class="kt">Empty</span> <span class="ow">=</span> <span class="n">mempty</span>
+   <span class="n">foldMap</span> <span class="n">f</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="n">x</span><span class="p">)</span> <span class="ow">=</span> <span class="n">f</span> <span class="n">x</span>
+   <span class="n">foldMap</span> <span class="n">f</span> <span class="p">(</span><span class="kt">Node</span> <span class="n">l</span> <span class="n">k</span> <span class="n">r</span><span class="p">)</span> <span class="ow">=</span> <span class="n">foldMap</span> <span class="n">f</span> <span class="n">l</span> <span class="p">`</span><span class="n">mappend</span><span class="p">`</span> <span class="n">f</span> <span class="n">k</span> <span class="p">`</span><span class="n">mappend</span><span class="p">`</span> <span class="n">foldMap</span> <span class="n">f</span> <span class="n">r</span>
+
+<span class="nf">toList</span> <span class="o">$</span> <span class="kt">Node</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="mi">1</span><span class="p">)</span> <span class="mi">2</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="mi">3</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+
+
+<div class="output_text output_subarea ">
+<pre>[1,2,3]</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to Contents</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Ex.-10.3.2---Implement-concat,-etc.-">Ex. 10.3.2 - Implement <em>concat</em>, etc. <a name="10.3.2" /><a class="anchor-link" href="#Ex.-10.3.2---Implement-concat,-etc.-">&#182;</a></h3><p>Pick some of the following functions to implement: concat, concatMap, and, or, any, all, sum, product, maximum(By), minimum(By), elem, notElem, and find. Figure out how they generalize to Foldable and come up with elegant implementations using fold or foldMap along with appropriate Monoid instances.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Ex.-10.3.2.a---Implement-concat.-">Ex. 10.3.2.a - Implement <em>concat</em>. <a name="10.3.2.a" /><a class="anchor-link" href="#Ex.-10.3.2.a---Implement-concat.-">&#182;</a></h4>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[18]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span class="nf">concat</span> <span class="ow">::</span> <span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="n">a</span><span class="p">]</span>
+
+<span class="c1">-- concat [] ys = ys</span>
+<span class="c1">-- concat (x:xs) ys = x : (concat xs ys)</span>
+
+<span class="c1">-- concat xs ys = xs `mappend` ys</span>
+<span class="nf">concat</span> <span class="ow">=</span> <span class="n">mappend</span>
+
+<span class="nf">concat</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">]</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+
+
+<div class="output_text output_subarea ">
+<pre>[1,2,3,4,5,6]</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to Contents</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Ex.-10.3.2.b---Implement-concatMap.-">Ex. 10.3.2.b - Implement <em>concatMap</em>. <a name="10.3.2.b" /><a class="anchor-link" href="#Ex.-10.3.2.b---Implement-concatMap.-">&#182;</a></h4>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[19]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span class="nf">concatMap</span> <span class="ow">::</span> <span class="p">(</span><span class="n">a</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="n">b</span><span class="p">])</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="n">b</span><span class="p">]</span>
+
+<span class="c1">-- concatMap _ [] = []</span>
+<span class="c1">-- concatMap g (x:xs) = g x ++ (concatMap g xs)</span>
+
+<span class="c1">-- concatMap g xs = fold $ fmap g xs</span>
+<span class="c1">-- concatMap g xs = (fold . fmap g) xs</span>
+<span class="c1">-- concatMap g xs = foldMap g xs</span>
+<span class="nf">concatMap</span> <span class="ow">=</span> <span class="n">foldMap</span>
+
+
+<span class="nf">concatMap</span> <span class="p">(</span><span class="nf">\</span><span class="n">x</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">])</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+
+
+<div class="output_text output_subarea ">
+<pre>[1,1,2,2,3,3]</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to Contents</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Ex.-10.3.2.c---Implement-and.-">Ex. 10.3.2.c - Implement <em>and</em>. <a name="10.3.2.c" /><a class="anchor-link" href="#Ex.-10.3.2.c---Implement-and.-">&#182;</a></h4>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[20]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span class="nf">and</span> <span class="ow">::</span> <span class="kt">Foldable</span> <span class="n">t</span> <span class="ow">=&gt;</span> <span class="n">t</span> <span class="kt">Bool</span> <span class="ow">-&gt;</span> <span class="kt">Bool</span>
+<span class="nf">and</span> <span class="ow">=</span> <span class="n">getAll</span> <span class="o">.</span> <span class="p">(</span><span class="n">foldMap</span> <span class="kt">All</span><span class="p">)</span>
+
+<span class="kr">newtype</span> <span class="kt">All</span> <span class="ow">=</span> <span class="kt">All</span> <span class="p">{</span><span class="n">getAll</span> <span class="ow">::</span> <span class="kt">Bool</span><span class="p">}</span>
+
+<span class="kr">instance</span> <span class="kt">Monoid</span> <span class="kt">All</span> <span class="kr">where</span>
+    <span class="n">mempty</span> <span class="ow">=</span> <span class="kt">All</span> <span class="kt">True</span>
+    <span class="n">mappend</span> <span class="p">(</span><span class="kt">All</span> <span class="kt">True</span><span class="p">)</span> <span class="p">(</span><span class="kt">All</span> <span class="kt">True</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">All</span> <span class="kt">True</span>
+    <span class="n">mappend</span> <span class="kr">_</span>          <span class="kr">_</span>          <span class="ow">=</span> <span class="kt">All</span> <span class="kt">False</span>
+    
+<span class="nf">and</span> <span class="o">$</span> <span class="kt">Node</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="kt">True</span><span class="p">)</span> <span class="kt">True</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="kt">True</span><span class="p">)</span>
+<span class="nf">and</span> <span class="o">$</span> <span class="kt">Node</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="kt">True</span><span class="p">)</span> <span class="kt">True</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="kt">False</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+
+
+<div class="output_text output_subarea ">
+<pre>True</pre>
+</div>
+
+</div>
+
+<div class="output_area"><div class="prompt"></div>
+
+
+<div class="output_text output_subarea ">
+<pre>False</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to Contents</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Ex.-10.3.2.d---Implement-or.-">Ex. 10.3.2.d - Implement <em>or</em>. <a name="10.3.2.d" /><a class="anchor-link" href="#Ex.-10.3.2.d---Implement-or.-">&#182;</a></h4>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[21]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span class="nf">or</span> <span class="ow">::</span> <span class="kt">Foldable</span> <span class="n">t</span> <span class="ow">=&gt;</span> <span class="n">t</span> <span class="kt">Bool</span> <span class="ow">-&gt;</span> <span class="kt">Bool</span>
+<span class="nf">or</span> <span class="ow">=</span> <span class="n">getAny</span> <span class="o">.</span> <span class="p">(</span><span class="n">foldMap</span> <span class="kt">Any</span><span class="p">)</span>
+
+<span class="kr">newtype</span> <span class="kt">Any</span> <span class="ow">=</span> <span class="kt">Any</span> <span class="p">{</span><span class="n">getAny</span> <span class="ow">::</span> <span class="kt">Bool</span><span class="p">}</span>
+
+<span class="kr">instance</span> <span class="kt">Monoid</span> <span class="kt">Any</span> <span class="kr">where</span>
+    <span class="n">mempty</span> <span class="ow">=</span> <span class="kt">Any</span> <span class="kt">False</span>
+    <span class="n">mappend</span> <span class="p">(</span><span class="kt">Any</span> <span class="kt">False</span><span class="p">)</span> <span class="p">(</span><span class="kt">Any</span> <span class="kt">False</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">Any</span> <span class="kt">False</span>
+    <span class="n">mappend</span> <span class="kr">_</span>           <span class="kr">_</span>           <span class="ow">=</span> <span class="kt">Any</span> <span class="kt">True</span>
+    
+<span class="nf">or</span> <span class="o">$</span> <span class="kt">Node</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="kt">False</span><span class="p">)</span> <span class="kt">False</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="kt">True</span><span class="p">)</span>
+<span class="nf">or</span> <span class="o">$</span> <span class="kt">Node</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="kt">False</span><span class="p">)</span> <span class="kt">False</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="kt">False</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+
+
+<div class="output_text output_subarea ">
+<pre>True</pre>
+</div>
+
+</div>
+
+<div class="output_area"><div class="prompt"></div>
+
+
+<div class="output_text output_subarea ">
+<pre>False</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to Contents</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Ex.-10.3.2.e---Implement-any.-">Ex. 10.3.2.e - Implement <em>any</em>. <a name="10.3.2.e" /><a class="anchor-link" href="#Ex.-10.3.2.e---Implement-any.-">&#182;</a></h4>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[22]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span class="nf">any</span> <span class="ow">::</span> <span class="kt">Foldable</span> <span class="n">t</span> <span class="ow">=&gt;</span> <span class="n">t</span> <span class="kt">Bool</span> <span class="ow">-&gt;</span> <span class="kt">Bool</span>
+<span class="nf">any</span> <span class="ow">=</span> <span class="n">or</span>
+
+<span class="nf">any</span> <span class="o">$</span> <span class="kt">Node</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="kt">False</span><span class="p">)</span> <span class="kt">False</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="kt">True</span><span class="p">)</span>
+<span class="nf">any</span> <span class="o">$</span> <span class="kt">Node</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="kt">False</span><span class="p">)</span> <span class="kt">False</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="kt">False</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+
+
+<div class="output_text output_subarea ">
+<pre>True</pre>
+</div>
+
+</div>
+
+<div class="output_area"><div class="prompt"></div>
+
+
+<div class="output_text output_subarea ">
+<pre>False</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to Contents</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Ex.-10.3.2.f---Implement-all.-">Ex. 10.3.2.f - Implement <em>all</em>. <a name="10.3.2.f" /><a class="anchor-link" href="#Ex.-10.3.2.f---Implement-all.-">&#182;</a></h4>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[23]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span class="nf">all</span> <span class="ow">::</span> <span class="kt">Foldable</span> <span class="n">t</span> <span class="ow">=&gt;</span> <span class="n">t</span> <span class="kt">Bool</span> <span class="ow">-&gt;</span> <span class="kt">Bool</span>
+<span class="nf">all</span> <span class="ow">=</span> <span class="n">and</span>
+
+<span class="nf">all</span> <span class="o">$</span> <span class="kt">Node</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="kt">True</span><span class="p">)</span> <span class="kt">True</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="kt">True</span><span class="p">)</span>
+<span class="nf">all</span> <span class="o">$</span> <span class="kt">Node</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="kt">True</span><span class="p">)</span> <span class="kt">True</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="kt">False</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+
+
+<div class="output_text output_subarea ">
+<pre>True</pre>
+</div>
+
+</div>
+
+<div class="output_area"><div class="prompt"></div>
+
+
+<div class="output_text output_subarea ">
+<pre>False</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to Contents</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Ex.-10.3.2.g---Implement-sum.-">Ex. 10.3.2.g - Implement <em>sum</em>. <a name="10.3.2.g" /><a class="anchor-link" href="#Ex.-10.3.2.g---Implement-sum.-">&#182;</a></h4>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[24]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span class="nf">sum</span> <span class="ow">::</span> <span class="p">(</span><span class="kt">Foldable</span> <span class="n">t</span><span class="p">)</span> <span class="ow">=&gt;</span> <span class="n">t</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Int</span>
+<span class="nf">sum</span> <span class="ow">=</span> <span class="n">getSum</span> <span class="o">.</span> <span class="p">(</span><span class="n">foldMap</span> <span class="kt">Sum</span><span class="p">)</span>
+
+<span class="kr">newtype</span> <span class="kt">Sum</span> <span class="ow">=</span> <span class="kt">Sum</span> <span class="p">{</span><span class="n">getSum</span> <span class="ow">::</span> <span class="kt">Int</span><span class="p">}</span>
+
+<span class="kr">instance</span> <span class="kt">Monoid</span> <span class="kt">Sum</span> <span class="kr">where</span>
+    <span class="n">mempty</span> <span class="ow">=</span> <span class="kt">Sum</span> <span class="mi">0</span>
+    <span class="n">mappend</span> <span class="p">(</span><span class="kt">Sum</span> <span class="n">x</span><span class="p">)</span> <span class="p">(</span><span class="kt">Sum</span> <span class="n">y</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">Sum</span> <span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">y</span><span class="p">)</span>
+    
+<span class="nf">sum</span> <span class="o">$</span> <span class="kt">Node</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="mi">1</span><span class="p">)</span> <span class="mi">2</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="mi">3</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+
+
+<div class="output_text output_subarea ">
+<pre>6</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to Contents</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Ex.-10.3.2.h---Implement-product.-">Ex. 10.3.2.h - Implement <em>product</em>. <a name="10.3.2.h" /><a class="anchor-link" href="#Ex.-10.3.2.h---Implement-product.-">&#182;</a></h4>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[25]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span class="nf">product</span> <span class="ow">::</span> <span class="p">(</span><span class="kt">Foldable</span> <span class="n">t</span><span class="p">)</span> <span class="ow">=&gt;</span> <span class="n">t</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Int</span>
+<span class="nf">product</span> <span class="ow">=</span> <span class="n">getProd</span> <span class="o">.</span> <span class="p">(</span><span class="n">foldMap</span> <span class="kt">Prod</span><span class="p">)</span>
+
+<span class="kr">newtype</span> <span class="kt">Prod</span> <span class="ow">=</span> <span class="kt">Prod</span> <span class="p">{</span><span class="n">getProd</span> <span class="ow">::</span> <span class="kt">Int</span><span class="p">}</span>
+
+<span class="kr">instance</span> <span class="kt">Monoid</span> <span class="kt">Prod</span> <span class="kr">where</span>
+    <span class="n">mempty</span> <span class="ow">=</span> <span class="kt">Prod</span> <span class="mi">1</span>
+    <span class="n">mappend</span> <span class="p">(</span><span class="kt">Prod</span> <span class="n">x</span><span class="p">)</span> <span class="p">(</span><span class="kt">Prod</span> <span class="n">y</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">Prod</span> <span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="n">y</span><span class="p">)</span>
+    
+<span class="nf">product</span> <span class="o">$</span> <span class="kt">Node</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="mi">1</span><span class="p">)</span> <span class="mi">2</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="mi">3</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+
+
+<div class="output_text output_subarea ">
+<pre>6</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to Contents</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Ex.-10.3.2.i---Implement-maximum.-">Ex. 10.3.2.i - Implement <em>maximum</em>. <a name="10.3.2.i" /><a class="anchor-link" href="#Ex.-10.3.2.i---Implement-maximum.-">&#182;</a></h4>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[26]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span class="nf">maximum</span> <span class="ow">::</span> <span class="p">(</span><span class="kt">Foldable</span> <span class="n">t</span><span class="p">)</span> <span class="ow">=&gt;</span> <span class="n">t</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Int</span>
+<span class="nf">maximum</span> <span class="ow">=</span> <span class="n">getMax</span> <span class="o">.</span> <span class="p">(</span><span class="n">foldMap</span> <span class="kt">Max</span><span class="p">)</span>
+
+<span class="kr">newtype</span> <span class="kt">Max</span> <span class="ow">=</span> <span class="kt">Max</span> <span class="p">{</span><span class="n">getMax</span> <span class="ow">::</span> <span class="kt">Int</span><span class="p">}</span>
+
+<span class="kr">instance</span> <span class="kt">Monoid</span> <span class="kt">Max</span> <span class="kr">where</span>
+    <span class="n">mempty</span> <span class="ow">=</span> <span class="kt">Max</span> <span class="mi">0</span>
+    <span class="n">mappend</span> <span class="p">(</span><span class="kt">Max</span> <span class="n">x</span><span class="p">)</span> <span class="p">(</span><span class="kt">Max</span> <span class="n">y</span><span class="p">)</span> <span class="o">|</span> <span class="n">y</span> <span class="o">&gt;</span> <span class="n">x</span>     <span class="ow">=</span> <span class="kt">Max</span> <span class="n">y</span>
+                            <span class="o">|</span> <span class="n">otherwise</span> <span class="ow">=</span> <span class="kt">Max</span> <span class="n">x</span>
+                            
+<span class="nf">maximum</span> <span class="o">$</span> <span class="kt">Node</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="mi">1</span><span class="p">)</span> <span class="mi">4</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="mi">3</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+
+
+<div class="output_text output_subarea ">
+<pre>4</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to Contents</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Ex.-10.3.2.j---Implement-minimum.-">Ex. 10.3.2.j - Implement <em>minimum</em>. <a name="10.3.2.j" /><a class="anchor-link" href="#Ex.-10.3.2.j---Implement-minimum.-">&#182;</a></h4>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[27]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span class="nf">minimum</span> <span class="ow">::</span> <span class="p">(</span><span class="kt">Foldable</span> <span class="n">t</span><span class="p">)</span> <span class="ow">=&gt;</span> <span class="n">t</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Int</span>
+<span class="nf">minimum</span> <span class="ow">=</span> <span class="n">getMin</span> <span class="o">.</span> <span class="p">(</span><span class="n">foldMap</span> <span class="kt">Min</span><span class="p">)</span>
+
+<span class="kr">newtype</span> <span class="kt">Min</span> <span class="ow">=</span> <span class="kt">Min</span> <span class="p">{</span><span class="n">getMin</span> <span class="ow">::</span> <span class="kt">Int</span><span class="p">}</span>
+
+<span class="kr">instance</span> <span class="kt">Monoid</span> <span class="kt">Min</span> <span class="kr">where</span>
+    <span class="n">mempty</span> <span class="ow">=</span> <span class="kt">Min</span> <span class="mi">1000000</span>
+    <span class="n">mappend</span> <span class="p">(</span><span class="kt">Min</span> <span class="n">x</span><span class="p">)</span> <span class="p">(</span><span class="kt">Min</span> <span class="n">y</span><span class="p">)</span> <span class="o">|</span> <span class="n">y</span> <span class="o">&lt;</span> <span class="n">x</span>     <span class="ow">=</span> <span class="kt">Min</span> <span class="n">y</span>
+                            <span class="o">|</span> <span class="n">otherwise</span> <span class="ow">=</span> <span class="kt">Min</span> <span class="n">x</span>
+                            
+<span class="nf">minimum</span> <span class="o">$</span> <span class="kt">Node</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="mi">1</span><span class="p">)</span> <span class="mi">4</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="mi">3</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+
+
+<div class="output_text output_subarea ">
+<pre>1</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to Contents</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Ex.-10.3.2.k---Implement-elem.-">Ex. 10.3.2.k - Implement <em>elem</em>. <a name="10.3.2.k" /><a class="anchor-link" href="#Ex.-10.3.2.k---Implement-elem.-">&#182;</a></h4>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[28]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span class="nf">elem</span> <span class="ow">::</span> <span class="p">(</span><span class="kt">Foldable</span> <span class="n">t</span><span class="p">,</span> <span class="kt">Eq</span> <span class="n">a</span><span class="p">)</span> <span class="ow">=&gt;</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">t</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">Bool</span>
+<span class="nf">elem</span> <span class="n">x</span> <span class="ow">=</span> <span class="n">getAny</span> <span class="o">.</span> <span class="p">(</span><span class="n">foldMap</span> <span class="p">(</span><span class="kt">Any</span> <span class="o">.</span> <span class="p">(</span><span class="o">==</span> <span class="n">x</span><span class="p">)))</span>
+
+<span class="nf">elem</span> <span class="mi">4</span> <span class="o">$</span> <span class="kt">Node</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="mi">1</span><span class="p">)</span> <span class="mi">4</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="mi">3</span><span class="p">)</span>
+<span class="nf">elem</span> <span class="mi">2</span> <span class="o">$</span> <span class="kt">Node</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="mi">1</span><span class="p">)</span> <span class="mi">4</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="mi">3</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+
+
+<div class="output_text output_subarea ">
+<pre>True</pre>
+</div>
+
+</div>
+
+<div class="output_area"><div class="prompt"></div>
+
+
+<div class="output_text output_subarea ">
+<pre>False</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to Contents</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Ex.-10.3.2.l---Implement-notElem.-">Ex. 10.3.2.l - Implement <em>notElem</em>. <a name="10.3.2.l" /><a class="anchor-link" href="#Ex.-10.3.2.l---Implement-notElem.-">&#182;</a></h4>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[29]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span class="nf">notElem</span> <span class="ow">::</span> <span class="p">(</span><span class="kt">Foldable</span> <span class="n">t</span><span class="p">,</span> <span class="kt">Eq</span> <span class="n">a</span><span class="p">)</span> <span class="ow">=&gt;</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">t</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">Bool</span>
+<span class="nf">notElem</span> <span class="n">x</span> <span class="ow">=</span> <span class="n">not</span> <span class="o">.</span> <span class="p">(</span><span class="n">elem</span> <span class="n">x</span><span class="p">)</span>
+
+<span class="nf">notElem</span> <span class="mi">4</span> <span class="o">$</span> <span class="kt">Node</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="mi">1</span><span class="p">)</span> <span class="mi">4</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="mi">3</span><span class="p">)</span>
+<span class="nf">notElem</span> <span class="mi">2</span> <span class="o">$</span> <span class="kt">Node</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="mi">1</span><span class="p">)</span> <span class="mi">4</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="mi">3</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+
+
+<div class="output_text output_subarea ">
+<pre>False</pre>
+</div>
+
+</div>
+
+<div class="output_area"><div class="prompt"></div>
+
+
+<div class="output_text output_subarea ">
+<pre>True</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to Contents</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Ex.-10.3.2.m---Implement-find.-">Ex. 10.3.2.m - Implement <em>find</em>. <a name="10.3.2.m" /><a class="anchor-link" href="#Ex.-10.3.2.m---Implement-find.-">&#182;</a></h4>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[30]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span class="nf">find</span> <span class="ow">::</span> <span class="kt">Foldable</span> <span class="n">t</span> <span class="ow">=&gt;</span> <span class="p">(</span><span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">Bool</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="n">t</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">Maybe</span> <span class="n">a</span>
+<span class="nf">find</span> <span class="n">p</span> <span class="ow">=</span> <span class="n">getFirst</span> <span class="o">.</span> <span class="n">foldMap</span> <span class="p">(</span><span class="kt">First</span> <span class="o">.</span> <span class="n">sel</span> <span class="n">p</span><span class="p">)</span>
+  <span class="kr">where</span> <span class="n">sel</span> <span class="n">p</span> <span class="n">x</span> <span class="o">|</span> <span class="n">p</span> <span class="n">x</span>       <span class="ow">=</span> <span class="kt">Just</span> <span class="n">x</span>
+                <span class="o">|</span> <span class="n">otherwise</span> <span class="ow">=</span> <span class="kt">Nothing</span>
+
+<span class="nf">t1</span> <span class="ow">=</span> <span class="kt">Node</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="mi">1</span><span class="p">)</span> <span class="mi">4</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="mi">3</span><span class="p">)</span>
+
+<span class="nf">find</span> <span class="p">(</span><span class="o">&gt;</span> <span class="mi">2</span><span class="p">)</span> <span class="n">t1</span>
+<span class="nf">find</span> <span class="p">(</span><span class="o">&gt;</span> <span class="mi">4</span><span class="p">)</span> <span class="n">t1</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+
+
+<div class="output_text output_subarea ">
+<pre>Just 4</pre>
+</div>
+
+</div>
+
+<div class="output_area"><div class="prompt"></div>
+
+
+<div class="output_text output_subarea ">
+<pre>Nothing</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to Contents</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Section-11.1---Traversable-Definition-">Section 11.1 - Traversable Definition <a name="11.1" /><a class="anchor-link" href="#Section-11.1---Traversable-Definition-">&#182;</a></h1>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>A good exercise is to figure out what the default implementations should be: given either traverse or sequenceA, how would you define the other three methods? (Hint for mapM: Control.Applicative exports the WrapMonad newtype, which makes any Monad into an Applicative. The sequence function can be implemented in terms of mapM.)</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[31]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span class="c1">-- I don&#39;t seem to need the following line. I include it, here, because it was necessary,</span>
+<span class="c1">-- when debugging the kernel hang mentioned, below, in GHCi.</span>
+<span class="kr">import</span> <span class="nn">Prelude</span> <span class="k">hiding</span> <span class="p">(</span><span class="kt">Traversable</span><span class="p">,</span> <span class="nf">sequenceA</span><span class="p">,</span> <span class="nf">traverse</span><span class="p">,</span> <span class="nf">mapM</span><span class="p">,</span> <span class="nf">sequence</span><span class="p">)</span>
+<span class="kr">import</span> <span class="nn">Control.Applicative</span> <span class="p">(</span><span class="kt">WrappedMonad</span><span class="p">(</span><span class="o">..</span><span class="p">))</span>
+
+<span class="kr">class</span> <span class="p">(</span><span class="kt">Functor</span> <span class="n">t</span><span class="p">,</span> <span class="kt">Foldable</span> <span class="n">t</span><span class="p">)</span> <span class="ow">=&gt;</span> <span class="kt">Traversable</span> <span class="n">t</span> <span class="kr">where</span>
+  <span class="n">traverse</span> <span class="ow">::</span> <span class="kt">Applicative</span> <span class="n">f</span> <span class="ow">=&gt;</span> <span class="p">(</span><span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">f</span> <span class="n">b</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="n">t</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">f</span> <span class="p">(</span><span class="n">t</span> <span class="n">b</span><span class="p">)</span>
+  <span class="n">traverse</span> <span class="n">g</span> <span class="ow">=</span> <span class="n">sequenceA</span> <span class="o">.</span> <span class="n">fmap</span> <span class="n">g</span>
+  
+  <span class="n">sequenceA</span> <span class="ow">::</span> <span class="kt">Applicative</span> <span class="n">f</span> <span class="ow">=&gt;</span> <span class="n">t</span> <span class="p">(</span><span class="n">f</span> <span class="n">a</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="n">f</span> <span class="p">(</span><span class="n">t</span> <span class="n">a</span><span class="p">)</span>
+  <span class="n">sequenceA</span> <span class="ow">=</span> <span class="n">traverse</span> <span class="n">id</span>
+
+  <span class="n">mapM</span> <span class="ow">::</span> <span class="kt">Monad</span> <span class="n">m</span> <span class="ow">=&gt;</span> <span class="p">(</span><span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">m</span> <span class="n">b</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="n">t</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">m</span> <span class="p">(</span><span class="n">t</span> <span class="n">b</span><span class="p">)</span>
+  <span class="c1">-- mapM g = unwrapMonad . sequenceA . (fmap (WrapMonad . g))</span>
+  <span class="n">mapM</span> <span class="n">g</span> <span class="ow">=</span> <span class="n">unwrapMonad</span> <span class="o">.</span> <span class="n">traverse</span> <span class="p">(</span><span class="kt">WrapMonad</span> <span class="o">.</span> <span class="n">g</span><span class="p">)</span>
+  
+  <span class="n">sequence</span> <span class="ow">::</span> <span class="kt">Monad</span> <span class="n">m</span> <span class="ow">=&gt;</span> <span class="n">t</span> <span class="p">(</span><span class="n">m</span> <span class="n">a</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="n">m</span> <span class="p">(</span><span class="n">t</span> <span class="n">a</span><span class="p">)</span>
+  <span class="n">sequence</span> <span class="ow">=</span> <span class="n">mapM</span> <span class="n">id</span>
+  
+<span class="c1">-- If I remove the following two lines, the kernel hangs when I attempt to run the cell.</span>
+<span class="nf">main</span> <span class="ow">::</span> <span class="kt">IO</span> <span class="nb">()</span>
+<span class="nf">main</span> <span class="ow">=</span> <span class="n">putStrLn</span> <span class="s">&quot;Hello, World!&quot;</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to Contents</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Section-11.2---Traversable-Intuition-">Section 11.2 - Traversable Intuition <a name="11.2" /><a class="anchor-link" href="#Section-11.2---Traversable-Intuition-">&#182;</a></h1>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Ex.-11.2.1----Tree-of-lists-to-list-of-trees.-">Ex. 11.2.1 -  Tree of lists to list of trees. <a name="11.2.1" /><a class="anchor-link" href="#Ex.-11.2.1----Tree-of-lists-to-list-of-trees.-">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><em>There are at least two natural ways to turn a tree of lists into a list of trees. What are they, and why?</em></p>
+<p>Taking the following tree, as an example:</p>
+
+<pre><code>         [1,2,3]
+
+        /       \
+     [4,5]      [6]
+     /   \
+ [7,8,9] [10]
+
+</code></pre>
+<p>The most natural way seems to be to push it straight down from above, preserving the existing relative horizontal position of the elements, which seems to be what we get, when we rely on the <em>Foldable</em> instance to do the transposition:</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[32]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span class="nf">t</span>   <span class="ow">=</span> <span class="p">(</span><span class="kt">Node</span> <span class="p">(</span><span class="kt">Node</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="p">[</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">])</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">]</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="p">[</span><span class="mi">10</span><span class="p">]))</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="p">[</span><span class="mi">6</span><span class="p">]))</span>
+<span class="nf">res</span> <span class="ow">=</span> <span class="n">foldMap</span> <span class="p">(</span><span class="n">fmap</span> <span class="kt">Leaf</span><span class="p">)</span> <span class="n">t</span>
+
+<span class="nf">print</span> <span class="n">t</span>
+<span class="nf">print</span> <span class="n">res</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+
+
+<div class="output_text output_subarea ">
+<pre>Node (Node (Leaf [7,8,9]) [4,5] (Leaf [10])) [1,2,3] (Leaf [6])</pre>
+</div>
+
+</div>
+
+<div class="output_area"><div class="prompt"></div>
+
+
+<div class="output_text output_subarea ">
+<pre>[Leaf 7,Leaf 8,Leaf 9,Leaf 4,Leaf 5,Leaf 10,Leaf 1,Leaf 2,Leaf 3,Leaf 6]</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>I suppose another "natural" way would be to scan down the complete depth of the tree, always taking the left-most untraversed path. Here is my attempt at coding this:</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[33]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span class="nf">toListRowByRow</span> <span class="ow">::</span> <span class="kt">Tree</span> <span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="kt">Tree</span> <span class="n">a</span><span class="p">]</span>
+<span class="nf">toListRowByRow</span> <span class="kt">Empty</span>           <span class="ow">=</span> <span class="kt">[]</span>
+<span class="nf">toListRowByRow</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="n">xs</span><span class="p">)</span>       <span class="ow">=</span> <span class="n">map</span> <span class="kt">Leaf</span> <span class="n">xs</span>
+<span class="nf">toListRowByRow</span> <span class="p">(</span><span class="kt">Node</span> <span class="n">t1</span> <span class="n">xs</span> <span class="n">t2</span><span class="p">)</span> <span class="ow">=</span> <span class="p">(</span><span class="n">map</span> <span class="kt">Leaf</span> <span class="n">xs</span><span class="p">)</span> <span class="o">++</span> <span class="p">(</span><span class="n">toListRowByRow</span> <span class="n">t1</span><span class="p">)</span> <span class="o">++</span> <span class="p">(</span><span class="n">toListRowByRow</span> <span class="n">t2</span><span class="p">)</span>
+
+<span class="nf">res&#39;</span> <span class="ow">=</span> <span class="n">toListRowByRow</span> <span class="n">t</span>
+
+<span class="nf">print</span> <span class="n">t</span>
+<span class="nf">print</span> <span class="n">res&#39;</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+
+
+<div class="output_text output_subarea ">
+<pre>Node (Node (Leaf [7,8,9]) [4,5] (Leaf [10])) [1,2,3] (Leaf [6])</pre>
+</div>
+
+</div>
+
+<div class="output_area"><div class="prompt"></div>
+
+
+<div class="output_text output_subarea ">
+<pre>[Leaf 1,Leaf 2,Leaf 3,Leaf 4,Leaf 5,Leaf 7,Leaf 8,Leaf 9,Leaf 10,Leaf 6]</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to Contents</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Ex.-11.2.1x----sequenceA-in-terms-of-foldMap.-">Ex. 11.2.1x -  <em>sequenceA</em> in terms of <em>foldMap</em>. <a name="11.2.1x" /><a class="anchor-link" href="#Ex.-11.2.1x----sequenceA-in-terms-of-foldMap.-">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>In trying to answer the previous question, it occured to me that, if there was a completely generic way of turning an <em>Applicative</em> into a <em>Monoid</em>, then one could define <em>sequenceA</em> in terms of <em>foldMap</em>, thereby providing automatic <em>Traversable</em> instance derivation. Here is my attempt to code this:</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[34]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span class="kr">newtype</span> <span class="kt">MonApp</span> <span class="ow">=</span> <span class="kt">MonApp</span> <span class="p">{</span><span class="n">getApp</span> <span class="ow">::</span> <span class="p">(</span><span class="kt">Applicative</span> <span class="n">f</span><span class="p">,</span> <span class="kt">Monoid</span> <span class="n">a</span><span class="p">)</span> <span class="ow">=&gt;</span> <span class="n">f</span> <span class="n">a</span><span class="p">}</span>
+
+<span class="kr">instance</span> <span class="kt">Monoid</span> <span class="kt">MonApp</span> <span class="kr">where</span>
+  <span class="n">mempty</span>          <span class="ow">=</span> <span class="kt">MonApp</span> <span class="o">$</span> <span class="n">pure</span> <span class="n">mempty</span>
+  <span class="n">mappend</span> <span class="n">ma1</span> <span class="n">ma2</span> <span class="ow">=</span> <span class="kt">MonApp</span> <span class="o">$</span> <span class="n">mappend</span> <span class="o">&lt;$&gt;</span> <span class="p">(</span><span class="n">getApp</span> <span class="n">ma1</span><span class="p">)</span> <span class="o">&lt;*&gt;</span> <span class="p">(</span><span class="n">getApp</span> <span class="n">ma2</span><span class="p">)</span>
+
+<span class="kr">instance</span> <span class="p">(</span><span class="kt">Monoid</span> <span class="n">a</span><span class="p">)</span> <span class="ow">=&gt;</span> <span class="kt">Monoid</span> <span class="p">(</span><span class="kt">Tree</span> <span class="n">a</span><span class="p">)</span> <span class="kr">where</span>
+  <span class="n">mempty</span> <span class="ow">=</span> <span class="kt">Empty</span>
+  <span class="n">mappend</span> <span class="kt">Empty</span> <span class="n">t</span> <span class="ow">=</span> <span class="n">t</span>
+  <span class="n">mappend</span> <span class="n">t</span> <span class="kt">Empty</span> <span class="ow">=</span> <span class="n">t</span>
+  <span class="n">mappend</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="n">x</span><span class="p">)</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="n">y</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">Leaf</span> <span class="p">(</span><span class="n">x</span> <span class="p">`</span><span class="n">mappend</span><span class="p">`</span> <span class="n">y</span><span class="p">)</span>
+  <span class="n">mappend</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="n">x</span><span class="p">)</span> <span class="p">(</span><span class="kt">Node</span> <span class="n">t1</span> <span class="n">y</span> <span class="n">t2</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">Node</span> <span class="n">t1</span> <span class="p">(</span><span class="n">x</span> <span class="p">`</span><span class="n">mappend</span><span class="p">`</span> <span class="n">y</span><span class="p">)</span> <span class="n">t2</span>
+  <span class="n">mappend</span> <span class="p">(</span><span class="kt">Node</span> <span class="n">t1</span> <span class="n">y</span> <span class="n">t2</span><span class="p">)</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="n">x</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">Node</span> <span class="n">t1</span> <span class="p">(</span><span class="n">y</span> <span class="p">`</span><span class="n">mappend</span><span class="p">`</span> <span class="n">x</span><span class="p">)</span> <span class="n">t2</span>
+  <span class="n">mappend</span> <span class="p">(</span><span class="kt">Node</span> <span class="n">t1</span> <span class="n">x</span> <span class="n">t2</span><span class="p">)</span> <span class="p">(</span><span class="kt">Node</span> <span class="n">t3</span> <span class="n">y</span> <span class="n">t4</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">Node</span> <span class="p">(</span><span class="n">t1</span> <span class="p">`</span><span class="n">mappend</span><span class="p">`</span> <span class="n">t3</span><span class="p">)</span> <span class="p">(</span><span class="n">x</span> <span class="p">`</span><span class="n">mappend</span><span class="p">`</span> <span class="n">y</span><span class="p">)</span> <span class="p">(</span><span class="n">t2</span> <span class="p">`</span><span class="n">mappend</span><span class="p">`</span> <span class="n">t4</span><span class="p">)</span>
+
+<span class="c1">-- This instance definition is only intended to work for those cases</span>
+<span class="c1">-- in which the data type contained within the tree is a Monoid,</span>
+<span class="c1">-- in which case &#39;Tree a&#39; will also be a Monoid, via the instance, above.</span>
+<span class="c1">-- I can&#39;t figure out how to express this to the compiler. Little help? :)</span>
+<span class="kr">instance</span> <span class="kt">Monoid</span> <span class="p">(</span><span class="kt">Tree</span> <span class="n">a</span><span class="p">)</span> <span class="ow">=&gt;</span> <span class="kt">Traversable</span> <span class="kt">Tree</span> <span class="kr">where</span>
+  <span class="n">sequenceA</span> <span class="ow">=</span> <span class="n">getApp</span> <span class="o">.</span> <span class="n">foldMap</span> <span class="p">(</span><span class="kt">MonApp</span> <span class="o">.</span> <span class="p">(</span><span class="n">fmap</span> <span class="kt">Leaf</span><span class="p">))</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+
+<div class="output_html rendered_html output_subarea ">
+<style>/* Styles used for the Hoogle display in the pager */
+.hoogle-doc {
+display: block;
+padding-bottom: 1.3em;
+padding-left: 0.4em;
+}
+.hoogle-code {
+display: block;
+font-family: monospace;
+white-space: pre;
+}
+.hoogle-text {
+display: block;
+}
+.hoogle-name {
+color: green;
+font-weight: bold;
+}
+.hoogle-head {
+font-weight: bold;
+}
+.hoogle-sub {
+display: block;
+margin-left: 0.4em;
+}
+.hoogle-package {
+font-weight: bold;
+font-style: italic;
+}
+.hoogle-module {
+font-weight: bold;
+}
+.hoogle-class {
+font-weight: bold;
+}
+.get-type {
+color: green;
+font-weight: bold;
+font-family: monospace;
+display: block;
+white-space: pre-wrap;
+}
+.show-type {
+color: green;
+font-weight: bold;
+font-family: monospace;
+margin-left: 1em;
+}
+.mono {
+font-family: monospace;
+display: block;
+}
+.err-msg {
+color: red;
+font-style: italic;
+font-family: monospace;
+white-space: pre;
+display: block;
+}
+#unshowable {
+color: red;
+font-weight: bold;
+}
+.err-msg.in.collapse {
+padding-top: 0.7em;
+}
+.highlight-code {
+white-space: pre;
+font-family: monospace;
+}
+.suggestion-warning { 
+font-weight: bold;
+color: rgb(200, 130, 0);
+}
+.suggestion-error { 
+font-weight: bold;
+color: red;
+}
+.suggestion-name {
+font-weight: bold;
+}
+</style><span class='err-msg'>Illegal polymorphic or qualified type: forall (f :: * -> *) a. (Applicative f, Monoid a) => f a<br/>Perhaps you intended to use RankNTypes or Rank2Types<br/>In the definition of data constructor ‘IHaskell992.MonApp’<br/>In the newtype declaration for ‘IHaskell992.MonApp’</span>
+</div>
+
+</div>
+
+</div>
+</div>
+
 </div>
 <div class="cell border-box-sizing text_cell rendered">
 <div class="prompt input_prompt">
