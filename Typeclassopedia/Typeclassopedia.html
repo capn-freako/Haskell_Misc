@@ -258,7 +258,12 @@ Original date: September 25, 2015</p>
 <li><a href="#11.1">Section 11.1 - Traversable Definition</a></li>
 <li><a href="#11.2">Section 11.2 - Traversable Intuiition</a><ul>
 <li><a href="#11.2.1">Ex. 11.2.1 - Tree of list => list of trees.</a></li>
-<li><a href="#11.2.1x">Ex. 11.2.1x - *sequenceA* in terms of *foldMap*.</a></li>
+<li><a href="#11.2.2">Ex. 11.2.2 - List of Trees => Tree of lists.</a></li>
+<li><a href="#11.2.3">Ex. 11.2.3 - Type of *traverse . traverse*.</a></li>
+</ul>
+</li>
+<li><a href="#11.3">Section 11.3 - Traversable Instances and Examples</a><ul>
+<li><a href="#11.3.1">Ex. 11.3.1 - *fmap* & *foldMap*, via Traversable methods.</a></li>
 </ul>
 </li>
 </ul>
@@ -271,17 +276,7 @@ Original date: September 25, 2015</p>
 <div class="prompt input_prompt">In&nbsp;[1]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-haskell"><pre><span class="c1">-- All language pragmas should come before any other code cells, to avoid confusing errors.</span>
-<span class="cm">{-# LANGUAGE</span>
-<span class="cm"> DeriveFunctor</span>
-<span class="cm"> DatatypeContexts  -- Needs to be included, despite deprecation warning.</span>
-<span class="cm"> ScopedTypeVariables</span>
-<span class="cm"> FlexibleContexts</span>
-<span class="cm"> UndecidableInstances</span>
-<span class="cm"> AllowAmbiguousTypes</span>
-<span class="cm"> #-}</span>
-
-<span class="kr">import</span> <span class="nn">Data.Time</span>
+<div class=" highlight hl-haskell"><pre><span class="kr">import</span> <span class="nn">Data.Time</span>
 
 <span class="nf">putStrLn</span> <span class="s">&quot;Notebook last run:&quot;</span>
 <span class="nf">getCurrentTime</span>
@@ -297,95 +292,6 @@ Original date: September 25, 2015</p>
 
 <div class="output_area"><div class="prompt"></div>
 
-<div class="output_html rendered_html output_subarea ">
-<style>/* Styles used for the Hoogle display in the pager */
-.hoogle-doc {
-display: block;
-padding-bottom: 1.3em;
-padding-left: 0.4em;
-}
-.hoogle-code {
-display: block;
-font-family: monospace;
-white-space: pre;
-}
-.hoogle-text {
-display: block;
-}
-.hoogle-name {
-color: green;
-font-weight: bold;
-}
-.hoogle-head {
-font-weight: bold;
-}
-.hoogle-sub {
-display: block;
-margin-left: 0.4em;
-}
-.hoogle-package {
-font-weight: bold;
-font-style: italic;
-}
-.hoogle-module {
-font-weight: bold;
-}
-.hoogle-class {
-font-weight: bold;
-}
-.get-type {
-color: green;
-font-weight: bold;
-font-family: monospace;
-display: block;
-white-space: pre-wrap;
-}
-.show-type {
-color: green;
-font-weight: bold;
-font-family: monospace;
-margin-left: 1em;
-}
-.mono {
-font-family: monospace;
-display: block;
-}
-.err-msg {
-color: red;
-font-style: italic;
-font-family: monospace;
-white-space: pre;
-display: block;
-}
-#unshowable {
-color: red;
-font-weight: bold;
-}
-.err-msg.in.collapse {
-padding-top: 0.7em;
-}
-.highlight-code {
-white-space: pre;
-font-family: monospace;
-}
-.suggestion-warning { 
-font-weight: bold;
-color: rgb(200, 130, 0);
-}
-.suggestion-error { 
-font-weight: bold;
-color: red;
-}
-.suggestion-name {
-font-weight: bold;
-}
-</style><span class='err-msg'>Warning: -XDatatypeContexts is deprecated: It was widely considered a misfeature, and has been removed from the Haskell language.</span>
-</div>
-
-</div>
-
-<div class="output_area"><div class="prompt"></div>
-
 
 <div class="output_text output_subarea ">
 <pre>Notebook last run:</pre>
@@ -397,7 +303,7 @@ font-weight: bold;
 
 
 <div class="output_text output_subarea ">
-<pre>2016-02-04 15:29:20.91673 UTC</pre>
+<pre>2016-02-23 03:00:18.120647 UTC</pre>
 </div>
 
 </div>
@@ -437,10 +343,11 @@ font-weight: bold;
     <span class="n">fmap&#39;</span> <span class="n">g</span> <span class="p">(</span><span class="kt">Right</span> <span class="n">x</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">Right</span> <span class="p">(</span><span class="n">g</span> <span class="n">x</span><span class="p">)</span>
 
 <span class="kr">instance</span> <span class="kt">MyFunctor</span> <span class="p">((</span><span class="ow">-&gt;</span><span class="p">)</span> <span class="n">e</span><span class="p">)</span> <span class="kr">where</span>
-    <span class="n">fmap&#39;</span> <span class="n">g</span> <span class="n">f</span> <span class="ow">=</span> <span class="n">g</span> <span class="o">.</span> <span class="n">f</span>
+    <span class="c1">-- fmap&#39; g f = g . f</span>
+    <span class="n">fmap&#39;</span> <span class="ow">=</span> <span class="p">(</span><span class="o">.</span><span class="p">)</span>
 
 <span class="c1">-- Testing Functor law on defined instances.</span>
-<span class="nf">func_law</span> <span class="n">x</span> <span class="ow">=</span> <span class="n">fmap&#39;</span> <span class="n">id</span> <span class="n">x</span> <span class="o">==</span> <span class="n">x</span>  <span class="c1">-- &quot;id x&quot; was producing an annoying error.</span>
+<span class="nf">func_law</span> <span class="n">x</span> <span class="ow">=</span> <span class="n">fmap&#39;</span> <span class="n">id</span> <span class="n">x</span> <span class="o">==</span> <span class="n">id</span> <span class="n">x</span>
 
 <span class="nf">func_law2</span> <span class="n">x</span> <span class="ow">=</span> <span class="n">fmap&#39;</span> <span class="n">id</span> <span class="n">f</span> <span class="n">x</span> <span class="o">==</span> <span class="n">f</span> <span class="n">x</span>
   <span class="kr">where</span>
@@ -674,8 +581,12 @@ first member IS included, for ((,) e), but NOT for Pair.</p>
 <div class="prompt input_prompt">In&nbsp;[5]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-haskell"><pre><span class="c1">-- data NoFunc a = NoFunc a deriving (Functor)  -- Compiles without error.</span>
-<span class="kr">data</span> <span class="p">(</span><span class="kt">Ord</span> <span class="n">a</span><span class="p">)</span> <span class="ow">=&gt;</span> <span class="kt">NoFunc</span> <span class="n">a</span> <span class="ow">=</span> <span class="kt">NoFunc</span> <span class="n">a</span> <span class="kr">deriving</span> <span class="p">(</span><span class="kt">Functor</span><span class="p">)</span>
+<div class=" highlight hl-haskell"><pre><span class="cm">{-# LANGUAGE KindSignatures GADTs StandaloneDeriving DeriveFunctor #-}</span>
+
+<span class="kr">data</span> <span class="kt">NoFunc</span> <span class="ow">::</span> <span class="o">*</span> <span class="ow">-&gt;</span> <span class="o">*</span> <span class="kr">where</span>
+    <span class="kt">NoFunc</span> <span class="ow">::</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">NoFunc</span> <span class="nb">()</span>
+
+<span class="kr">deriving</span> <span class="kr">instance</span> <span class="kt">Functor</span> <span class="p">(</span><span class="kt">NoFunc</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -770,7 +681,7 @@ color: red;
 .suggestion-name {
 font-weight: bold;
 }
-</style><span class='err-msg'>Can't make a derived instance of ‘Functor interactive:IHaskell150.NoFunc’: Data type ‘IHaskell150.NoFunc’ must not have a class context (Ord a)<br/>In the data declaration for ‘IHaskell150.NoFunc’</span>
+</style><span class='err-msg'>Can't make a derived instance of ‘Functor interactive:IHaskell150.NoFunc’: Constructor ‘IHaskell150.NoFunc’ must be truly polymorphic in the last argument of the data type<br/>In the stand-alone deriving instance for ‘Functor (interactive:IHaskell150.NoFunc)’</span>
 </div>
 
 </div>
@@ -2666,7 +2577,7 @@ font-weight: bold;
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>A good exercise is to figure out what the default implementations should be: given either traverse or sequenceA, how would you define the other three methods? (Hint for mapM: Control.Applicative exports the WrapMonad newtype, which makes any Monad into an Applicative. The sequence function can be implemented in terms of mapM.)</p>
+<p><em>A good exercise is to figure out what the default implementations should be: given either traverse or sequenceA, how would you define the other three methods? (Hint for mapM: Control.Applicative exports the WrapMonad newtype, which makes any Monad into an Applicative. The sequence function can be implemented in terms of mapM.)</em></p>
 
 </div>
 </div>
@@ -2684,7 +2595,7 @@ font-weight: bold;
 <span class="kr">class</span> <span class="p">(</span><span class="kt">Functor</span> <span class="n">t</span><span class="p">,</span> <span class="kt">Foldable</span> <span class="n">t</span><span class="p">)</span> <span class="ow">=&gt;</span> <span class="kt">Traversable</span> <span class="n">t</span> <span class="kr">where</span>
   <span class="n">traverse</span> <span class="ow">::</span> <span class="kt">Applicative</span> <span class="n">f</span> <span class="ow">=&gt;</span> <span class="p">(</span><span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">f</span> <span class="n">b</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="n">t</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">f</span> <span class="p">(</span><span class="n">t</span> <span class="n">b</span><span class="p">)</span>
   <span class="n">traverse</span> <span class="n">g</span> <span class="ow">=</span> <span class="n">sequenceA</span> <span class="o">.</span> <span class="n">fmap</span> <span class="n">g</span>
-  
+
   <span class="n">sequenceA</span> <span class="ow">::</span> <span class="kt">Applicative</span> <span class="n">f</span> <span class="ow">=&gt;</span> <span class="n">t</span> <span class="p">(</span><span class="n">f</span> <span class="n">a</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="n">f</span> <span class="p">(</span><span class="n">t</span> <span class="n">a</span><span class="p">)</span>
   <span class="n">sequenceA</span> <span class="ow">=</span> <span class="n">traverse</span> <span class="n">id</span>
 
@@ -2739,17 +2650,13 @@ font-weight: bold;
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><em>There are at least two natural ways to turn a tree of lists into a list of trees. What are they, and why?</em></p>
-<p>Taking the following tree, as an example:</p>
-
-<pre><code>         [1,2,3]
-
-        /       \
-     [4,5]      [6]
-     /   \
- [7,8,9] [10]
-
-</code></pre>
-<p>The most natural way seems to be to push it straight down from above, preserving the existing relative horizontal position of the elements, which seems to be what we get, when we rely on the <em>Foldable</em> instance to do the transposition:</p>
+<p>They are:</p>
+<ol>
+<li>concatenation of all lists in the tree (going in the order prescribed by the tree's <em>Foldable</em> instance), followed by mapping of the <em>Leaf</em> constructor, and</li>
+<li>forming the list of all trees possible, by taking each value in the top node's list as the top node value in a new tree, and forming as many trees as are possible, via recursive application to both the left and right sub-trees, independently.</li>
+</ol>
+<p>These two approaches are induced by the <em>Monoid</em> and <em>Applicative</em> instances for the inner functor (<em>List</em>), which are: <em>concatenation</em> and <em>outer product</em>, respectively.</p>
+<p>By jumping ahead and copying the <em>Traversable</em> instance for <em>Tree</em> from the documentation, we can see this in code (because, the <em>sequenceA</em> function invokes the <em>Applicative</em> instance for the inner functor):</p>
 
 </div>
 </div>
@@ -2759,66 +2666,17 @@ font-weight: bold;
 <div class="prompt input_prompt">In&nbsp;[32]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-haskell"><pre><span class="nf">t</span>   <span class="ow">=</span> <span class="p">(</span><span class="kt">Node</span> <span class="p">(</span><span class="kt">Node</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="p">[</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">])</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">]</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="p">[</span><span class="mi">10</span><span class="p">]))</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="p">[</span><span class="mi">6</span><span class="p">]))</span>
-<span class="nf">res</span> <span class="ow">=</span> <span class="n">foldMap</span> <span class="p">(</span><span class="n">fmap</span> <span class="kt">Leaf</span><span class="p">)</span> <span class="n">t</span>
+<div class=" highlight hl-haskell"><pre><span class="kr">instance</span> <span class="kt">Traversable</span> <span class="kt">Tree</span> <span class="kr">where</span>
+  <span class="n">sequenceA</span> <span class="kt">Empty</span>          <span class="ow">=</span> <span class="n">pure</span> <span class="kt">Empty</span>
+  <span class="n">sequenceA</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="n">f</span><span class="p">)</span>       <span class="ow">=</span> <span class="kt">Leaf</span> <span class="o">&lt;$&gt;</span> <span class="n">f</span>
+  <span class="n">sequenceA</span> <span class="p">(</span><span class="kt">Node</span> <span class="n">t1</span> <span class="n">f</span> <span class="n">t2</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">Node</span> <span class="o">&lt;$&gt;</span> <span class="p">(</span><span class="n">sequenceA</span> <span class="n">t1</span><span class="p">)</span> <span class="o">&lt;*&gt;</span> <span class="n">f</span> <span class="o">&lt;*&gt;</span> <span class="p">(</span><span class="n">sequenceA</span> <span class="n">t2</span><span class="p">)</span>
+
+<span class="nf">t</span>    <span class="ow">=</span> <span class="kt">Node</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="p">[</span><span class="mi">4</span><span class="p">])</span>
+<span class="nf">res</span>  <span class="ow">=</span> <span class="n">foldMap</span> <span class="p">(</span><span class="n">fmap</span> <span class="kt">Leaf</span><span class="p">)</span> <span class="n">t</span>
+<span class="nf">res&#39;</span> <span class="ow">=</span> <span class="n">sequenceA</span> <span class="n">t</span>
 
 <span class="nf">print</span> <span class="n">t</span>
 <span class="nf">print</span> <span class="n">res</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area"><div class="prompt"></div>
-
-
-<div class="output_text output_subarea ">
-<pre>Node (Node (Leaf [7,8,9]) [4,5] (Leaf [10])) [1,2,3] (Leaf [6])</pre>
-</div>
-
-</div>
-
-<div class="output_area"><div class="prompt"></div>
-
-
-<div class="output_text output_subarea ">
-<pre>[Leaf 7,Leaf 8,Leaf 9,Leaf 4,Leaf 5,Leaf 10,Leaf 1,Leaf 2,Leaf 3,Leaf 6]</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>I suppose another "natural" way would be to scan down the complete depth of the tree, always taking the left-most untraversed path. Here is my attempt at coding this:</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[33]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-haskell"><pre><span class="nf">toListRowByRow</span> <span class="ow">::</span> <span class="kt">Tree</span> <span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="kt">Tree</span> <span class="n">a</span><span class="p">]</span>
-<span class="nf">toListRowByRow</span> <span class="kt">Empty</span>           <span class="ow">=</span> <span class="kt">[]</span>
-<span class="nf">toListRowByRow</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="n">xs</span><span class="p">)</span>       <span class="ow">=</span> <span class="n">map</span> <span class="kt">Leaf</span> <span class="n">xs</span>
-<span class="nf">toListRowByRow</span> <span class="p">(</span><span class="kt">Node</span> <span class="n">t1</span> <span class="n">xs</span> <span class="n">t2</span><span class="p">)</span> <span class="ow">=</span> <span class="p">(</span><span class="n">map</span> <span class="kt">Leaf</span> <span class="n">xs</span><span class="p">)</span> <span class="o">++</span> <span class="p">(</span><span class="n">toListRowByRow</span> <span class="n">t1</span><span class="p">)</span> <span class="o">++</span> <span class="p">(</span><span class="n">toListRowByRow</span> <span class="n">t2</span><span class="p">)</span>
-
-<span class="nf">res&#39;</span> <span class="ow">=</span> <span class="n">toListRowByRow</span> <span class="n">t</span>
-
-<span class="nf">print</span> <span class="n">t</span>
 <span class="nf">print</span> <span class="n">res&#39;</span>
 </pre></div>
 
@@ -2834,7 +2692,7 @@ font-weight: bold;
 
 
 <div class="output_text output_subarea ">
-<pre>Node (Node (Leaf [7,8,9]) [4,5] (Leaf [10])) [1,2,3] (Leaf [6])</pre>
+<pre>Node (Leaf [1]) [2,3] (Leaf [4])</pre>
 </div>
 
 </div>
@@ -2843,7 +2701,16 @@ font-weight: bold;
 
 
 <div class="output_text output_subarea ">
-<pre>[Leaf 1,Leaf 2,Leaf 3,Leaf 4,Leaf 5,Leaf 7,Leaf 8,Leaf 9,Leaf 10,Leaf 6]</pre>
+<pre>[Leaf 1,Leaf 2,Leaf 3,Leaf 4]</pre>
+</div>
+
+</div>
+
+<div class="output_area"><div class="prompt"></div>
+
+
+<div class="output_text output_subarea ">
+<pre>[Node (Leaf 1) 2 (Leaf 4),Node (Leaf 1) 3 (Leaf 4)]</pre>
 </div>
 
 </div>
@@ -2867,7 +2734,69 @@ font-weight: bold;
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Ex.-11.2.1x----sequenceA-in-terms-of-foldMap.-">Ex. 11.2.1x -  <em>sequenceA</em> in terms of <em>foldMap</em>. <a name="11.2.1x" /><a class="anchor-link" href="#Ex.-11.2.1x----sequenceA-in-terms-of-foldMap.-">&#182;</a></h3>
+<h3 id="Ex.-11.2.2---List-of-trees-to-tree-of-lists.-">Ex. 11.2.2 - List of trees to tree of lists. <a name="11.2.2" /><a class="anchor-link" href="#Ex.-11.2.2---List-of-trees-to-tree-of-lists.-">&#182;</a></h3><p><em>Give a natural way to turn a list of trees into a tree of lists.</em></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[33]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span class="nf">lofT2TofL</span> <span class="ow">::</span> <span class="p">[</span><span class="kt">Tree</span> <span class="n">a</span><span class="p">]</span> <span class="ow">-&gt;</span> <span class="kt">Tree</span> <span class="p">[</span><span class="n">a</span><span class="p">]</span>
+<span class="c1">-- lofT2TofL []     = Empty</span>
+<span class="c1">-- lofT2TofL (x:xs) = Node Empty (toList x) (lofT2TofL xs)</span>
+<span class="nf">lofT2TofL</span> <span class="ow">=</span> <span class="kt">Leaf</span> <span class="o">.</span> <span class="n">concatMap</span> <span class="n">toList</span>
+
+<span class="nf">t1</span> <span class="ow">=</span> <span class="kt">Empty</span>
+<span class="nf">t2</span> <span class="ow">=</span> <span class="kt">Leaf</span> <span class="mi">1</span>
+<span class="nf">t3</span> <span class="ow">=</span> <span class="kt">Node</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="mi">2</span><span class="p">)</span> <span class="mi">3</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="mi">4</span><span class="p">)</span>
+<span class="nf">l1</span> <span class="ow">=</span> <span class="p">[</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="n">t3</span><span class="p">]</span>
+
+<span class="nf">res</span> <span class="ow">=</span> <span class="n">lofT2TofL</span> <span class="n">l1</span>
+
+<span class="nf">print</span> <span class="n">l1</span>
+<span class="nf">print</span> <span class="n">res</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+
+
+<div class="output_text output_subarea ">
+<pre>[Empty,Leaf 1,Node (Leaf 2) 3 (Leaf 4)]</pre>
+</div>
+
+</div>
+
+<div class="output_area"><div class="prompt"></div>
+
+
+<div class="output_text output_subarea ">
+<pre>Leaf [1,2,3,4]</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to Contents</a></p>
+
 </div>
 </div>
 </div>
@@ -2876,7 +2805,7 @@ font-weight: bold;
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>In trying to answer the previous question, it occured to me that, if there was a completely generic way of turning an <em>Applicative</em> into a <em>Monoid</em>, then one could define <em>sequenceA</em> in terms of <em>foldMap</em>, thereby providing automatic <em>Traversable</em> instance derivation. Here is my attempt to code this:</p>
+<h3 id="Ex.-11.2.3---traverse-.-traverse-">Ex. 11.2.3 - traverse . traverse <a name="11.2.3" /><a class="anchor-link" href="#Ex.-11.2.3---traverse-.-traverse-">&#182;</a></h3><p><em>What is the type of traverse . traverse? What does it do?</em></p>
 
 </div>
 </div>
@@ -2886,27 +2815,8 @@ font-weight: bold;
 <div class="prompt input_prompt">In&nbsp;[34]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-haskell"><pre><span class="kr">newtype</span> <span class="kt">MonApp</span> <span class="ow">=</span> <span class="kt">MonApp</span> <span class="p">{</span><span class="n">getApp</span> <span class="ow">::</span> <span class="p">(</span><span class="kt">Applicative</span> <span class="n">f</span><span class="p">,</span> <span class="kt">Monoid</span> <span class="n">a</span><span class="p">)</span> <span class="ow">=&gt;</span> <span class="n">f</span> <span class="n">a</span><span class="p">}</span>
-
-<span class="kr">instance</span> <span class="kt">Monoid</span> <span class="kt">MonApp</span> <span class="kr">where</span>
-  <span class="n">mempty</span>          <span class="ow">=</span> <span class="kt">MonApp</span> <span class="o">$</span> <span class="n">pure</span> <span class="n">mempty</span>
-  <span class="n">mappend</span> <span class="n">ma1</span> <span class="n">ma2</span> <span class="ow">=</span> <span class="kt">MonApp</span> <span class="o">$</span> <span class="n">mappend</span> <span class="o">&lt;$&gt;</span> <span class="p">(</span><span class="n">getApp</span> <span class="n">ma1</span><span class="p">)</span> <span class="o">&lt;*&gt;</span> <span class="p">(</span><span class="n">getApp</span> <span class="n">ma2</span><span class="p">)</span>
-
-<span class="kr">instance</span> <span class="p">(</span><span class="kt">Monoid</span> <span class="n">a</span><span class="p">)</span> <span class="ow">=&gt;</span> <span class="kt">Monoid</span> <span class="p">(</span><span class="kt">Tree</span> <span class="n">a</span><span class="p">)</span> <span class="kr">where</span>
-  <span class="n">mempty</span> <span class="ow">=</span> <span class="kt">Empty</span>
-  <span class="n">mappend</span> <span class="kt">Empty</span> <span class="n">t</span> <span class="ow">=</span> <span class="n">t</span>
-  <span class="n">mappend</span> <span class="n">t</span> <span class="kt">Empty</span> <span class="ow">=</span> <span class="n">t</span>
-  <span class="n">mappend</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="n">x</span><span class="p">)</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="n">y</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">Leaf</span> <span class="p">(</span><span class="n">x</span> <span class="p">`</span><span class="n">mappend</span><span class="p">`</span> <span class="n">y</span><span class="p">)</span>
-  <span class="n">mappend</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="n">x</span><span class="p">)</span> <span class="p">(</span><span class="kt">Node</span> <span class="n">t1</span> <span class="n">y</span> <span class="n">t2</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">Node</span> <span class="n">t1</span> <span class="p">(</span><span class="n">x</span> <span class="p">`</span><span class="n">mappend</span><span class="p">`</span> <span class="n">y</span><span class="p">)</span> <span class="n">t2</span>
-  <span class="n">mappend</span> <span class="p">(</span><span class="kt">Node</span> <span class="n">t1</span> <span class="n">y</span> <span class="n">t2</span><span class="p">)</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="n">x</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">Node</span> <span class="n">t1</span> <span class="p">(</span><span class="n">y</span> <span class="p">`</span><span class="n">mappend</span><span class="p">`</span> <span class="n">x</span><span class="p">)</span> <span class="n">t2</span>
-  <span class="n">mappend</span> <span class="p">(</span><span class="kt">Node</span> <span class="n">t1</span> <span class="n">x</span> <span class="n">t2</span><span class="p">)</span> <span class="p">(</span><span class="kt">Node</span> <span class="n">t3</span> <span class="n">y</span> <span class="n">t4</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">Node</span> <span class="p">(</span><span class="n">t1</span> <span class="p">`</span><span class="n">mappend</span><span class="p">`</span> <span class="n">t3</span><span class="p">)</span> <span class="p">(</span><span class="n">x</span> <span class="p">`</span><span class="n">mappend</span><span class="p">`</span> <span class="n">y</span><span class="p">)</span> <span class="p">(</span><span class="n">t2</span> <span class="p">`</span><span class="n">mappend</span><span class="p">`</span> <span class="n">t4</span><span class="p">)</span>
-
-<span class="c1">-- This instance definition is only intended to work for those cases</span>
-<span class="c1">-- in which the data type contained within the tree is a Monoid,</span>
-<span class="c1">-- in which case &#39;Tree a&#39; will also be a Monoid, via the instance, above.</span>
-<span class="c1">-- I can&#39;t figure out how to express this to the compiler. Little help? :)</span>
-<span class="kr">instance</span> <span class="kt">Monoid</span> <span class="p">(</span><span class="kt">Tree</span> <span class="n">a</span><span class="p">)</span> <span class="ow">=&gt;</span> <span class="kt">Traversable</span> <span class="kt">Tree</span> <span class="kr">where</span>
-  <span class="n">sequenceA</span> <span class="ow">=</span> <span class="n">getApp</span> <span class="o">.</span> <span class="n">foldMap</span> <span class="p">(</span><span class="kt">MonApp</span> <span class="o">.</span> <span class="p">(</span><span class="n">fmap</span> <span class="kt">Leaf</span><span class="p">))</span>
+<div class=" highlight hl-haskell"><pre><span class="kt">:</span><span class="n">t</span> <span class="n">traverse</span>
+<span class="kt">:</span><span class="n">t</span> <span class="n">traverse</span> <span class="o">.</span> <span class="n">traverse</span>
 </pre></div>
 
 </div>
@@ -3001,7 +2911,317 @@ color: red;
 .suggestion-name {
 font-weight: bold;
 }
-</style><span class='err-msg'>Illegal polymorphic or qualified type: forall (f :: * -> *) a. (Applicative f, Monoid a) => f a<br/>Perhaps you intended to use RankNTypes or Rank2Types<br/>In the definition of data constructor ‘IHaskell992.MonApp’<br/>In the newtype declaration for ‘IHaskell992.MonApp’</span>
+</style><span class='get-type'>traverse :: forall (t :: * -> *) a (f :: * -> *) b. (Applicative f, Traversable t) => (a -> f b) -> t a -> f (t b)</span>
+</div>
+
+</div>
+
+<div class="output_area"><div class="prompt"></div>
+
+<div class="output_html rendered_html output_subarea ">
+<style>/* Styles used for the Hoogle display in the pager */
+.hoogle-doc {
+display: block;
+padding-bottom: 1.3em;
+padding-left: 0.4em;
+}
+.hoogle-code {
+display: block;
+font-family: monospace;
+white-space: pre;
+}
+.hoogle-text {
+display: block;
+}
+.hoogle-name {
+color: green;
+font-weight: bold;
+}
+.hoogle-head {
+font-weight: bold;
+}
+.hoogle-sub {
+display: block;
+margin-left: 0.4em;
+}
+.hoogle-package {
+font-weight: bold;
+font-style: italic;
+}
+.hoogle-module {
+font-weight: bold;
+}
+.hoogle-class {
+font-weight: bold;
+}
+.get-type {
+color: green;
+font-weight: bold;
+font-family: monospace;
+display: block;
+white-space: pre-wrap;
+}
+.show-type {
+color: green;
+font-weight: bold;
+font-family: monospace;
+margin-left: 1em;
+}
+.mono {
+font-family: monospace;
+display: block;
+}
+.err-msg {
+color: red;
+font-style: italic;
+font-family: monospace;
+white-space: pre;
+display: block;
+}
+#unshowable {
+color: red;
+font-weight: bold;
+}
+.err-msg.in.collapse {
+padding-top: 0.7em;
+}
+.highlight-code {
+white-space: pre;
+font-family: monospace;
+}
+.suggestion-warning { 
+font-weight: bold;
+color: rgb(200, 130, 0);
+}
+.suggestion-error { 
+font-weight: bold;
+color: red;
+}
+.suggestion-name {
+font-weight: bold;
+}
+</style><span class='get-type'>traverse . traverse :: forall (t :: * -> *) (f :: * -> *) (t1 :: * -> *) a b. (Applicative f, Traversable t, Traversable t1) => (a -> f b) -> t (t1 a) -> f (t (t1 b))</span>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[35]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span class="c1">-- (traverse . traverse) allows us to traverse nested Traversables:</span>
+
+<span class="nf">toList2</span> <span class="ow">::</span> <span class="kt">Tree</span> <span class="p">(</span><span class="kt">Tree</span> <span class="p">[</span><span class="n">a</span><span class="p">])</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="kt">Tree</span><span class="p">(</span><span class="kt">Tree</span> <span class="n">a</span><span class="p">)]</span>
+<span class="nf">toList2</span> <span class="ow">=</span> <span class="p">(</span><span class="n">traverse</span> <span class="o">.</span> <span class="n">traverse</span><span class="p">)</span> <span class="n">id</span>
+
+<span class="nf">tt1</span>  <span class="ow">=</span> <span class="kt">Leaf</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="nf">tt2</span>  <span class="ow">=</span> <span class="kt">Node</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]))</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="p">[</span><span class="mi">3</span><span class="p">])</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="p">[</span><span class="mi">4</span><span class="p">]))</span>
+<span class="nf">tt3</span>  <span class="ow">=</span> <span class="kt">Node</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]))</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="p">[</span><span class="mi">3</span><span class="p">])</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="p">(</span><span class="kt">Leaf</span> <span class="kt">[]</span><span class="p">))</span>
+
+<span class="nf">res1</span> <span class="ow">=</span> <span class="n">toList2</span> <span class="n">tt1</span>
+<span class="nf">res2</span> <span class="ow">=</span> <span class="n">toList2</span> <span class="n">tt2</span>
+<span class="nf">res3</span> <span class="ow">=</span> <span class="n">toList2</span> <span class="n">tt3</span>
+
+<span class="nf">print</span> <span class="n">res1</span>
+<span class="nf">print</span> <span class="n">res2</span>
+<span class="nf">print</span> <span class="n">res3</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+
+
+<div class="output_text output_subarea ">
+<pre>[Leaf (Leaf 1)]</pre>
+</div>
+
+</div>
+
+<div class="output_area"><div class="prompt"></div>
+
+
+<div class="output_text output_subarea ">
+<pre>[Node (Leaf (Leaf 1)) (Leaf 3) (Leaf (Leaf 4)),Node (Leaf (Leaf 2)) (Leaf 3) (Leaf (Leaf 4))]</pre>
+</div>
+
+</div>
+
+<div class="output_area"><div class="prompt"></div>
+
+
+<div class="output_text output_subarea ">
+<pre>[]</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>That last case is quite interesting; I don't completely understand it, yet.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to Contents</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Section-11.3---Traversable-Instances-and-Examples-">Section 11.3 - Traversable Instances and Examples <a name="11.3" /><a class="anchor-link" href="#Section-11.3---Traversable-Instances-and-Examples-">&#182;</a></h1>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Ex.-11.3.1---fmap-&amp;-foldMap,-via-Traversable-methods.-">Ex. 11.3.1 - <em>fmap</em> &amp; <em>foldMap</em>, via Traversable methods. <a name="11.3.1" /><a class="anchor-link" href="#Ex.-11.3.1---fmap-&amp;-foldMap,-via-Traversable-methods.-">&#182;</a></h3><p><em>Implement </em>fmap<em> and </em>foldMap<em> using only the Traversable methods. (Note that the Traversable module provides these implementations as </em>fmapDefault<em> and </em>foldMapDefault<em>.)</em></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[36]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span class="kr">import</span> <span class="nn">Data.Functor.Identity</span> <span class="p">(</span><span class="kt">Identity</span> <span class="p">(</span><span class="o">..</span><span class="p">))</span>
+
+<span class="c1">-- fmap :: (a -&gt; b) -&gt; t a -&gt; t b</span>
+<span class="c1">-- fmap g xs = &lt;some function of &#39;traverse&#39;&gt;</span>
+<span class="c1">--   g  :: a -&gt; b</span>
+<span class="c1">--   xs :: t a</span>
+<span class="c1">--</span>
+<span class="c1">-- traverse :: (Applicative f, Traversable t) =&gt; (a -&gt; f b) -&gt; t a -&gt; f (t b)</span>
+<span class="c1">-- pure . g :: a -&gt; f b</span>
+<span class="c1">-- traverse (pure . g) xs :: f (t b)</span>
+<span class="c1">-- runIdentity $ traverse (pure . g) xs :: t b (If f = Identity)</span>
+<span class="c1">-- Want :: t b</span>
+<span class="c1">-- fmap g xs = runIdentity $ traverse (pure . g) xs</span>
+<span class="nf">fmap</span> <span class="n">g</span> <span class="ow">=</span> <span class="n">runIdentity</span> <span class="o">.</span> <span class="n">traverse</span> <span class="p">(</span><span class="n">pure</span> <span class="o">.</span> <span class="n">g</span><span class="p">)</span>
+
+<span class="nf">res</span> <span class="ow">=</span> <span class="n">fmap</span> <span class="p">(</span><span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="n">t2</span>
+<span class="nf">print</span> <span class="n">t2</span>
+<span class="nf">print</span> <span class="n">res</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+
+
+<div class="output_text output_subarea ">
+<pre>Leaf 1</pre>
+</div>
+
+</div>
+
+<div class="output_area"><div class="prompt"></div>
+
+
+<div class="output_text output_subarea ">
+<pre>Leaf 2</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[37]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span class="c1">-- foldMap :: (Foldable t, Monoid m) =&gt; (a -&gt; m) -&gt; t a -&gt; m</span>
+<span class="c1">-- foldMap g xs = &lt;some function of &#39;traverse&#39;&gt;</span>
+<span class="c1">--   g  :: a -&gt; m</span>
+<span class="c1">--   xs :: t a</span>
+<span class="c1">--</span>
+<span class="c1">-- traverse                          :: (Applicative f, Traversable t) =&gt; (a -&gt; f b) -&gt; t a -&gt; f (t b)</span>
+<span class="c1">-- AppMon . g                        :: a -&gt; AppMon m b</span>
+<span class="c1">-- traverse (AppMon . g)             :: t a -&gt; AppMon m (t b)</span>
+<span class="c1">-- traverse (AppMon . g) xs          :: AppMon m (t b)</span>
+<span class="c1">-- getMon $ traverse (AppMon . g) xs :: m</span>
+<span class="c1">-- ..</span>
+<span class="c1">-- Want :: m</span>
+<span class="c1">-- foldMap g xs = getMon $ traverse (AppMon . g) xs</span>
+<span class="nf">foldMap</span> <span class="n">g</span> <span class="ow">=</span> <span class="n">getMon</span> <span class="o">.</span> <span class="n">traverse</span> <span class="p">(</span><span class="kt">AppMon</span> <span class="o">.</span> <span class="n">g</span><span class="p">)</span>
+
+<span class="c1">-- Applicative wrapper around a Monoid.</span>
+<span class="kr">newtype</span> <span class="kt">AppMon</span> <span class="n">m</span> <span class="n">a</span> <span class="ow">=</span> <span class="kt">AppMon</span> <span class="p">{</span><span class="n">getMon</span> <span class="ow">::</span> <span class="n">m</span><span class="p">}</span>
+
+<span class="kr">instance</span> <span class="kt">Functor</span> <span class="p">(</span><span class="kt">AppMon</span> <span class="n">m</span><span class="p">)</span> <span class="kr">where</span>
+    <span class="n">fmap</span> <span class="kr">_</span> <span class="p">(</span><span class="kt">AppMon</span> <span class="n">m</span><span class="p">)</span> <span class="ow">=</span> <span class="p">(</span><span class="kt">AppMon</span> <span class="n">m</span><span class="p">)</span>
+    
+<span class="kr">instance</span> <span class="p">(</span><span class="kt">Monoid</span> <span class="n">m</span><span class="p">)</span> <span class="ow">=&gt;</span> <span class="kt">Applicative</span> <span class="p">(</span><span class="kt">AppMon</span> <span class="n">m</span><span class="p">)</span> <span class="kr">where</span>
+    <span class="n">pure</span> <span class="kr">_</span>  <span class="ow">=</span> <span class="kt">AppMon</span> <span class="n">mempty</span>
+    <span class="n">x</span> <span class="o">&lt;*&gt;</span> <span class="n">y</span> <span class="ow">=</span> <span class="kt">AppMon</span> <span class="o">$</span> <span class="n">getMon</span> <span class="n">x</span> <span class="p">`</span><span class="n">mappend</span><span class="p">`</span> <span class="n">getMon</span> <span class="n">y</span>
+    
+<span class="nf">res</span> <span class="ow">=</span> <span class="n">getSum</span> <span class="o">$</span> <span class="n">foldMap</span> <span class="kt">Sum</span> <span class="n">t3</span>
+<span class="nf">print</span> <span class="n">t3</span>
+<span class="nf">print</span> <span class="n">res</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+
+
+<div class="output_text output_subarea ">
+<pre>Node (Leaf 2) 3 (Leaf 4)</pre>
+</div>
+
+</div>
+
+<div class="output_area"><div class="prompt"></div>
+
+
+<div class="output_text output_subarea ">
+<pre>9</pre>
 </div>
 
 </div>
