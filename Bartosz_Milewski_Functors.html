@@ -216,7 +216,7 @@ Original Date: May 2, 2016</p>
 
 
 <div class="output_text output_subarea ">
-<pre>2016-05-13 01:14:18.70425 UTC</pre>
+<pre>2016-05-22 02:22:37.007089 UTC</pre>
 </div>
 
 </div>
@@ -231,7 +231,24 @@ Original Date: May 2, 2016</p>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Table-of-Contents-">Table of Contents <a name="contents" /><a class="anchor-link" href="#Table-of-Contents-">&#182;</a></h2><ol>
-<li><a href="#category">Category: The Essence of Composition</a></li>
+<li><a href="#category">Category: The Essence of Composition</a><ol>
+<li><a href="#category_1">Identity in Python</a></li>
+<li><a href="#category_2">Composition in Python</a></li>
+<li><a href="#category_3">Composition w/ Identity in Python</a></li>
+<li><a href="#category_4">WWW a category? Links morphisms?</a></li>
+<li><a href="#category_5">Facebook a category? Friendships morphisms?</a></li>
+<li><a href="#category_6">When is a directed graph a category?</a></li>
+</ol>
+</li>
+<li><a href="#types_and_functions">Types and Functions</a><ol>
+<li><a href="#types_1">Memoization in Python</a></li>
+<li><a href="#types_2">Memoization of random()</a></li>
+<li><a href="#types_3">Memoized C++ functions</a></li>
+<li><a href="#types_4">Memoization in Python</a></li>
+<li><a href="#types_5">Bool to Bool</a></li>
+<li><a href="#types_6">Category drawing: Void, (), and Bool</a></li>
+</ol>
+</li>
 <li><a href="#functors">Functors</a><ol>
 <li><a href="#functors_1">Alternative Functor instance for *Maybe*</a></li>
 <li><a href="#functors_2">Functor laws for *Reader*</a></li>
@@ -259,6 +276,482 @@ Original Date: May 2, 2016</p>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Category:-The-Essence-of-Composition-">Category: The Essence of Composition <a name="category" /><a class="anchor-link" href="#Category:-The-Essence-of-Composition-">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Challenge-1---Identity-in-Python-">Challenge 1 - Identity in Python <a name="category_1" /><a class="anchor-link" href="#Challenge-1---Identity-in-Python-">&#182;</a></h3>
+<pre><code>def identity(x):
+    return x</code></pre>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Challenge-2---Composition-in-Python-">Challenge 2 - Composition in Python <a name="category_2" /><a class="anchor-link" href="#Challenge-2---Composition-in-Python-">&#182;</a></h3>
+<pre><code>def compose(g, h):
+    return lambda x: g(h(x))</code></pre>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Challenge-3---Composition-w/-Identity-in-Python-">Challenge 3 - Composition w/ Identity in Python <a name="category_3" /><a class="anchor-link" href="#Challenge-3---Composition-w/-Identity-in-Python-">&#182;</a></h3><p><em>identity_compose.py</em>:</p>
+
+<pre><code>#! /usr/bin/env python
+
+def main():
+    def f(x):
+        return x + 2
+
+    g = compose(f, identity)
+    h = compose(identity, f)
+
+    for x in range(3):
+        assert g(x) == f(x)
+        assert h(x) == f(x)
+
+    print "All tests passed."
+
+if(__name__ == "__main__"):
+    main()</code></pre>
+<p>davids-air-2:Haskell_Misc dbanas$ ./identity_compose.py<br>
+All tests passed.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to contents.</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Challenge-4---WWW-a-category?-Links-morphisms?-">Challenge 4 - WWW a category? Links morphisms? <a name="category_4" /><a class="anchor-link" href="#Challenge-4---WWW-a-category?-Links-morphisms?-">&#182;</a></h3><p>I say, "yes," because:</p>
+<ul>
+<li>I can certainly make an identity link.</li>
+<li>Composition is easy and associative: it amounts to simply taking the destination of the final link in the composition chain.</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Challenge-5---Facebook-a-category?-Friendships-morphisms?-">Challenge 5 - Facebook a category? Friendships morphisms? <a name="category_5" /><a class="anchor-link" href="#Challenge-5---Facebook-a-category?-Friendships-morphisms?-">&#182;</a></h3><p>I say, "no," because I can't friend myself; therefore, identity is missing.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Challenge-6---When-is-a-directed-graph-a-category?-">Challenge 6 - When is a directed graph a category? <a name="category_6" /><a class="anchor-link" href="#Challenge-6---When-is-a-directed-graph-a-category?-">&#182;</a></h3><p>When all possible compositions of arrows are members of the graph, and every node in the graph has an identity arrow.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to contents.</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Types-and-Functions-">Types and Functions <a name="types_and_functions" /><a class="anchor-link" href="#Types-and-Functions-">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Challenge-1---Memoization-in-Python-">Challenge 1 - Memoization in Python <a name="types_1" /><a class="anchor-link" href="#Challenge-1---Memoization-in-Python-">&#182;</a></h3>
+<pre><code>#! /usr/bin/env python
+
+from operator import mul
+import time
+
+class Memoized(object):
+    def __init__(self, f):
+        self.f = f
+        self.memo = {}
+
+    def call(self, *args):
+        if(args in self.memo):
+            return self.memo[args]
+        else:
+            res = self.f(*args)
+            self.memo[args] = res
+            return res
+
+def fact(x):
+    return reduce(mul, range(1, x + 1), 1)
+
+def main():
+    fact_m = Memoized(fact)
+    arg = 100000
+
+    t0 = time.time()
+    fact_m.call(arg)
+    t1 = time.time()
+    res = fact_m.call(arg)
+    t2 = time.time()
+
+    print "{}! = {}".format(arg, res)
+    print "First call took {} seconds.".format(t1 - t0)
+    print "Second call took {} seconds.".format(t2 - t1)
+
+if(__name__ == "__main__"):
+    main()</code></pre>
+
+<pre><code>&gt; ./memoize.py  
+100000! = 2824229407960347874293421578024535518477494926091224850578918  
+{Many lines snipped.}  
+00000000000000000000000000000000000000000000000000000000000000000000000  
+
+First call took 3.60797715187 seconds.  
+Second call took 5.00679016113e-06 seconds.  
+Keys of memo: [(100000,)]</code></pre>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to contents.</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Challenge-2---Memoization-of-random()-">Challenge 2 - Memoization of <em>random()</em> <a name="types_2" /><a class="anchor-link" href="#Challenge-2---Memoization-of-random()-">&#182;</a></h3><p><em>rand_mem.py</em>:</p>
+
+<pre><code>#! /usr/bin/env python
+
+import time
+from random import random
+from memoize import Memoized
+
+def main():
+    rand_m = Memoized(random)
+
+    t0 = time.time()
+    res1 = rand_m.call()
+    t1 = time.time()
+    res2 = rand_m.call()
+    t2 = time.time()
+
+    print "First result: {} ; Second result: {}".format(res1, res2)
+    print "First call took {} seconds.".format(t1 - t0)
+    print "Second call took {} seconds.".format(t2 - t1)
+    print "Keys of memo: {}".format(rand_m.memo.keys())
+
+if(__name__ == "__main__"):
+    main()</code></pre>
+
+<pre><code>&gt; ./rand_mem.py  
+First result: 0.314463120332 ; Second result: 0.314463120332  
+First call took 3.81469726562e-06 seconds.  
+Second call took 1.19209289551e-06 seconds.  
+Keys of memo: [()]
+
+</code></pre>
+<p>It didn't work, because the <em>random()</em> function gets called without an argument.<br>
+So, all successive calls will return the original value, which isn't very random.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to contents.</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Challenge-4---Memoized-C++-functions-">Challenge 4 - Memoized C++ functions <a name="types_4" /><a class="anchor-link" href="#Challenge-4---Memoized-C++-functions-">&#182;</a></h3><p><em>rand_mem.py</em>:</p>
+
+<pre><code>#include &lt;map&gt;
+#include &lt;iostream&gt;
+#include &lt;chrono&gt;
+
+using namespace std;
+using namespace std::chrono;
+
+template&lt;typename T1, typename T2&gt;
+class Memoized {
+  public:
+    Memoized(T2 (*g)(T1)) {
+        f = g;
+        _memo.clear();
+    }
+
+    T2 call(T1 x) {
+        try {
+            return _memo.at(x);
+        }
+        catch(...) {
+            T2 res = f(x);
+            _memo[x] = res;
+            return res;
+        }
+    }
+
+  protected:
+    map&lt;T1, T2&gt; _memo;
+    T2 (*f)(T1);
+};
+
+double fact(int n) {
+    int i;
+    double result = 1;
+    for (i = 2; i &lt;= n; ++i)
+        result *= i;
+    return result;
+}
+
+int f(int x)
+{
+    static int y = 0;
+    y += x;
+    return y;
+}
+
+int main(int argc, char *argv[]) {
+    int x = 1000;
+
+    cout &lt;&lt; "1. Factorial\n";
+    Memoized&lt;int, double&gt; fact_m(fact);
+    for(auto i=0; i &lt; 2; ++i) {
+        cout &lt;&lt; "\tTrial " &lt;&lt; i &lt;&lt; "\n";
+        high_resolution_clock::time_point t1 = high_resolution_clock::now();
+        double res = fact(x);
+        high_resolution_clock::time_point t2 = high_resolution_clock::now();
+        auto duration = duration_cast&lt;microseconds&gt;( t2 - t1 ).count();
+        t1 = high_resolution_clock::now();
+        double res_m = fact_m.call(x);
+        t2 = high_resolution_clock::now();
+        auto duration_m = duration_cast&lt;microseconds&gt;( t2 - t1 ).count();
+        printf("\t\tFunction argument: %d; Function result: %e; Memoized function result: %e.\n", x, res, res_m);
+        printf("\t\tFunction time: %lld us; Memoized function time: %lld us.\n", duration, duration_m);
+    }
+
+    cout &lt;&lt; "4. f(int x)\n";
+    Memoized&lt;int, int&gt; f_m(f);
+    for(auto i=0; i &lt; 2; ++i) {
+        cout &lt;&lt; "\tTrial " &lt;&lt; i &lt;&lt; "\n";
+        high_resolution_clock::time_point t1 = high_resolution_clock::now();
+        int res = f(x);
+        high_resolution_clock::time_point t2 = high_resolution_clock::now();
+        auto duration = duration_cast&lt;microseconds&gt;( t2 - t1 ).count();
+        t1 = high_resolution_clock::now();
+        int res_m = f_m.call(x);
+        t2 = high_resolution_clock::now();
+        auto duration_m = duration_cast&lt;microseconds&gt;( t2 - t1 ).count();
+        printf("\t\tFunction argument: %d; Function result: %d; Memoized function result: %d.\n", x, res, res_m);
+        printf("\t\tFunction time: %lld us; Memoized function time: %lld us.\n", duration, duration_m);
+    }
+}</code></pre>
+
+<pre><code>&gt; g++ -Wno-c++11-extensions mem_fact.cpp  
+&gt; ./a.out 
+1. Factorial
+    Trial 0
+        Function argument: 1000; Function result: inf; Memoized function result: inf.
+        Function time: 6 us; Memoized function time: 473 us.
+    Trial 1
+        Function argument: 1000; Function result: inf; Memoized function result: inf.
+        Function time: 7 us; Memoized function time: 7 us.
+
+4. f(int x)
+    Trial 0
+        Function argument: 1000; Function result: 1000; Memoized function result: 2000.
+        Function time: 0 us; Memoized function time: 19 us.
+    Trial 1
+        Function argument: 1000; Function result: 3000; Memoized function result: 2000.
+        Function time: 0 us; Memoized function time: 0 us.
+
+</code></pre>
+<h4 id="1)-Factorial">1) Factorial<a class="anchor-link" href="#1)-Factorial">&#182;</a></h4><p>This function is pure:</p>
+<ul>
+<li>Both trials produce the same result.</li>
+<li>The memoized and non-memoized versions yield identical results.</li>
+</ul>
+<h4 id="2)-std::getchar()">2) std::getchar()<a class="anchor-link" href="#2)-std::getchar()">&#182;</a></h4><p>This function is not pure:</p>
+<ul>
+<li>It can, potentially, produce different results each time it is called, depending upon user input.</li>
+<li>It can't be memoized, because it takes no argument.</li>
+</ul>
+<h4 id="3)-bool-f()">3) bool f()<a class="anchor-link" href="#3)-bool-f()">&#182;</a></h4><p>This function is not pure:</p>
+<ul>
+<li>It produces the same result, each time it is called.</li>
+<li>However, it has side effects: it modifies the state of the governing terminal, via its output statement.</li>
+<li>It can't be memoized, because it takes no argument.</li>
+</ul>
+<h4 id="4)-int-f(int-x)">4) int f(int x)<a class="anchor-link" href="#4)-int-f(int-x)">&#182;</a></h4><p>This function is not pure:</p>
+<ul>
+<li>It produces different results, each time it is called, due to its static storage.</li>
+<li>The memoized and non-memoized versions produce different results.</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to contents.</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Challenge-5-">Challenge 5 <a name="types_5" /><a class="anchor-link" href="#Challenge-5-">&#182;</a></h3><p><em>How many different functions are there from Bool to Bool?</em><br>
+<em>Can you implement them all?</em></p>
+<p>There are 3:</p>
+<ul>
+<li>true</li>
+<li>complement</li>
+<li>bottom</li>
+</ul>
+<p>Yes, they can all be implemented (in Haskell):</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[2]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span class="nf">true</span> <span class="ow">::</span> <span class="kt">Bool</span> <span class="ow">-&gt;</span> <span class="kt">Bool</span>
+<span class="nf">true</span> <span class="kt">True</span> <span class="ow">=</span> <span class="kt">True</span>
+<span class="nf">true</span> <span class="kt">False</span> <span class="ow">=</span> <span class="kt">False</span>
+
+<span class="nf">complement</span> <span class="ow">::</span> <span class="kt">Bool</span> <span class="ow">-&gt;</span> <span class="kt">Bool</span>
+<span class="nf">complement</span> <span class="kt">True</span> <span class="ow">=</span> <span class="kt">False</span>
+<span class="nf">complement</span> <span class="kt">False</span> <span class="ow">=</span> <span class="kt">True</span>
+
+<span class="nf">bottom</span> <span class="ow">::</span> <span class="kt">Bool</span> <span class="ow">-&gt;</span> <span class="kt">Bool</span>
+<span class="nf">bottom</span> <span class="kr">_</span> <span class="ow">=</span> <span class="n">undefined</span>
+
+<span class="nf">main</span> <span class="ow">::</span> <span class="kt">IO</span> <span class="nb">()</span>
+<span class="nf">main</span> <span class="ow">=</span> <span class="kr">do</span>
+  <span class="n">putStrLn</span> <span class="s">&quot;true:&quot;</span>
+  <span class="n">putStrLn</span> <span class="o">$</span> <span class="s">&quot;</span><span class="se">\t</span><span class="s">True -&gt; &quot;</span> <span class="o">++</span> <span class="p">(</span><span class="n">show</span> <span class="o">$</span> <span class="n">true</span> <span class="kt">True</span><span class="p">)</span>
+  <span class="n">putStrLn</span> <span class="o">$</span> <span class="s">&quot;</span><span class="se">\t</span><span class="s">False -&gt; &quot;</span> <span class="o">++</span> <span class="p">(</span><span class="n">show</span> <span class="o">$</span> <span class="n">true</span> <span class="kt">False</span><span class="p">)</span>
+  <span class="n">putStrLn</span> <span class="s">&quot;complement:&quot;</span>
+  <span class="n">putStrLn</span> <span class="o">$</span> <span class="s">&quot;</span><span class="se">\t</span><span class="s">True -&gt; &quot;</span> <span class="o">++</span> <span class="p">(</span><span class="n">show</span> <span class="o">$</span> <span class="n">complement</span> <span class="kt">True</span><span class="p">)</span>
+  <span class="n">putStrLn</span> <span class="o">$</span> <span class="s">&quot;</span><span class="se">\t</span><span class="s">False -&gt; &quot;</span> <span class="o">++</span> <span class="p">(</span><span class="n">show</span> <span class="o">$</span> <span class="n">complement</span> <span class="kt">False</span><span class="p">)</span>
+  <span class="n">putStrLn</span> <span class="s">&quot;bottom:&quot;</span>
+<span class="c1">--  putStrLn $ &quot;\tTrue -&gt; &quot; ++ (show $ bottom True)</span>
+<span class="c1">--  putStrLn $ &quot;\tFalse -&gt; &quot; ++ (show $ bottom False)</span>
+  <span class="n">putStrLn</span> <span class="s">&quot;</span><span class="se">\t</span><span class="s">(Attempting to call &#39;bottom&#39; short circuits the monad, and we get no output.)&quot;</span>
+<span class="nf">main</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+
+
+<div class="output_text output_subarea ">
+<pre>true:
+	True -&gt; True
+	False -&gt; False
+complement:
+	True -&gt; False
+	False -&gt; True
+bottom:
+	(Attempting to call &apos;bottom&apos; short circuits the monad, and we get no output.)</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to contents.</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Challenge-6-">Challenge 6 <a name="types_6" /><a class="anchor-link" href="#Challenge-6-">&#182;</a></h3><p><img src="types_6.png" alt="Category Picture"></p>
+
 </div>
 </div>
 </div>
@@ -468,7 +961,7 @@ fmap (g . h) (x:xs)</code></pre>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[2]:</div>
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-haskell"><pre><span class="kr">import</span> <span class="nn">Data.Bifunctor</span>
@@ -534,7 +1027,7 @@ second</code></pre>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-haskell"><pre><span class="kr">import</span> <span class="nn">Control.Applicative</span>   <span class="p">(</span><span class="kt">Const</span> <span class="p">(</span><span class="o">..</span><span class="p">))</span>
@@ -654,7 +1147,7 @@ id (Right (Identity x))</code></pre>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-haskell"><pre><span class="kr">import</span> <span class="nn">Data.Bifunctor</span>
@@ -728,7 +1221,7 @@ data Snd a b = Snd b</code></pre>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-haskell"><pre><span class="kr">import</span> <span class="nn">Data.Bifunctor</span>

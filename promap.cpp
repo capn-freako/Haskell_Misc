@@ -75,6 +75,17 @@ const promap<Key1, B>* rmap(B (*g)(A), const promap<Key1, A>& f)
     return res;
 }
 
+// lmap
+template<class Key1, class Key2, class T>
+const promap<Key1, T>* lmap(Key2 (*g)(Key1), const promap<Key2, T>& f)
+{
+    auto new_map = new std::map<Key1, T>();
+    for(auto key : f.keys())
+        new_map->operator[](key) = g(f[key]);
+    auto res = new promap<Key1, B> (new_map);
+    return res;
+}
+
 int g(int x) {return(x + 1);}
 
 int h(int x) {return(x * 2);}
