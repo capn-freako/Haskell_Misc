@@ -216,7 +216,7 @@ Original Date: May 2, 2016</p>
 
 
 <div class="output_text output_subarea ">
-<pre>2016-05-26 01:04:25.467437 UTC</pre>
+<pre>2016-05-27 15:22:49.486835 UTC</pre>
 </div>
 
 </div>
@@ -255,6 +255,12 @@ Original Date: May 2, 2016</p>
 <li><a href="#categories_3">Bool as two (set-theoretical) monoids</a></li>
 <li><a href="#categories_4">True/AND monoid as category</a></li>
 <li><a href="#categories_5">Addition modulo 3 as category</a></li>
+</ol>
+</li>
+<li><a href="#kleisli">Kleisli Categories</a><ol>
+<li><a href="#kleisli_1">Kleisli category for partial functions</a></li>
+<li><a href="#kleisli_2">Implementation of `safe_reciprocal`</a></li>
+<li><a href="#kleisli_3">Composition of `safe_root` and `safe_reciprocal`</a></li>
 </ol>
 </li>
 <li><a href="#functors">Functors</a><ol>
@@ -942,6 +948,202 @@ Again, I claim preorder, due to the missing stipulation regarding equality.</p>
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Kleisli-Categories-">Kleisli Categories <a name="kleisli" /><a class="anchor-link" href="#Kleisli-Categories-">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Challenge-1---Kleisli-category-for-partial-functions-">Challenge 1 - Kleisli category for partial functions <a name="kleisli_1" /><a class="anchor-link" href="#Challenge-1---Kleisli-category-for-partial-functions-">&#182;</a></h3><p>Construct the Kleisli category for partial functions (define composition and identity).</p>
+<p><strong>Objects</strong>: Hask</p>
+<p><strong>Morphisms</strong>: a -&gt; (b, Bool)</p>
+<p><strong>Composition</strong>:<br>
+m1 &#183; m2 = &#955;x &#8594; case (m1 x) of<br>
+(_, False) &#8594; (&#8709;, False)<br>
+(y, True) &#8594; m2 y</p>
+<p><strong>Identity</strong>:<br>
+&#955;x &#8594; (x, True)</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to contents.</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Challenge-2---Implementation-of-safe_reciprocal-">Challenge 2 - Implementation of <code>safe_reciprocal</code> <a name="kleisli_2" /><a class="anchor-link" href="#Challenge-2---Implementation-of-safe_reciprocal-">&#182;</a></h3><p>Implement the embellished function <code>safe_reciprocal</code> that returns a valid reciprocal of its argument, if it’s different from zero.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span class="kr">type</span> <span class="kt">SafeRecip</span> <span class="n">a</span> <span class="ow">=</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="kt">Bool</span><span class="p">)</span>
+
+<span class="nf">safe_reciprocal</span> <span class="ow">::</span> <span class="p">(</span><span class="kt">Fractional</span> <span class="n">a</span><span class="p">,</span> <span class="kt">Eq</span> <span class="n">a</span><span class="p">)</span> <span class="ow">=&gt;</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">SafeRecip</span> <span class="n">a</span>
+<span class="nf">safe_reciprocal</span> <span class="n">x</span>
+    <span class="o">|</span> <span class="n">x</span> <span class="o">==</span> <span class="mi">0</span>    <span class="ow">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="kt">False</span><span class="p">)</span>
+    <span class="o">|</span> <span class="n">otherwise</span> <span class="ow">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">x</span><span class="p">,</span> <span class="kt">True</span><span class="p">)</span>
+
+<span class="nf">main</span> <span class="ow">::</span> <span class="kt">IO</span> <span class="nb">()</span>
+<span class="nf">main</span> <span class="ow">=</span> <span class="kr">do</span>
+    <span class="n">putStr</span> <span class="s">&quot;safe_reciprocal 0 = &quot;</span>
+    <span class="n">print</span> <span class="o">$</span> <span class="n">safe_reciprocal</span> <span class="mi">0</span>
+    <span class="n">putStr</span> <span class="s">&quot;safe_reciprocal 2 = &quot;</span>
+    <span class="n">print</span> <span class="o">$</span> <span class="n">safe_reciprocal</span> <span class="mi">2</span>
+    
+<span class="nf">main</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+
+
+<div class="output_text output_subarea ">
+<pre>safe_reciprocal 0 = (0.0,False)
+safe_reciprocal 2 = (0.5,True)</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to contents.</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Challenge-3---Composition-of-safe_root-and--safe_reciprocal-">Challenge 3 - Composition of <code>safe_root</code> and  <code>safe_reciprocal</code> <a name="kleisli_3" /><a class="anchor-link" href="#Challenge-3---Composition-of-safe_root-and--safe_reciprocal-">&#182;</a></h3><p>Compose <code>safe_root</code> and <code>safe_reciprocal</code> to implement safe_root_reciprocal that calculates sqrt(1/x) whenever possible.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span class="c1">-- We need a way to generate a default value, in the event of failure.</span>
+<span class="kr">class</span> <span class="kt">HasDef</span> <span class="n">a</span> <span class="kr">where</span>
+    <span class="n">defVal</span> <span class="ow">::</span> <span class="n">a</span>
+
+<span class="kr">instance</span> <span class="kt">HasDef</span> <span class="kt">Float</span> <span class="kr">where</span>
+    <span class="n">defVal</span> <span class="ow">=</span> <span class="mf">0.0</span>
+
+<span class="c1">-- Some convenient type aliases.</span>
+<span class="kr">type</span> <span class="kt">SafeUnit</span> <span class="n">a</span> <span class="ow">=</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="kt">Bool</span><span class="p">)</span>
+<span class="kr">type</span> <span class="kt">SafeFunc</span> <span class="n">a</span> <span class="n">b</span> <span class="ow">=</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">SafeUnit</span> <span class="n">b</span>
+
+<span class="c1">-- Our composer for SafeFuncs.</span>
+<span class="kr">infix</span> <span class="mi">9</span> <span class="o">&gt;=&gt;</span>
+<span class="p">(</span><span class="o">&gt;=&gt;</span><span class="p">)</span> <span class="ow">::</span> <span class="p">(</span><span class="kt">HasDef</span> <span class="n">c</span><span class="p">)</span> <span class="ow">=&gt;</span> <span class="kt">SafeFunc</span> <span class="n">a</span> <span class="n">b</span> <span class="ow">-&gt;</span> <span class="kt">SafeFunc</span> <span class="n">b</span> <span class="n">c</span> <span class="ow">-&gt;</span> <span class="kt">SafeFunc</span> <span class="n">a</span> <span class="n">c</span>
+<span class="nf">sf1</span> <span class="o">&gt;=&gt;</span> <span class="n">sf2</span> <span class="ow">=</span> <span class="nf">\</span><span class="n">x</span> <span class="ow">-&gt;</span> <span class="kr">case</span> <span class="n">sf1</span> <span class="n">x</span> <span class="kr">of</span>
+    <span class="p">(</span><span class="kr">_</span><span class="p">,</span> <span class="kt">False</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">defVal</span><span class="p">,</span> <span class="kt">False</span><span class="p">)</span>
+    <span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="kt">True</span><span class="p">)</span>  <span class="ow">-&gt;</span> <span class="n">sf2</span> <span class="n">y</span>
+
+<span class="c1">-- Rewriting `safe_reciprocal`, so that it fits into the new framework.</span>
+<span class="nf">safe_reciprocal</span> <span class="ow">::</span> <span class="p">(</span><span class="kt">Floating</span> <span class="n">a</span><span class="p">,</span> <span class="kt">Eq</span> <span class="n">a</span><span class="p">)</span> <span class="ow">=&gt;</span> <span class="kt">SafeFunc</span> <span class="n">a</span> <span class="n">a</span>
+<span class="nf">safe_reciprocal</span> <span class="n">x</span>
+    <span class="o">|</span> <span class="n">x</span> <span class="o">==</span> <span class="mi">0</span>    <span class="ow">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="kt">False</span><span class="p">)</span>
+    <span class="o">|</span> <span class="n">otherwise</span> <span class="ow">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">x</span><span class="p">,</span> <span class="kt">True</span><span class="p">)</span>
+
+<span class="c1">-- The safe version of `sqrt`.</span>
+<span class="nf">safe_root</span> <span class="ow">::</span> <span class="p">(</span><span class="kt">Floating</span> <span class="n">a</span><span class="p">,</span> <span class="kt">Ord</span> <span class="n">a</span><span class="p">)</span> <span class="ow">=&gt;</span> <span class="kt">SafeFunc</span> <span class="n">a</span> <span class="n">a</span>
+<span class="nf">safe_root</span> <span class="n">x</span>
+    <span class="o">|</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="mi">0</span>     <span class="ow">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="kt">False</span><span class="p">)</span>
+    <span class="o">|</span> <span class="n">otherwise</span> <span class="ow">=</span> <span class="p">(</span><span class="n">sqrt</span> <span class="n">x</span><span class="p">,</span> <span class="kt">True</span><span class="p">)</span>
+
+<span class="c1">-- The goal of this exercise.</span>
+<span class="nf">safe_recip_root</span> <span class="ow">::</span> <span class="p">(</span><span class="kt">Floating</span> <span class="n">a</span><span class="p">,</span> <span class="kt">Ord</span> <span class="n">a</span><span class="p">,</span> <span class="kt">Eq</span> <span class="n">a</span><span class="p">,</span> <span class="kt">HasDef</span> <span class="n">a</span><span class="p">)</span> <span class="ow">=&gt;</span> <span class="kt">SafeFunc</span> <span class="n">a</span> <span class="n">a</span>
+<span class="nf">safe_recip_root</span> <span class="ow">=</span> <span class="n">safe_root</span> <span class="o">&gt;=&gt;</span> <span class="n">safe_reciprocal</span>
+
+<span class="c1">-- Testing</span>
+<span class="nf">main</span> <span class="ow">::</span> <span class="kt">IO</span> <span class="nb">()</span>
+<span class="nf">main</span> <span class="ow">=</span> <span class="kr">do</span>
+    <span class="n">putStr</span> <span class="s">&quot;safe_recip_root 0 = &quot;</span>
+    <span class="n">print</span> <span class="o">$</span> <span class="n">safe_recip_root</span> <span class="p">(</span><span class="mi">0</span> <span class="ow">::</span> <span class="kt">Float</span><span class="p">)</span>
+    <span class="n">putStr</span> <span class="s">&quot;safe_recip_root -1 = &quot;</span>
+    <span class="n">print</span> <span class="o">$</span> <span class="n">safe_recip_root</span> <span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="ow">::</span> <span class="kt">Float</span><span class="p">)</span>
+    <span class="n">putStr</span> <span class="s">&quot;safe_recip_root 2 = &quot;</span>
+    <span class="n">print</span> <span class="o">$</span> <span class="n">safe_recip_root</span> <span class="p">(</span><span class="mi">2</span> <span class="ow">::</span> <span class="kt">Float</span><span class="p">)</span>
+
+<span class="nf">main</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+
+
+<div class="output_text output_subarea ">
+<pre>safe_recip_root 0 = (0.0,False)
+safe_recip_root -1 = (0.0,False)
+safe_recip_root 2 = (0.70710677,True)</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to contents.</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Functors-">Functors <a name="functors" /><a class="anchor-link" href="#Functors-">&#182;</a></h2>
 </div>
 </div>
@@ -1133,7 +1335,7 @@ fmap (g . h) (x:xs)</code></pre>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-haskell"><pre><span class="kr">import</span> <span class="nn">Data.Bifunctor</span>
@@ -1199,7 +1401,7 @@ second</code></pre>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-haskell"><pre><span class="kr">import</span> <span class="nn">Control.Applicative</span>   <span class="p">(</span><span class="kt">Const</span> <span class="p">(</span><span class="o">..</span><span class="p">))</span>
@@ -1319,7 +1521,7 @@ id (Right (Identity x))</code></pre>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-haskell"><pre><span class="kr">import</span> <span class="nn">Data.Bifunctor</span>
@@ -1393,7 +1595,7 @@ data Snd a b = Snd b</code></pre>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[6]:</div>
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-haskell"><pre><span class="kr">import</span> <span class="nn">Data.Bifunctor</span>
