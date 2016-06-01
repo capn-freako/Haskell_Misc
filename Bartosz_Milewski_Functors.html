@@ -216,7 +216,7 @@ Original Date: May 2, 2016</p>
 
 
 <div class="output_text output_subarea ">
-<pre>2016-05-27 15:22:49.486835 UTC</pre>
+<pre>2016-06-01 03:55:07.465386 UTC</pre>
 </div>
 
 </div>
@@ -261,6 +261,25 @@ Original Date: May 2, 2016</p>
 <li><a href="#kleisli_1">Kleisli category for partial functions</a></li>
 <li><a href="#kleisli_2">Implementation of `safe_reciprocal`</a></li>
 <li><a href="#kleisli_3">Composition of `safe_root` and `safe_reciprocal`</a></li>
+</ol>
+</li>
+<li><a href="#products">Products and Coproducts</a><ol>
+<li><a href="#products_1">Uniqueness of Terminal Object</a></li>
+<li><a href="#products_2">Product of Two Objects in a Poset</a></li>
+<li><a href="#products_3">Coproduct of Two Objects in a Poset</a></li>
+<li><a href="#products_4">*Either* in Python</a></li>
+<li><a href="#products_5">*Either* as best coproduct</a></li>
+<li><a href="#products_6">Arguing in favor of *Either*</a></li>
+<li><a href="#products_7">Testing a slight change in *i()* injector.</a></li>
+<li><a href="#products_8">Uniqueness of Terminal Object</a></li>
+</ol>
+</li>
+<li><a href="#sadts">Simple Algebraic Data Types</a><ol>
+<li><a href="#sadts_1">Isomorphism Between *Maybe* and *Either ()*</a></li>
+<li><a href="#sadts_2">*Shape* as a C++ interface</a></li>
+<li><a href="#sadts_3">Adding *circ* to *Shape*</a></li>
+<li><a href="#sadts_4">Adding *Square* to *Shape*</a></li>
+<li><a href="#sadts_5">Showing "`a + a = 2 * a`", for types.</a></li>
 </ol>
 </li>
 <li><a href="#functors">Functors</a><ol>
@@ -1144,6 +1163,710 @@ safe_recip_root 2 = (0.70710677,True)</pre>
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Products-and-Coproducts-">Products and Coproducts <a name="products" /><a class="anchor-link" href="#Products-and-Coproducts-">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Challenge-1---Uniqueness-of-Terminal-Object-">Challenge 1 - Uniqueness of Terminal Object <a name="products_1" /><a class="anchor-link" href="#Challenge-1---Uniqueness-of-Terminal-Object-">&#182;</a></h3><p>Show that the terminal object is unique up to unique isomorphism.</p>
+<ol>
+<li>Assume two terminal objects: <em>a</em> and <em>b</em>.</li>
+<li>Because they are terminal, there can be only one morphism to them from any other object, including themselves.</li>
+<li>Assume:<ol>
+<li>Morphism <em>f</em> connects a to b, and</li>
+<li>Morphism <em>g</em> connects b to a.</li>
+</ol>
+</li>
+<li>Then:<ol>
+<li>g &#183; f is a reflective morphism on a, and</li>
+<li>f &#183; g is a reflective morphism on b.</li>
+</ol>
+</li>
+<li>But, both a and b <em>must</em> have identity morphisms. And, since they can only have one morphism to them from any other object, including themselves:<ol>
+<li>g &#183; f = id_a</li>
+<li>f &#183; g = id_b</li>
+</ol>
+</li>
+<li>So, f and g form an isomorphism between a an b. And, since there can be only one morphism connecting a to b and b to a, this isomorphism must be unique.</li>
+</ol>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to contents.</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Challenge-2---Product-of-Two-Objects-in-a-Poset-">Challenge 2 - Product of Two Objects in a Poset <a name="products_2" /><a class="anchor-link" href="#Challenge-2---Product-of-Two-Objects-in-a-Poset-">&#182;</a></h3><p>What is a product of two objects in a poset? Hint: Use the universal construction.</p>
+<ol>
+<li>Morphisms in a partial order imply inequality, as follows:<br>
+If morphism <em>f</em> points from object <em>a</em> to object <em>b</em>, then <code>a &lt;= b</code>.</li>
+<li>Since the product <em>c</em> of a and b must have projections to both a and b, which must be morphisms in the poset, c must be less than or equal to both a and b.</li>
+<li>Many objects may satisfy this constraint, but the only one that will not produce a factorizing morphism common to both projections is <code>min(a, b)</code>.</li>
+<li>So, the product of two objects, <em>a</em> and <em>b</em>, in a poset is their minimum.</li>
+</ol>
+<p>After reading comments #26 - #28, I realize that the above is incorrect (for a poset; it's correct, for a total order.), because it presumes an arrow connecting objects <em>a</em> and <em>b</em>, which needn't exist. The correct answer is, "smallest object having morphisms to both a and b."</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to contents.</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Challenge-3---Coproduct-of-Two-Objects-in-a-Poset-">Challenge 3 - Coproduct of Two Objects in a Poset <a name="products_3" /><a class="anchor-link" href="#Challenge-3---Coproduct-of-Two-Objects-in-a-Poset-">&#182;</a></h3><p>What is a coproduct of two objects in a poset?</p>
+<ol>
+<li>Reversing the direction of the two projections, relative to the previous challenge, would imply:<ol>
+<li>a &lt;= c, and</li>
+<li>b &lt;= c.</li>
+</ol>
+</li>
+</ol>
+<p>So, the coproduct, <em>c</em>, must be greater than or equal to both objects, <em>a</em> and <em>b</em>.</p>
+<ol>
+<li>Again, there may be many objects, which satisfy this constraint. However, only <code>max(a, b)</code> will eliminate all common factorizing morphisms.</li>
+<li>So, the coproduct of two objects in a poset is their maximum.</li>
+</ol>
+<p>(Same correction applies here, re: poset vs. total order.)</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to contents.</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Challenge-4---Either-in-Python-">Challenge 4 - <em>Either</em> in Python <a name="products_4" /><a class="anchor-link" href="#Challenge-4---Either-in-Python-">&#182;</a></h3><p>Implement the equivalent of Haskell Either as a generic type in your favorite language (other than Haskell).</p>
+<p><em>either.py</em>:</p>
+<h1 id="!-/usr/bin/env-python">! /usr/bin/env python<a class="anchor-link" href="#!-/usr/bin/env-python">&#182;</a></h1>
+<pre><code>class Either(object):
+    def __init__(self, constructor, value):
+        if(constructor == 'Left'):
+            self._constructor = 'Left'
+        elif(constructor == 'Right'):
+            self._constructor = 'Right'
+        else:
+            raise RuntimeError('Unrecognized constructor: {}'.format(constructor))
+        self._value = value
+
+    def __str__(self):
+        if(self._constructor == 'Left'):
+            res = "Left "
+        else:
+            res = "Right "
+        res += str(self._value)
+        return res
+
+    def _get_constructor(self):
+        return _constructor
+    constructor = property(_get_constructor)
+
+    def _get_value(self):
+        return _value
+    value = property(_get_value)
+
+def left(x):
+    return Either('Left', x)
+
+def right(x):
+    return Either('Right', x)
+
+def main():
+    myLeft = left('Testing')
+    print "left('Testing'): {}".format(myLeft)
+    print "right(1): {}".format(right(1))
+    print "Either('Middle', 2): {}".format(Either('Middle', 2))
+
+if(__name__ == "__main__"):
+    main()</code></pre>
+<p><em>From a command prompt</em>:</p>
+
+<pre><code>./either.py 
+left('Testing'): Left Testing
+right(1): Right 1
+Traceback (most recent call last):
+  File "./either.py", line 42, in &lt;module&gt;
+    main()
+  File "./either.py", line 39, in main
+    print "Either('Middle', 2): {}".format(Either('Middle', 2))
+  File "./either.py", line 10, in __init__
+    raise RuntimeError('Unrecognized constructor: {}'.format(constructor))
+RuntimeError: Unrecognized constructor: Middle</code></pre>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to contents.</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Challenge-5---Either-as-best-coproduct-">Challenge 5 - <em>Either</em> as best coproduct <a name="products_5" /><a class="anchor-link" href="#Challenge-5---Either-as-best-coproduct-">&#182;</a></h3><p>Show that Either is a “better” coproduct than int equipped with two injections:</p>
+
+<pre><code>int i(int n) { return n; }
+int j(bool b) { return b? 0: 1; }</code></pre>
+<p>Hint: Define a function:</p>
+
+<pre><code>int m(Either const &amp; e);
+that factorizes i and j.</code></pre>
+<p>Assumptions:</p>
+<ol>
+<li><em>Either</em> is a C++ class with the following:<ol>
+<li>Constructors:<ul>
+<li><code>Either(int n)</code></li>
+<li><code>Either(bool b)</code></li>
+</ul>
+</li>
+<li>Member variables:<ul>
+<li><strong>type</strong> - an enumeration containing <em>INT</em> and <em>BOOL</em></li>
+<li><strong>val</strong> - a union of <em>int</em> and <em>bool</em></li>
+</ul>
+</li>
+</ol>
+</li>
+</ol>
+
+<pre><code>int m(Either const &amp; e) {
+    switch(e.type) {
+        INT:
+            return e.val;
+
+        BOOL:
+            return e.val ? 0 : 1;
+
+        default:
+            throw Exception("m: Unrecognized type.");
+    }
+}
+
+int i2(int n) {
+    Either e(n);
+    return m(e);
+}
+
+int j2(bool b) {
+    Either e(b);
+    return m(e);
+}</code></pre>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to contents.</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Challenge-6---Arguing-in-favor-of-Either.-">Challenge 6 - Arguing in favor of <em>Either</em>. <a name="products_6" /><a class="anchor-link" href="#Challenge-6---Arguing-in-favor-of-Either.-">&#182;</a></h3><p>Continuing the previous problem: How would you argue that int with the two injections i and j cannot be “better” than Either?</p>
+<p>It is because the two injections, <em>i</em> and <em>j</em>, have been shown to have a common factorizing function, <em>m</em>.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to contents.</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Challenge-7---Testing-a-slight-change-in-i()-injector.-">Challenge 7 - Testing a slight change in <em>i()</em> injector. <a name="products_7" /><a class="anchor-link" href="#Challenge-7---Testing-a-slight-change-in-i()-injector.-">&#182;</a></h3><p>Still continuing: What about these injections?</p>
+
+<pre><code>int i(int n) { 
+    if (n &lt; 0) return n; 
+    return n + 2;
+}
+int j(bool b) { return b? 0: 1; }</code></pre>
+<p>They are still factorable, given a slight change to <em>m()</em>, above:</p>
+
+<pre><code>int m(Either const &amp; e) {
+    switch(e.type) {
+        INT:
+            if (e.val &lt; 0) return e.val;
+            return e.val + 2;
+
+        BOOL:
+            return e.val ? 0 : 1;
+
+        default:
+            throw Exception("m: Unrecognized type.");
+    }
+}</code></pre>
+<p>However, I believe the factorization, in this case, is superfluous and that the two representations are isomorphic, due to the two element "gap" created by the <em>i()</em> injector. That gap yields a unique function back from the int representation to the Either representation, which we don't have without it, due to the ambiguity in the meaning of values '0' and '1'. (i.e. - They could represent either an <em>int</em>, or a <em>bool</em>.)</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to contents.</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Challenge-8---Proving-inferiority,-via-multiple-morphisms.-">Challenge 8 - Proving inferiority, via multiple morphisms. <a name="products_8" /><a class="anchor-link" href="#Challenge-8---Proving-inferiority,-via-multiple-morphisms.-">&#182;</a></h3><p>Come up with an inferior candidate for a coproduct of int and bool that cannot be better than Either because it allows multiple acceptable morphisms from it to Either.</p>
+<p>From comment #37:</p>
+
+<pre><code>int i(int n) { 
+    if (n &lt; 0) return n; 
+    return n + 3;
+}
+
+int j(bool b) { return b ? 0 : 1; }
+
+Either m1(int x) {
+    if (x &gt;= 3) return new Either(x - 3);
+    else if (x == 2) return new Either(false); // There's no way to produce 2 from either i or j to int (as coproduct) so this line has no effect in the composition of m and i, j
+    else if (x == 1) return new Either(false);
+    else if (x == 0) return new Either(true);
+    else return new Either(x);
+}
+
+Either m2(int x) {
+    if (x &gt;= 3) return new Either(x - 3);
+    else if (x == 2) return new Either(true); // Here we return Either(true) instead to make m2 different from m1.
+    else if (x == 1) return new Either(false);
+    else if (x == 0) return new Either(true);
+    else return new Either(x);
+}</code></pre>
+<p>The fact that the "x = 2" case does not lie in the <em>image</em> of either injector makes it an available degree of freedom with which to define multiple morphisms.</p>
+<p>My own:</p>
+
+<pre><code>// injections
+int i(int n) {return n;}
+int j(bool b) {return b ? 0 : 1;}
+
+// morphisms
+Either m1(int x) {return new Either(x);}
+Either m2(int x) {
+    switch(x) {
+        case 0: return new Either(true);
+        case 1: return new Either(false);
+        default: return new Either(x);
+    }
+}</code></pre>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to contents.</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Simple-Algebraic-Data-Types-">Simple Algebraic Data Types <a name="sadts" /><a class="anchor-link" href="#Simple-Algebraic-Data-Types-">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Challenge-1---Isomorphism-Between-Maybe-and-Either-()-">Challenge 1 - Isomorphism Between <em>Maybe</em> and <em>Either ()</em> <a name="sadts_1" /><a class="anchor-link" href="#Challenge-1---Isomorphism-Between-Maybe-and-Either-()-">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span class="nf">maybe_to_either</span> <span class="ow">::</span> <span class="kt">Maybe</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">Either</span> <span class="nb">()</span> <span class="n">a</span>
+<span class="nf">maybe_to_either</span> <span class="kt">Nothing</span>  <span class="ow">=</span> <span class="kt">Left</span> <span class="nb">()</span>
+<span class="nf">maybe_to_either</span> <span class="p">(</span><span class="kt">Just</span> <span class="n">x</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">Right</span> <span class="n">x</span>
+
+<span class="nf">either_to_maybe</span> <span class="ow">::</span> <span class="kt">Either</span> <span class="nb">()</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">Maybe</span> <span class="n">a</span>
+<span class="nf">either_to_maybe</span> <span class="p">(</span><span class="kt">Left</span> <span class="nb">()</span><span class="p">)</span>  <span class="ow">=</span> <span class="kt">Nothing</span>
+<span class="nf">either_to_maybe</span> <span class="p">(</span><span class="kt">Right</span> <span class="n">x</span><span class="p">)</span>  <span class="ow">=</span> <span class="kt">Just</span> <span class="n">x</span>
+
+<span class="nf">assertion1</span> <span class="ow">=</span> <span class="n">map</span> <span class="p">(</span><span class="n">maybe_to_either</span> <span class="o">.</span> <span class="n">either_to_maybe</span><span class="p">)</span> <span class="p">[</span><span class="kt">Left</span> <span class="nb">()</span><span class="p">,</span> <span class="kt">Right</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">map</span> <span class="n">id</span> <span class="p">[</span><span class="kt">Left</span> <span class="nb">()</span><span class="p">,</span> <span class="kt">Right</span> <span class="mi">1</span><span class="p">]</span>
+<span class="nf">assertion2</span> <span class="ow">=</span> <span class="n">map</span> <span class="p">(</span><span class="n">either_to_maybe</span> <span class="o">.</span> <span class="n">maybe_to_either</span><span class="p">)</span> <span class="p">[</span><span class="kt">Nothing</span><span class="p">,</span> <span class="kt">Just</span> <span class="mi">1</span><span class="p">]</span>  <span class="o">==</span> <span class="n">map</span> <span class="n">id</span> <span class="p">[</span><span class="kt">Nothing</span><span class="p">,</span> <span class="kt">Just</span> <span class="mi">1</span><span class="p">]</span>
+
+<span class="nf">main</span> <span class="ow">::</span> <span class="kt">IO</span> <span class="nb">()</span>
+<span class="nf">main</span> <span class="ow">=</span> <span class="kr">do</span>
+    <span class="n">print</span> <span class="n">assertion1</span>
+    <span class="n">print</span> <span class="n">assertion2</span>
+
+<span class="nf">main</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+
+
+<div class="output_text output_subarea ">
+<pre>True
+True</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to contents.</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Challenge-2---Shape-as-a-C++-interface-">Challenge 2 - <em>Shape</em> as a C++ interface <a name="sadts_2" /><a class="anchor-link" href="#Challenge-2---Shape-as-a-C++-interface-">&#182;</a></h3><p>Here’s a sum type defined in Haskell:</p>
+
+<pre><code>data Shape = Circle Float
+           | Rect Float Float</code></pre>
+<p>When we want to define a function like area that acts on a Shape, we do it by pattern matching on the two constructors:</p>
+
+<pre><code>area :: Shape -&gt; Float
+area (Circle r) = pi * r * r
+area (Rect d h) = d * h</code></pre>
+<p>Implement Shape in C++ or Java as an interface and create two classes: Circle and Rect. Implement area as a virtual function.</p>
+<p><em>shape.cpp</em>:</p>
+
+<pre><code>#include &lt;iostream&gt;
+
+#define PI 3.14159
+
+using namespace std;
+
+class Shape {
+  public:
+    virtual double area() const = 0;
+};
+
+class Rectangle : public Shape {
+  public:
+    Rectangle (double height, double width) {
+        _height = height;
+        _width  = width;
+    }
+
+    Rectangle (const Rectangle &amp;r) {
+        _height = r.height();
+        _width  = r.width();
+    }
+
+    double area() const { return (_height * _width); }
+    double height() const { return _height; }
+    double width() const { return _width; }
+
+  private:
+    double _height, _width;
+};
+
+class Circle : public Shape {
+  public:
+    Circle (double radius) {
+        _radius = radius;
+    }
+
+    Circle (const Circle &amp;c) {
+        _radius = c.radius();
+    }
+
+    double area() const { return (PI * _radius * _radius); }
+    double radius() const { return _radius; }
+
+  private:
+    double _radius;
+};
+
+int main(int argc, char *argv[]) {
+    auto r1 = Rectangle(2.0, 4.0);
+    cout &lt;&lt; "Area of r1: " &lt;&lt; r1.area() &lt;&lt; endl;
+    auto r2 = Rectangle(r1);
+    cout &lt;&lt; "Area of r2: " &lt;&lt; r2.area() &lt;&lt; endl;
+    auto c1 = Circle(2.0);
+    cout &lt;&lt; "Area of c1: " &lt;&lt; c1.area() &lt;&lt; endl;
+    auto c2 = Circle(c1);
+    cout &lt;&lt; "Area of c2: " &lt;&lt; c2.area() &lt;&lt; endl;
+}</code></pre>
+<p><em>From command prompt</em>:</p>
+
+<pre><code>g++ -Wno-c++11-extensions shape.cpp 
+./a.out 
+Area of r1: 8
+Area of r2: 8
+Area of c1: 12.5664
+Area of c2: 12.5664</code></pre>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to contents.</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Challenge-3---Adding-circ-to-Shape.-">Challenge 3 - Adding <em>circ</em> to <em>Shape</em>. <a name="sadts_3" /><a class="anchor-link" href="#Challenge-3---Adding-circ-to-Shape.-">&#182;</a></h3><p>Continuing with the previous example: We can easily add a new function <code>circ</code> that calculates the circumference of a Shape. We can do it without touching the definition of Shape:</p>
+
+<pre><code>circ :: Shape -&gt; Float
+circ (Circle r) = 2.0 * pi * r
+circ (Rect d h) = 2.0 * (d + h)</code></pre>
+<p>Add circ to your C++ or Java implementation. What parts of the original code did you have to touch?</p>
+<p>I had to change the definitions of the interface, as well as both classes:</p>
+
+<pre><code>diff --git a/shape.cpp b/shape.cpp
+index 67ed088..4842965 100644
+--- a/shape.cpp
++++ b/shape.cpp
+@@ -7,6 +7,7 @@ using namespace std;
+ class Shape {
+   public:
+     virtual double area() const = 0;
++    virtual double circ() const = 0;
+ };
+
+ class Rectangle : public Shape {
+@@ -22,6 +23,7 @@ class Rectangle : public Shape {
+     }
+
+     double area() const { return (_height * _width); }
++    double circ() const { return (2.0 * (_height + _width)); }
+     double height() const { return _height; }
+     double width() const { return _width; }
+
+@@ -40,6 +42,7 @@ class Circle : public Shape {
+     }
+
+     double area() const { return (PI * _radius * _radius); }
++    double circ() const { return (2.0 * PI * _radius); }
+     double radius() const { return _radius; }</code></pre>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to contents.</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Challenge-4---Adding-Square-to-Shape.-">Challenge 4 - Adding <em>Square</em> to <em>Shape</em>. <a name="sadts_4" /><a class="anchor-link" href="#Challenge-4---Adding-Square-to-Shape.-">&#182;</a></h3><p>Continuing further: Add a new shape, Square, to Shape and make all the necessary updates. What code did you have to touch in Haskell vs. C++ or Java? (Even if you’re not a Haskell programmer, the modifications should be pretty obvious.)</p>
+<p>In Haskell, I have to add:</p>
+<ul>
+<li>a third data constructor to the <em>Shape</em> type.</li>
+<li>a third pattern matching alternative to both functions:<ul>
+<li>area</li>
+<li>circ</li>
+</ul>
+</li>
+</ul>
+<p>In C++, I have to:</p>
+<ul>
+<li>Add a class, Square, derived from Shape.</li>
+<li>Add overides of <em>area</em> and <em>circ</em> for this new class.</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to contents.</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Challenge-5---Showing-a-+-a-=-2-*-a,-for-types.-">Challenge 5 - Showing <code>a + a = 2 * a</code>, for types. <a name="sadts_5" /><a class="anchor-link" href="#Challenge-5---Showing-a-+-a-=-2-*-a,-for-types.-">&#182;</a></h3><p>Show that <code>a + a = 2 * a</code> holds for types (up to isomorphism). Remember that 2 corresponds to Bool, according to our translation table.</p>
+
+<pre><code>a + a      = {row 3}
+Either a a = {isomorphism, below}
+(Bool, a)  = {row 4}
+Bool * a   = {row 5}
+2 * a</code></pre>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span class="nf">forward</span> <span class="ow">::</span> <span class="kt">Either</span> <span class="n">a</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="kt">Bool</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+<span class="nf">forward</span> <span class="p">(</span><span class="kt">Left</span> <span class="n">x</span><span class="p">)</span>  <span class="ow">=</span> <span class="p">(</span><span class="kt">False</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+<span class="nf">forward</span> <span class="p">(</span><span class="kt">Right</span> <span class="n">x</span><span class="p">)</span> <span class="ow">=</span> <span class="p">(</span><span class="kt">True</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+
+<span class="nf">backward</span> <span class="ow">::</span> <span class="p">(</span><span class="kt">Bool</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="kt">Either</span> <span class="n">a</span> <span class="n">a</span>
+<span class="nf">backward</span> <span class="p">(</span><span class="kt">False</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">Left</span> <span class="n">x</span>
+<span class="nf">backward</span> <span class="p">(</span><span class="kt">True</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>  <span class="ow">=</span> <span class="kt">Right</span> <span class="n">x</span>
+
+<span class="nf">assertion1</span> <span class="ow">=</span> <span class="n">map</span> <span class="p">(</span><span class="n">forward</span> <span class="o">.</span> <span class="n">backward</span><span class="p">)</span> <span class="p">[(</span><span class="kt">False</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="kt">True</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span> <span class="o">==</span> <span class="n">map</span> <span class="n">id</span> <span class="p">[(</span><span class="kt">False</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="kt">True</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
+<span class="nf">assertion2</span> <span class="ow">=</span> <span class="n">map</span> <span class="p">(</span><span class="n">backward</span> <span class="o">.</span> <span class="n">forward</span><span class="p">)</span> <span class="p">[</span><span class="kt">Left</span> <span class="mi">1</span><span class="p">,</span> <span class="kt">Right</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">map</span> <span class="n">id</span> <span class="p">[</span><span class="kt">Left</span> <span class="mi">1</span><span class="p">,</span> <span class="kt">Right</span> <span class="mi">1</span><span class="p">]</span>
+
+<span class="nf">main</span> <span class="ow">::</span> <span class="kt">IO</span> <span class="nb">()</span>
+<span class="nf">main</span> <span class="ow">=</span> <span class="kr">do</span>
+    <span class="n">print</span> <span class="n">assertion1</span>
+    <span class="n">print</span> <span class="n">assertion2</span>
+
+<span class="nf">main</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+
+
+<div class="output_text output_subarea ">
+<pre>True
+True</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to contents.</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Functors-">Functors <a name="functors" /><a class="anchor-link" href="#Functors-">&#182;</a></h2>
 </div>
 </div>
@@ -1335,7 +2058,7 @@ fmap (g . h) (x:xs)</code></pre>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-haskell"><pre><span class="kr">import</span> <span class="nn">Data.Bifunctor</span>
@@ -1401,7 +2124,7 @@ second</code></pre>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[6]:</div>
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-haskell"><pre><span class="kr">import</span> <span class="nn">Control.Applicative</span>   <span class="p">(</span><span class="kt">Const</span> <span class="p">(</span><span class="o">..</span><span class="p">))</span>
@@ -1521,7 +2244,7 @@ id (Right (Identity x))</code></pre>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[7]:</div>
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-haskell"><pre><span class="kr">import</span> <span class="nn">Data.Bifunctor</span>
@@ -1595,7 +2318,7 @@ data Snd a b = Snd b</code></pre>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[8]:</div>
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-haskell"><pre><span class="kr">import</span> <span class="nn">Data.Bifunctor</span>
