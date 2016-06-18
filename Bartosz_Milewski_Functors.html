@@ -216,7 +216,7 @@ Original Date: May 2, 2016</p>
 
 
 <div class="output_text output_subarea ">
-<pre>2016-06-01 03:55:07.465386 UTC</pre>
+<pre>2016-06-18 22:36:07.850465 UTC</pre>
 </div>
 
 </div>
@@ -296,6 +296,12 @@ Original Date: May 2, 2016</p>
 <li><a href="#functoriality_4">More Bifunctor instances</a></li>
 <li><a href="#functoriality_5">Bifunctor in Python</a></li>
 <li><a href="#functoriality_6">Functorial nature of C++ std::map</a></li>
+</ol>
+</li>
+<li><a href="#natural_transformations">Natural Transformations</a><ol>
+<li><a href="#natural_transformations_1">Natural Transformation from *Maybe* to *List*</a></li>
+<li><a href="#natural_transformations_2">Natural Transformations from *Reader ()* to *List*</a></li>
+<li><a href="#natural_transformations_3">Natural Transformations from *Reader Bool* to *Maybe*</a></li>
 </ol>
 </li>
 </ol>
@@ -698,10 +704,11 @@ int main(int argc, char *argv[]) {
 <div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="Challenge-5-">Challenge 5 <a name="types_5" /><a class="anchor-link" href="#Challenge-5-">&#182;</a></h3><p><em>How many different functions are there from Bool to Bool?</em><br>
 <em>Can you implement them all?</em></p>
-<p>There are 3:</p>
+<p>There are 4:</p>
 <ul>
 <li>true</li>
 <li>complement</li>
+<li>constant</li>
 <li>bottom</li>
 </ul>
 <p>Yes, they can all be implemented (in Haskell):</p>
@@ -711,7 +718,7 @@ int main(int argc, char *argv[]) {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[2]:</div>
+<div class="prompt input_prompt">In&nbsp;[15]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-haskell"><pre><span class="nf">true</span> <span class="ow">::</span> <span class="kt">Bool</span> <span class="ow">-&gt;</span> <span class="kt">Bool</span>
@@ -721,6 +728,9 @@ int main(int argc, char *argv[]) {
 <span class="nf">complement</span> <span class="ow">::</span> <span class="kt">Bool</span> <span class="ow">-&gt;</span> <span class="kt">Bool</span>
 <span class="nf">complement</span> <span class="kt">True</span> <span class="ow">=</span> <span class="kt">False</span>
 <span class="nf">complement</span> <span class="kt">False</span> <span class="ow">=</span> <span class="kt">True</span>
+
+<span class="nf">constant</span> <span class="ow">::</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">Bool</span>
+<span class="nf">constant</span> <span class="kr">_</span> <span class="ow">=</span> <span class="kt">True</span>
 
 <span class="nf">bottom</span> <span class="ow">::</span> <span class="kt">Bool</span> <span class="ow">-&gt;</span> <span class="kt">Bool</span>
 <span class="nf">bottom</span> <span class="kr">_</span> <span class="ow">=</span> <span class="n">undefined</span>
@@ -733,9 +743,10 @@ int main(int argc, char *argv[]) {
   <span class="n">putStrLn</span> <span class="s">&quot;complement:&quot;</span>
   <span class="n">putStrLn</span> <span class="o">$</span> <span class="s">&quot;</span><span class="se">\t</span><span class="s">True -&gt; &quot;</span> <span class="o">++</span> <span class="p">(</span><span class="n">show</span> <span class="o">$</span> <span class="n">complement</span> <span class="kt">True</span><span class="p">)</span>
   <span class="n">putStrLn</span> <span class="o">$</span> <span class="s">&quot;</span><span class="se">\t</span><span class="s">False -&gt; &quot;</span> <span class="o">++</span> <span class="p">(</span><span class="n">show</span> <span class="o">$</span> <span class="n">complement</span> <span class="kt">False</span><span class="p">)</span>
+  <span class="n">putStrLn</span> <span class="s">&quot;const:&quot;</span>
+  <span class="n">putStrLn</span> <span class="o">$</span> <span class="s">&quot;</span><span class="se">\t</span><span class="s">True -&gt; &quot;</span> <span class="o">++</span> <span class="p">(</span><span class="n">show</span> <span class="o">$</span> <span class="n">constant</span> <span class="kt">True</span><span class="p">)</span>
+  <span class="n">putStrLn</span> <span class="o">$</span> <span class="s">&quot;</span><span class="se">\t</span><span class="s">False -&gt; &quot;</span> <span class="o">++</span> <span class="p">(</span><span class="n">show</span> <span class="o">$</span> <span class="n">constant</span> <span class="kt">False</span><span class="p">)</span>
   <span class="n">putStrLn</span> <span class="s">&quot;bottom:&quot;</span>
-<span class="c1">--  putStrLn $ &quot;\tTrue -&gt; &quot; ++ (show $ bottom True)</span>
-<span class="c1">--  putStrLn $ &quot;\tFalse -&gt; &quot; ++ (show $ bottom False)</span>
   <span class="n">putStrLn</span> <span class="s">&quot;</span><span class="se">\t</span><span class="s">(Attempting to call &#39;bottom&#39; short circuits the monad, and we get no output.)&quot;</span>
 <span class="nf">main</span>
 </pre></div>
@@ -757,6 +768,9 @@ int main(int argc, char *argv[]) {
 	False -&gt; False
 complement:
 	True -&gt; False
+	False -&gt; True
+const:
+	True -&gt; True
 	False -&gt; True
 bottom:
 	(Attempting to call &apos;bottom&apos; short circuits the monad, and we get no output.)</pre>
@@ -1914,9 +1928,7 @@ Just x</code></pre>
 f :: r -&gt; a
 
 fmap id f      = {fmap definition}
-id . f         = {definition of composition}
-\x -&gt; id (f x) = {definition of id}
-\x -&gt; f x      = {eta reduction}
+id . f         = {id is the identity of composition}
 f              = {definition of id}
 id f
 
@@ -2743,6 +2755,301 @@ Functor composition law held.</code></pre>
 
 </div>
 </div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to contents.</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Natural-Transformations-">Natural Transformations <a name="natural_transformations" /><a class="anchor-link" href="#Natural-Transformations-">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Challenge-1---Natural-Transformation-from-Maybe-to-List-">Challenge 1 - Natural Transformation from <em>Maybe</em> to <em>List</em> <a name="natural_transformations_1" /><a class="anchor-link" href="#Challenge-1---Natural-Transformation-from-Maybe-to-List-">&#182;</a></h3><p>Define a natural transformation from the Maybe functor to the list functor. Prove the naturality condition for it.</p>
+<p>In this case, the <em>naturality condition</em> is:</p>
+<p><code>G f ∘ αa = αb ∘ F f</code></p>
+<p>where:</p>
+<ul>
+<li><code>G = []</code></li>
+<li><code>F = Maybe</code></li>
+<li><code>f :: a -&gt; b</code></li>
+<li><code>α</code> = natural transformation (<code>maybe_to_list</code>, below)</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span class="cm">{-# LANGUAGE</span>
+<span class="cm">  Rank2Types</span>
+<span class="cm">  FlexibleContexts</span>
+<span class="cm">  #-}</span>
+  
+<span class="kr">type</span> <span class="kt">NatTran</span> <span class="n">f</span> <span class="n">f&#39;</span> <span class="n">a</span> <span class="ow">=</span> <span class="p">(</span><span class="kt">Functor</span> <span class="n">f</span><span class="p">,</span> <span class="kt">Functor</span> <span class="n">f&#39;</span><span class="p">)</span> <span class="ow">=&gt;</span> <span class="n">f</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">f&#39;</span> <span class="n">a</span>
+
+<span class="nf">to_assert</span> <span class="ow">::</span> <span class="p">(</span><span class="kt">Functor</span> <span class="n">f</span><span class="p">,</span> <span class="kt">Functor</span> <span class="n">f&#39;</span><span class="p">,</span> <span class="kt">Eq</span> <span class="p">(</span><span class="n">f&#39;</span> <span class="n">b</span><span class="p">))</span> <span class="ow">=&gt;</span> <span class="p">(</span><span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">b</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="kt">NatTran</span> <span class="n">f</span> <span class="n">f&#39;</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">NatTran</span> <span class="n">f</span> <span class="n">f&#39;</span> <span class="n">b</span> <span class="ow">-&gt;</span> <span class="n">f</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">Bool</span>
+<span class="nf">to_assert</span> <span class="n">g</span> <span class="n">h</span> <span class="n">h&#39;</span> <span class="n">f</span> <span class="ow">=</span> <span class="p">(</span><span class="n">fmap</span> <span class="n">g</span> <span class="o">.</span> <span class="n">h</span><span class="p">)</span> <span class="n">f</span> <span class="o">==</span> <span class="p">(</span><span class="n">h&#39;</span> <span class="o">.</span> <span class="n">fmap</span> <span class="n">g</span><span class="p">)</span> <span class="n">f</span>
+
+<span class="nf">maybe_to_list</span> <span class="ow">::</span> <span class="kt">NatTran</span> <span class="kt">Maybe</span> <span class="kt">[]</span> <span class="n">a</span>
+<span class="nf">maybe_to_list</span> <span class="kt">Nothing</span>  <span class="ow">=</span> <span class="kt">[]</span>
+<span class="nf">maybe_to_list</span> <span class="p">(</span><span class="kt">Just</span> <span class="n">x</span><span class="p">)</span> <span class="ow">=</span> <span class="p">[</span><span class="n">x</span><span class="p">]</span>
+
+<span class="nf">test_func</span> <span class="ow">::</span> <span class="kt">Num</span> <span class="n">a</span> <span class="ow">=&gt;</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+<span class="nf">test_func</span> <span class="n">x</span> <span class="ow">=</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="nf">success</span> <span class="ow">=</span> <span class="n">all</span> <span class="p">(</span><span class="n">to_assert</span> <span class="n">test_func</span> <span class="n">maybe_to_list</span> <span class="n">maybe_to_list</span><span class="p">)</span> <span class="p">[</span><span class="kt">Nothing</span><span class="p">,</span> <span class="kt">Just</span> <span class="mi">1</span><span class="p">]</span>
+
+<span class="nf">main</span> <span class="ow">::</span> <span class="kt">IO</span> <span class="nb">()</span>
+<span class="nf">main</span> <span class="ow">=</span> <span class="kr">do</span>
+    <span class="kr">if</span> <span class="n">success</span> <span class="kr">then</span> <span class="n">putStrLn</span> <span class="s">&quot;Success!&quot;</span> <span class="kr">else</span> <span class="n">putStrLn</span> <span class="s">&quot;Failure.&quot;</span>
+    
+<span class="nf">main</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+
+
+<div class="output_text output_subarea ">
+<pre>Success!</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to contents.</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Challenge-2---Natural-Transformations-from-Reader-()-to-List-">Challenge 2 - Natural Transformations from <em>Reader ()</em> to <em>List</em> <a name="natural_transformations_2" /><a class="anchor-link" href="#Challenge-2---Natural-Transformations-from-Reader-()-to-List-">&#182;</a></h3><p>Define at least two different natural transformations between Reader () and the list functor.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[12]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span class="kr">newtype</span> <span class="kt">Reader</span> <span class="n">e</span> <span class="n">a</span> <span class="ow">=</span> <span class="kt">Reader</span> <span class="p">{</span><span class="n">runReader</span> <span class="ow">::</span> <span class="p">(</span><span class="n">e</span> <span class="ow">-&gt;</span> <span class="n">a</span><span class="p">)}</span>
+
+<span class="kr">instance</span> <span class="kt">Functor</span> <span class="p">(</span><span class="kt">Reader</span> <span class="n">e</span><span class="p">)</span> <span class="kr">where</span>  
+    <span class="n">fmap</span> <span class="n">f</span> <span class="p">(</span><span class="kt">Reader</span> <span class="n">g</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">Reader</span> <span class="p">(</span><span class="nf">\</span><span class="n">x</span> <span class="ow">-&gt;</span> <span class="n">f</span> <span class="p">(</span><span class="n">g</span> <span class="n">x</span><span class="p">))</span>
+
+<span class="c1">-- First natural transformation</span>
+<span class="nf">reader_to_list</span> <span class="ow">::</span> <span class="kt">Reader</span> <span class="nb">()</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="n">a</span><span class="p">]</span>
+<span class="nf">reader_to_list</span> <span class="n">m</span> <span class="ow">=</span> <span class="n">runReader</span> <span class="n">m</span> <span class="nb">()</span> <span class="kt">:</span> <span class="kt">[]</span>
+
+<span class="c1">-- Second natural transformation</span>
+<span class="nf">reader_to_list&#39;</span> <span class="ow">::</span> <span class="kt">Reader</span> <span class="nb">()</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="n">a</span><span class="p">]</span>
+<span class="nf">reader_to_list&#39;</span> <span class="n">m</span> <span class="ow">=</span> <span class="kt">[]</span>
+
+<span class="nf">success</span> <span class="ow">=</span> <span class="p">(</span><span class="n">all</span> <span class="p">(</span><span class="n">to_assert</span> <span class="n">test_func</span> <span class="n">reader_to_list</span> <span class="n">reader_to_list</span><span class="p">)</span> <span class="p">[</span><span class="kt">Reader</span> <span class="p">(</span><span class="n">const</span> <span class="mi">1</span><span class="p">),</span> <span class="kt">Reader</span> <span class="p">(</span><span class="n">const</span> <span class="mi">2</span><span class="p">)])</span> <span class="o">&amp;&amp;</span>
+          <span class="p">(</span><span class="n">all</span> <span class="p">(</span><span class="n">to_assert</span> <span class="n">test_func</span> <span class="n">reader_to_list&#39;</span> <span class="n">reader_to_list&#39;</span><span class="p">)</span> <span class="p">[</span><span class="kt">Reader</span> <span class="p">(</span><span class="n">const</span> <span class="mi">1</span><span class="p">),</span> <span class="kt">Reader</span> <span class="p">(</span><span class="n">const</span> <span class="mi">2</span><span class="p">)])</span>
+
+<span class="nf">main</span> <span class="ow">::</span> <span class="kt">IO</span> <span class="nb">()</span>
+<span class="nf">main</span> <span class="ow">=</span> <span class="kr">do</span>
+    <span class="kr">if</span> <span class="n">success</span> <span class="kr">then</span> <span class="n">putStrLn</span> <span class="s">&quot;Success!&quot;</span> <span class="kr">else</span> <span class="n">putStrLn</span> <span class="s">&quot;Failure.&quot;</span>
+
+<span class="nf">main</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+
+
+<div class="output_text output_subarea ">
+<pre>Success!</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>How many different lists of <code>()</code> are there?</p>
+<p>Stictly speaking, in Haskell, an infinite number:</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[13]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span class="nf">l</span>   <span class="ow">=</span> <span class="p">[</span><span class="nb">()</span><span class="p">]</span>
+<span class="nf">l&#39;</span>  <span class="ow">=</span> <span class="p">[</span><span class="nb">()</span><span class="p">,</span> <span class="nb">()</span><span class="p">]</span>
+<span class="nf">l&#39;&#39;</span> <span class="ow">=</span> <span class="p">[</span><span class="nb">()</span><span class="p">,</span> <span class="nb">()</span><span class="p">,</span> <span class="nb">()</span><span class="p">]</span>
+
+<span class="nf">main</span> <span class="ow">::</span> <span class="kt">IO</span> <span class="nb">()</span>
+<span class="nf">main</span> <span class="ow">=</span> <span class="kr">do</span>
+    <span class="n">print</span> <span class="n">l</span>
+    <span class="n">print</span> <span class="n">l&#39;</span>
+    <span class="n">print</span> <span class="n">l&#39;&#39;</span>
+    <span class="n">print</span> <span class="p">(</span><span class="n">l</span> <span class="o">==</span> <span class="n">l&#39;</span><span class="p">)</span>
+
+<span class="nf">main</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+
+
+<div class="output_text output_subarea ">
+<pre>[()]
+[(),()]
+[(),(),()]
+False</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>But, I suspect that, from our categorical perspective, they are all isomorphic, since <code>List</code> is considered to be a sum of alternative values of a particular type, and the type, <code>()</code>, has only one value: <code>()</code>.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to contents.</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Challenge-3---Natural-Transformations-from-Reader-Bool-to-Maybe-">Challenge 3 - Natural Transformations from <em>Reader Bool</em> to <em>Maybe</em> <a name="natural_transformations_3" /><a class="anchor-link" href="#Challenge-3---Natural-Transformations-from-Reader-Bool-to-Maybe-">&#182;</a></h3><p>Define at least two different natural transformations between <code>Reader Bool</code> and the <code>Maybe</code> functor.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[14]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span class="c1">-- First natural transformation</span>
+<span class="nf">reader_to_maybe</span> <span class="ow">::</span> <span class="kt">Reader</span> <span class="kt">Bool</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">Maybe</span> <span class="n">a</span>
+<span class="nf">reader_to_maybe</span> <span class="n">m</span> <span class="ow">=</span> <span class="kt">Just</span> <span class="o">$</span> <span class="n">runReader</span> <span class="n">m</span> <span class="kt">True</span>
+
+<span class="c1">-- Second natural transformation</span>
+<span class="nf">reader_to_maybe&#39;</span> <span class="ow">::</span> <span class="kt">Reader</span> <span class="kt">Bool</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">Maybe</span> <span class="n">a</span>
+<span class="nf">reader_to_maybe&#39;</span> <span class="n">m</span> <span class="ow">=</span> <span class="kt">Nothing</span>
+
+<span class="nf">reader_func</span> <span class="ow">::</span> <span class="kt">Bool</span> <span class="ow">-&gt;</span> <span class="kt">Int</span>
+<span class="nf">reader_func</span> <span class="kt">False</span> <span class="ow">=</span> <span class="mi">0</span>
+<span class="nf">reader_func</span> <span class="kt">True</span>  <span class="ow">=</span> <span class="mi">1</span>
+
+<span class="nf">reader_func&#39;</span> <span class="ow">::</span> <span class="kt">Bool</span> <span class="ow">-&gt;</span> <span class="kt">Int</span>
+<span class="nf">reader_func&#39;</span> <span class="kt">False</span> <span class="ow">=</span> <span class="mi">1</span>
+<span class="nf">reader_func&#39;</span> <span class="kt">True</span>  <span class="ow">=</span> <span class="mi">0</span>
+
+<span class="nf">success</span> <span class="ow">=</span> <span class="p">(</span><span class="n">all</span> <span class="p">(</span><span class="n">to_assert</span> <span class="n">test_func</span> <span class="n">reader_to_maybe</span>  <span class="n">reader_to_maybe</span><span class="p">)</span>  <span class="p">[</span><span class="kt">Reader</span> <span class="n">reader_func</span><span class="p">,</span> <span class="kt">Reader</span> <span class="n">reader_func&#39;</span><span class="p">])</span> <span class="o">&amp;&amp;</span>
+          <span class="p">(</span><span class="n">all</span> <span class="p">(</span><span class="n">to_assert</span> <span class="n">test_func</span> <span class="n">reader_to_maybe&#39;</span> <span class="n">reader_to_maybe&#39;</span><span class="p">)</span> <span class="p">[</span><span class="kt">Reader</span> <span class="n">reader_func</span><span class="p">,</span> <span class="kt">Reader</span> <span class="n">reader_func&#39;</span><span class="p">])</span>
+
+<span class="nf">main</span> <span class="ow">::</span> <span class="kt">IO</span> <span class="nb">()</span>
+<span class="nf">main</span> <span class="ow">=</span> <span class="kr">do</span>
+    <span class="kr">if</span> <span class="n">success</span> <span class="kr">then</span> <span class="n">putStrLn</span> <span class="s">&quot;Success!&quot;</span> <span class="kr">else</span> <span class="n">putStrLn</span> <span class="s">&quot;Failure.&quot;</span>
+
+<span class="nf">main</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+
+
+<div class="output_text output_subarea ">
+<pre>Success!</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
 </div>
 <div class="cell border-box-sizing text_cell rendered">
 <div class="prompt input_prompt">
