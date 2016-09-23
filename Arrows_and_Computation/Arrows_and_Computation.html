@@ -176,7 +176,7 @@ div#notebook {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Cap'n-Freako's-Solutions-to-the-Exercises-in-Arrows-and-Computation,-by-Ross-Paterson">Cap'n Freako's Solutions to the Exercises in <em>Arrows and Computation</em>, by Ross Paterson<a class="anchor-link" href="#Cap'n-Freako's-Solutions-to-the-Exercises-in-Arrows-and-Computation,-by-Ross-Paterson">&#182;</a></h1><p>Original author: David Banas <capn.freako@gmail.com><br>
+<h1 id="Solutions-to-the-Exercises-in:--Arrows-and-Computation,-by-Ross-Paterson">Solutions to the Exercises in:  <em>Arrows and Computation</em>, by Ross Paterson<a class="anchor-link" href="#Solutions-to-the-Exercises-in:--Arrows-and-Computation,-by-Ross-Paterson">&#182;</a></h1><p>Original author: David Banas <capn.freako@gmail.com><br>
 Original date:   July 29, 2016</p>
 <p>Copyright &#169; 2016 David Banas; all rights reserved World wide.</p>
 
@@ -215,7 +215,7 @@ Original date:   July 29, 2016</p>
 
 
 <div class="output_text output_subarea ">
-<pre>2016-08-10 14:19:08.350943 UTC</pre>
+<pre>2016-09-23 14:06:28.768083 UTC</pre>
 </div>
 
 </div>
@@ -232,6 +232,8 @@ Original date:   July 29, 2016</p>
 <h2 id="Table-of-Contents-">Table of Contents <a name="contents" /><a class="anchor-link" href="#Table-of-Contents-">&#182;</a></h2><ul>
 <li><a href="#ex1">Exercise 1 - *Arrow* instances for *Reader* and *Writer*.</a></li>
 <li><a href="#ex2">Exercise 2 - Attempted *Arrow* instance for *ListMap*.</a></li>
+<li><a href="#ex3">Exercise 3 - *Arrow* instance for *StreamtMap*.</a></li>
+<li><a href="#ex4">Exercise 4 - Show that a product Arrow is a *Functor*.</a></li>
 </ul>
 
 </div>
@@ -455,9 +457,9 @@ True</pre>
 <span class="nf">eqLM</span> <span class="n">lm1</span> <span class="n">lm2</span> <span class="n">xs</span> <span class="ow">=</span> <span class="n">runLM</span> <span class="n">lm1</span> <span class="n">xs</span> <span class="o">==</span> <span class="n">runLM</span> <span class="n">lm2</span> <span class="n">xs</span>
 
 <span class="c1">-- Useful expressions</span>
-<span class="nf">lm1</span> <span class="ow">=</span> <span class="kt">LM</span> <span class="p">(</span><span class="nf">\</span><span class="n">xs</span> <span class="ow">-&gt;</span> <span class="n">map</span> <span class="p">(</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="n">xs</span><span class="p">)</span>
+<span class="nf">lm3</span> <span class="ow">=</span> <span class="kt">LM</span> <span class="p">(</span><span class="nf">\</span><span class="n">xs</span> <span class="ow">-&gt;</span> <span class="n">map</span> <span class="p">(</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="n">xs</span><span class="p">)</span>
 <span class="nf">lm2</span> <span class="ow">=</span> <span class="kt">LM</span> <span class="p">(</span><span class="nf">\</span><span class="n">xs</span> <span class="ow">-&gt;</span> <span class="n">map</span> <span class="p">(</span><span class="o">*</span><span class="mi">2</span><span class="p">)</span> <span class="n">xs</span><span class="p">)</span>
-<span class="nf">lm3</span> <span class="ow">=</span> <span class="kt">LM</span> <span class="p">(</span><span class="nf">\</span><span class="n">xs</span> <span class="ow">-&gt;</span> <span class="n">map</span> <span class="p">(</span><span class="n">id</span><span class="p">)</span> <span class="n">xs</span><span class="p">)</span>
+<span class="nf">lm1</span> <span class="ow">=</span> <span class="kt">LM</span> <span class="p">(</span><span class="nf">\</span><span class="n">xs</span> <span class="ow">-&gt;</span> <span class="n">xs</span> <span class="o">++</span> <span class="n">xs</span><span class="p">)</span>
 <span class="nf">xs</span>  <span class="ow">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
 <span class="nf">ys</span>  <span class="ow">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="s">&quot;zero&quot;</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;one&quot;</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s">&quot;two&quot;</span><span class="p">)]</span>
 <span class="nf">zs</span>  <span class="ow">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)]</span>
@@ -522,6 +524,171 @@ True
 True
 True
 True
+False
+True</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The type of the enclosed function allows us to change the "shape" of the data container (i.e.  <em>List</em>, in this case), and that can break some of the properties we need to rely on.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to Contents</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Exercise-3-">Exercise 3 <a name="ex3" /><a class="anchor-link" href="#Exercise-3-">&#182;</a></h2><p>Define the following as an arrow type:</p>
+
+<pre><code>data Stream α = Cons α (Stream α)
+newtype StreamMap ι o = SM (Stream ι → Stream o)</code></pre>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span class="kr">data</span> <span class="kt">Stream</span> <span class="n">a</span> <span class="ow">=</span> <span class="kt">Cons</span> <span class="n">a</span> <span class="p">(</span><span class="kt">Stream</span> <span class="n">a</span><span class="p">)</span>
+
+<span class="kr">newtype</span> <span class="kt">StreamMap</span> <span class="n">a</span> <span class="n">b</span> <span class="ow">=</span> <span class="kt">SM</span> <span class="p">{</span><span class="n">runSM</span> <span class="ow">::</span> <span class="kt">Stream</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">Stream</span> <span class="n">b</span><span class="p">}</span>
+
+<span class="nf">zipS</span> <span class="ow">::</span> <span class="kt">Stream</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">Stream</span> <span class="n">b</span> <span class="ow">-&gt;</span> <span class="kt">Stream</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+<span class="nf">zipS</span> <span class="p">(</span><span class="kt">Cons</span> <span class="n">x</span> <span class="n">xs</span><span class="p">)</span> <span class="p">(</span><span class="kt">Cons</span> <span class="n">y</span> <span class="n">ys</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">Cons</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="p">(</span><span class="n">zipS</span> <span class="n">xs</span> <span class="n">ys</span><span class="p">)</span>
+
+<span class="nf">unzipS</span> <span class="ow">::</span> <span class="kt">Stream</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="kt">Stream</span> <span class="n">a</span><span class="p">,</span> <span class="kt">Stream</span> <span class="n">b</span><span class="p">)</span>
+<span class="nf">unzipS</span> <span class="p">(</span><span class="kt">Cons</span> <span class="n">z</span> <span class="n">zs</span><span class="p">)</span> <span class="ow">=</span> <span class="p">(</span><span class="kt">Cons</span> <span class="p">(</span><span class="n">fst</span> <span class="n">z</span><span class="p">)</span> <span class="p">(</span><span class="n">fst</span> <span class="p">(</span><span class="n">unzipS</span> <span class="n">zs</span><span class="p">)),</span> <span class="kt">Cons</span> <span class="p">(</span><span class="n">snd</span> <span class="n">z</span><span class="p">)</span> <span class="p">(</span><span class="n">snd</span> <span class="p">(</span><span class="n">unzipS</span> <span class="n">zs</span><span class="p">)))</span>
+
+<span class="kr">instance</span> <span class="kt">Arrow</span> <span class="kt">StreamMap</span> <span class="kr">where</span>
+    <span class="n">pure</span> <span class="n">f</span>        <span class="ow">=</span> <span class="kt">SM</span> <span class="n">g</span>
+     <span class="kr">where</span> <span class="n">g</span> <span class="p">(</span><span class="kt">Cons</span> <span class="n">x</span> <span class="n">xs</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">Cons</span> <span class="p">(</span><span class="n">f</span> <span class="n">x</span><span class="p">)</span> <span class="p">(</span><span class="n">g</span> <span class="n">xs</span><span class="p">)</span>
+    <span class="kt">SM</span> <span class="n">f</span> <span class="o">&gt;&gt;&gt;</span> <span class="kt">SM</span> <span class="n">g</span> <span class="ow">=</span> <span class="kt">SM</span> <span class="p">(</span><span class="n">g</span> <span class="o">.</span> <span class="n">f</span><span class="p">)</span>
+    <span class="n">first</span> <span class="p">(</span><span class="kt">SM</span> <span class="n">g</span><span class="p">)</span>  <span class="ow">=</span> <span class="kt">SM</span> <span class="p">(</span><span class="nf">\</span><span class="n">ws</span> <span class="ow">-&gt;</span>
+     <span class="kr">let</span> <span class="n">ys</span>       <span class="ow">=</span> <span class="n">g</span> <span class="n">xs</span>
+         <span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">zs</span><span class="p">)</span> <span class="ow">=</span> <span class="n">unzipS</span> <span class="n">ws</span>
+     <span class="kr">in</span> <span class="n">zipS</span> <span class="n">ys</span> <span class="n">zs</span><span class="p">)</span>
+
+<span class="c1">-- Test axioms.</span>
+<span class="c1">-- General utilities</span>
+<span class="nf">toList</span> <span class="ow">::</span> <span class="kt">Stream</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="n">a</span><span class="p">]</span>
+<span class="nf">toList</span> <span class="p">(</span><span class="kt">Cons</span> <span class="n">x</span> <span class="n">xs</span><span class="p">)</span> <span class="ow">=</span> <span class="n">x</span> <span class="kt">:</span> <span class="p">(</span><span class="n">toList</span> <span class="n">xs</span><span class="p">)</span>
+
+<span class="nf">eqSM</span> <span class="ow">::</span> <span class="p">(</span><span class="kt">Eq</span> <span class="n">b</span><span class="p">)</span> <span class="ow">=&gt;</span> <span class="kt">StreamMap</span> <span class="n">a</span> <span class="n">b</span> <span class="ow">-&gt;</span> <span class="kt">StreamMap</span> <span class="n">a</span> <span class="n">b</span> <span class="ow">-&gt;</span> <span class="kt">Stream</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">Bool</span>
+<span class="nf">eqSM</span> <span class="n">sm1</span> <span class="n">sm2</span> <span class="n">s</span> <span class="ow">=</span> <span class="n">take</span> <span class="mi">100</span> <span class="p">(</span><span class="n">toList</span> <span class="p">(</span><span class="n">runSM</span> <span class="n">sm1</span> <span class="n">s</span><span class="p">))</span> <span class="o">==</span> <span class="n">take</span> <span class="mi">100</span> <span class="p">(</span><span class="n">toList</span> <span class="p">(</span><span class="n">runSM</span> <span class="n">sm2</span> <span class="n">s</span><span class="p">))</span>
+
+<span class="c1">-- Useful expressions</span>
+<span class="nf">f</span> <span class="p">(</span><span class="kt">Cons</span> <span class="n">x</span> <span class="n">xs</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">Cons</span> <span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="p">(</span><span class="n">f</span> <span class="n">xs</span><span class="p">)</span>
+<span class="nf">sm1</span> <span class="ow">=</span> <span class="kt">SM</span> <span class="n">f</span>
+<span class="nf">g</span> <span class="p">(</span><span class="kt">Cons</span> <span class="n">x</span> <span class="n">xs</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">Cons</span> <span class="n">x</span> <span class="p">(</span><span class="kt">Cons</span> <span class="n">x</span> <span class="p">(</span><span class="n">g</span> <span class="n">xs</span><span class="p">))</span>
+<span class="nf">sm2</span> <span class="ow">=</span> <span class="kt">SM</span> <span class="n">g</span>
+<span class="nf">sm3</span> <span class="ow">::</span> <span class="kt">StreamMap</span> <span class="n">a</span> <span class="n">a</span>
+<span class="nf">sm3</span> <span class="ow">=</span> <span class="n">pure</span> <span class="n">id</span>
+<span class="nf">sms</span> <span class="ow">=</span> <span class="p">[</span><span class="n">sm1</span><span class="p">,</span> <span class="n">sm2</span><span class="p">,</span> <span class="n">sm3</span><span class="p">]</span>
+
+<span class="nf">s1</span> <span class="ow">=</span> <span class="kt">Cons</span> <span class="mi">0</span> <span class="p">(</span><span class="n">s1</span><span class="p">)</span>
+<span class="nf">s2</span> <span class="ow">=</span> <span class="kt">Cons</span> <span class="mi">0</span> <span class="p">(</span><span class="n">f</span> <span class="n">s2</span><span class="p">)</span>
+<span class="nf">ss</span> <span class="ow">=</span> <span class="p">[</span><span class="n">s1</span><span class="p">,</span> <span class="n">s2</span><span class="p">]</span>
+
+<span class="nf">f2</span> <span class="ow">=</span> <span class="nf">\</span><span class="n">x</span> <span class="ow">-&gt;</span> <span class="mi">1</span>
+<span class="nf">f3</span> <span class="ow">=</span> <span class="nf">\</span><span class="n">x</span> <span class="ow">-&gt;</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span>
+<span class="nf">f4</span> <span class="ow">=</span> <span class="nf">\</span><span class="n">x</span> <span class="ow">-&gt;</span> <span class="n">x</span> <span class="o">*</span> <span class="mi">2</span>
+<span class="nf">fs</span> <span class="ow">=</span> <span class="p">[</span><span class="n">f2</span><span class="p">,</span> <span class="n">f3</span><span class="p">,</span> <span class="n">f4</span><span class="p">]</span>
+
+<span class="c1">-- Functor identity</span>
+<span class="nf">idSM</span> <span class="ow">::</span> <span class="kt">StreamMap</span> <span class="n">a</span> <span class="n">a</span>
+<span class="nf">idSM</span> <span class="ow">=</span> <span class="n">pure</span> <span class="n">id</span>
+
+<span class="nf">assertion_sm1</span> <span class="ow">=</span> <span class="n">and</span> <span class="p">[</span><span class="n">eqSM</span> <span class="n">sm</span> <span class="p">(</span><span class="n">idSM</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">sm</span><span class="p">)</span> <span class="n">s</span> <span class="o">&amp;&amp;</span> <span class="n">eqSM</span> <span class="n">sm</span> <span class="p">(</span><span class="n">sm</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">idSM</span><span class="p">)</span> <span class="n">s</span> <span class="o">|</span> <span class="n">sm</span> <span class="ow">&lt;-</span> <span class="n">sms</span><span class="p">,</span> <span class="n">s</span> <span class="ow">&lt;-</span> <span class="n">ss</span><span class="p">]</span>
+
+<span class="c1">-- Functor composition</span>
+<span class="nf">assertion_sm2</span> <span class="ow">=</span> <span class="n">and</span> <span class="p">[</span><span class="n">eqSM</span> <span class="p">(</span><span class="n">pure</span> <span class="p">(</span><span class="n">g</span> <span class="o">.</span> <span class="n">f</span><span class="p">))</span> <span class="p">(</span><span class="n">pure</span> <span class="n">f</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">pure</span> <span class="n">g</span><span class="p">)</span> <span class="n">s</span> <span class="o">|</span> <span class="n">f</span> <span class="ow">&lt;-</span> <span class="n">fs</span><span class="p">,</span> <span class="n">g</span> <span class="ow">&lt;-</span> <span class="n">fs</span><span class="p">,</span> <span class="n">s</span> <span class="ow">&lt;-</span> <span class="n">ss</span><span class="p">]</span>
+
+<span class="c1">-- Associativity</span>
+<span class="nf">assertion_sm3</span> <span class="ow">=</span> <span class="n">and</span> <span class="p">[</span><span class="n">eqSM</span> <span class="p">((</span><span class="n">sm1</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">sm2</span><span class="p">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">sm3</span><span class="p">)</span> <span class="p">(</span><span class="n">sm1</span> <span class="o">&gt;&gt;&gt;</span> <span class="p">(</span><span class="n">sm2</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">sm3</span><span class="p">))</span> <span class="n">s</span> <span class="o">|</span> <span class="n">s</span> <span class="ow">&lt;-</span> <span class="n">ss</span><span class="p">]</span>
+
+<span class="c1">-- Extension</span>
+<span class="nf">assertion_sm4</span> <span class="ow">=</span> <span class="n">and</span> <span class="p">[</span><span class="n">eqSM</span> <span class="p">(</span><span class="n">first</span> <span class="p">(</span><span class="n">pure</span> <span class="n">f</span><span class="p">))</span> <span class="p">(</span><span class="n">pure</span> <span class="p">(</span><span class="n">f</span> <span class="p">`</span><span class="n">prod</span><span class="p">`</span> <span class="n">id</span><span class="p">))</span> <span class="p">(</span><span class="n">zipS</span> <span class="n">s1</span> <span class="n">s2</span><span class="p">)</span> <span class="o">|</span> <span class="n">f</span> <span class="ow">&lt;-</span> <span class="n">fs</span><span class="p">]</span>
+
+<span class="c1">-- Functor</span>
+<span class="nf">assertion_sm5</span> <span class="ow">=</span> <span class="n">and</span> <span class="p">[</span><span class="n">eqSM</span> <span class="p">(</span><span class="n">first</span> <span class="p">(</span><span class="n">sm</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">sm&#39;</span><span class="p">))</span> <span class="p">(</span><span class="n">first</span> <span class="n">sm</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">first</span> <span class="n">sm&#39;</span><span class="p">)</span> <span class="p">(</span><span class="n">zipS</span> <span class="n">s1</span> <span class="n">s2</span><span class="p">)</span> <span class="o">|</span> <span class="n">sm</span> <span class="ow">&lt;-</span> <span class="n">sms</span><span class="p">,</span> <span class="n">sm&#39;</span> <span class="ow">&lt;-</span> <span class="n">sms</span><span class="p">]</span>
+
+<span class="c1">-- Exchange</span>
+<span class="nf">assertion_sm6</span> <span class="ow">=</span> <span class="n">and</span> <span class="p">[</span><span class="n">eqSM</span> <span class="p">(</span><span class="n">first</span> <span class="n">sm</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">pure</span> <span class="p">(</span><span class="n">id</span> <span class="p">`</span><span class="n">prod</span><span class="p">`</span> <span class="n">f</span><span class="p">))</span> <span class="p">(</span><span class="n">pure</span> <span class="p">(</span><span class="n">id</span> <span class="p">`</span><span class="n">prod</span><span class="p">`</span> <span class="n">f</span><span class="p">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">first</span> <span class="n">sm</span><span class="p">)</span> <span class="p">(</span><span class="n">zipS</span> <span class="n">s1</span> <span class="n">s2</span><span class="p">)</span> <span class="o">|</span> <span class="n">sm</span> <span class="ow">&lt;-</span> <span class="n">sms</span><span class="p">,</span> <span class="n">f</span> <span class="ow">&lt;-</span> <span class="n">fs</span><span class="p">]</span>
+
+<span class="c1">-- Unit</span>
+<span class="nf">assertion_sm7</span> <span class="ow">=</span> <span class="n">and</span> <span class="p">[</span><span class="n">eqSM</span> <span class="p">(</span><span class="n">first</span> <span class="n">sm</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">pure</span> <span class="n">fst</span><span class="p">)</span> <span class="p">(</span><span class="n">pure</span> <span class="n">fst</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">sm</span><span class="p">)</span> <span class="p">(</span><span class="n">zipS</span> <span class="n">s1</span> <span class="n">s2</span><span class="p">)</span> <span class="o">|</span> <span class="n">sm</span> <span class="ow">&lt;-</span> <span class="n">sms</span><span class="p">]</span>
+
+<span class="c1">-- Association</span>
+<span class="nf">assertion_sm8</span> <span class="ow">=</span> <span class="n">and</span> <span class="p">[</span><span class="n">eqSM</span> <span class="p">(</span><span class="n">first</span> <span class="p">(</span><span class="n">first</span> <span class="n">sm</span><span class="p">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">pure</span> <span class="n">assoc</span><span class="p">)</span> <span class="p">(</span><span class="n">pure</span> <span class="n">assoc</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">first</span> <span class="n">sm</span><span class="p">)</span> <span class="p">(</span><span class="n">zipS</span> <span class="p">(</span><span class="n">zipS</span> <span class="n">s1</span> <span class="n">s2</span><span class="p">)</span> <span class="n">s2</span><span class="p">)</span> <span class="o">|</span> <span class="n">sm</span> <span class="ow">&lt;-</span> <span class="n">sms</span><span class="p">]</span>
+
+<span class="nf">main</span> <span class="ow">::</span> <span class="kt">IO</span> <span class="nb">()</span>
+<span class="nf">main</span> <span class="ow">=</span> <span class="kr">do</span>
+    <span class="n">putStrLn</span> <span class="s">&quot;Streams used (first 10 elements):&quot;</span>
+    <span class="n">putStr</span>   <span class="s">&quot;</span><span class="se">\t</span><span class="s">s1: &quot;</span>
+    <span class="n">print</span> <span class="o">$</span> <span class="n">take</span> <span class="mi">10</span> <span class="o">$</span> <span class="n">toList</span> <span class="n">s1</span>
+    <span class="n">putStr</span>   <span class="s">&quot;</span><span class="se">\t</span><span class="s">s2: &quot;</span>
+    <span class="n">print</span> <span class="o">$</span> <span class="n">take</span> <span class="mi">10</span> <span class="o">$</span> <span class="n">toList</span> <span class="n">s2</span>
+    <span class="n">putStrLn</span> <span class="s">&quot;&quot;</span>
+    <span class="n">putStrLn</span> <span class="s">&quot;Assertion values:&quot;</span>
+<span class="c1">--    print res</span>
+    <span class="n">print</span> <span class="n">assertion_sm1</span>
+    <span class="n">print</span> <span class="n">assertion_sm2</span>
+    <span class="n">print</span> <span class="n">assertion_sm3</span>
+    <span class="n">print</span> <span class="n">assertion_sm4</span>
+    <span class="n">print</span> <span class="n">assertion_sm5</span>
+    <span class="n">print</span> <span class="n">assertion_sm6</span>
+    <span class="n">print</span> <span class="n">assertion_sm7</span>
+    <span class="n">print</span> <span class="n">assertion_sm8</span>
+
+<span class="nf">main</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+
+
+<div class="output_text output_subarea ">
+<pre>Streams used (first 10 elements):
+	s1: [0,0,0,0,0,0,0,0,0,0]
+	s2: [0,1,2,3,4,5,6,7,8,9]
+
+Assertion values:
+True
+True
+True
+True
+True
+True
 True
 True</pre>
 </div>
@@ -541,6 +708,69 @@ True</pre>
 
 </div>
 </div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Exercise-4-">Exercise 4 <a name="ex4" /><a class="anchor-link" href="#Exercise-4-">&#182;</a></h2><p>Show that the following is a Functor.</p>
+
+<pre><code>(&lt;*) :: Arrow a =&gt; a b c -&gt; (b' -&gt; c') -&gt; a (b, b') (c, c')
+f &lt;* g = first f &gt;&gt;&gt; pure (id × g)</code></pre>
+<p>Note: I added "pure".</p>
+<p>From a private e-mail exchange with Ross:</p>
+<p>To show:</p>
+
+<pre><code>pure id &lt;* id = pure id
+
+(f &gt;&gt;&gt; f') &lt;* (g' . g) = (f &lt;* g) &gt;&gt;&gt; (f' &lt;* g')</code></pre>
+<p>My solutions:</p>
+<p><code>pure id &lt;* id                       =</code> {definition of <code>(&lt;*)</code>}<br>
+<code>first (pure id) &gt;&gt;&gt; pure (id x id)  =</code> {extension}<br>
+<code>pure (id x id)  &gt;&gt;&gt; pure (id x id)  =</code> {functor-composition}<br>
+<code>pure ((id x id) . (id x id))        =</code> {(x) is a functor in two arguments.}<br>
+<code>pure ((id . id) x (id . id))        =</code> {idempotency of <em>id</em>}<br>
+<code>pure (id x id)                      =</code> {by simple inspection}<br>
+<code>idA                                 =</code> {functor-identity}<br>
+<code>pure id</code><br>
+&#9633;</p>
+<p><code>(f &gt;&gt;&gt; f') &lt;* (g' . g)                                        =</code> {definition of <code>(&lt;*)</code>}<br>
+<code>first (f &gt;&gt;&gt; f') &gt;&gt;&gt; pure (id x (g' . g))                     =</code> {idempotency of <em>id</em>}<br>
+<code>first (f &gt;&gt;&gt; f') &gt;&gt;&gt; pure ((id . id) x (g' . g))              =</code> {(x) is a functor in two arguments.}<br>
+<code>first (f &gt;&gt;&gt; f') &gt;&gt;&gt; pure ((id x g') . (id x g))              =</code> {functor-composition}<br>
+<code>first (f &gt;&gt;&gt; f') &gt;&gt;&gt; pure (id x g) &gt;&gt;&gt; pure (id x g')         =</code> {functor}<br>
+<code>first f &gt;&gt;&gt; first f' &gt;&gt;&gt; pure (id x g) &gt;&gt;&gt; pure (id x g')     =</code> {exchange}<br>
+<code>first f &gt;&gt;&gt; pure (id x g) &gt;&gt;&gt; first f' &gt;&gt;&gt; pure (id x g')     =</code> {association?}<br>
+<code>(first f &gt;&gt;&gt; pure (id x g)) &gt;&gt;&gt; (first f' &gt;&gt;&gt; pure (id x g')) =</code> {definition of <code>(&lt;*)</code>}<br>
+<code>(f &lt;* g) &gt;&gt;&gt; (f' &lt;* g')</code><br>
+&#9633;</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to Contents</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre>
+</pre></div>
+
+</div>
+</div>
+</div>
+
 </div>
     </div>
   </div>
