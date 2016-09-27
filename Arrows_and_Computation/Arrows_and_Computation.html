@@ -767,22 +767,22 @@ f &lt;* g = first f &gt;&gt;&gt; pure (id × g)</code></pre>
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Exercise-5-">Exercise 5 <a name="ex5" /><a class="anchor-link" href="#Exercise-5-">&#182;</a></h2><p>Verify the <em>ArrowApply</em> axioms for pure functions.</p>
 <p>To show:</p>
-<div class="highlight"><pre><span class="nf">pure</span> <span class="p">((</span><span class="err">⋙</span> <span class="n">h</span><span class="p">)</span> <span class="err">×</span> <span class="n">id</span><span class="p">)</span> <span class="err">⋙</span> <span class="n">app</span> <span class="ow">=</span> <span class="n">app</span> <span class="err">⋙</span> <span class="n">h</span>
-<span class="nf">pure</span> <span class="p">(</span><span class="n">mkPair</span> <span class="err">×</span> <span class="n">id</span><span class="p">)</span> <span class="err">⋙</span> <span class="n">app</span> <span class="ow">=</span> <span class="n">pure</span> <span class="n">id</span>
-<span class="nf">mkPair</span> <span class="n">f</span>           <span class="err">⋙</span> <span class="n">app</span> <span class="ow">=</span> <span class="n">f</span>
 
-<span class="nf">mkPair</span> <span class="ow">::</span> <span class="kt">Arrow</span> <span class="n">α</span> <span class="err">⇒</span> <span class="n">β</span> <span class="err">→</span> <span class="n">α</span> <span class="n">γ</span> <span class="p">(</span><span class="n">β</span><span class="p">,</span> <span class="n">γ</span><span class="p">)</span>
-<span class="nf">mkPair</span> <span class="n">b</span> <span class="ow">=</span> <span class="n">pure</span> <span class="p">(</span><span class="n">λc</span> <span class="err">→</span> <span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">))</span>
-</pre></div>
+<pre><code>pure ((⋙ h) × id) ⋙ app = app ⋙ h
+pure (mkPair × id) ⋙ app = pure id
+mkPair f           ⋙ app = f
+
+mkPair :: Arrow α ⇒ β → α γ (β, γ)
+mkPair b = pure (λc → (b, c))</code></pre>
 <p>Given:</p>
-<div class="highlight"><pre><span class="kr">instance</span> <span class="kt">Arrow</span> <span class="p">(</span><span class="err">→</span><span class="p">)</span> <span class="kr">where</span>  
-  <span class="n">pure</span> <span class="n">f</span>  <span class="ow">=</span> <span class="n">f</span>  
-  <span class="n">f</span> <span class="err">⋙</span> <span class="n">g</span>  <span class="ow">=</span> <span class="n">g</span> <span class="err">·</span> <span class="n">f</span>  
-  <span class="n">first</span> <span class="n">f</span> <span class="ow">=</span> <span class="n">f</span> <span class="err">×</span> <span class="n">id</span>
 
-<span class="kr">instance</span> <span class="kt">ArrowApply</span> <span class="p">(</span><span class="err">→</span><span class="p">)</span> <span class="kr">where</span>
-  <span class="n">app</span>  <span class="err">̃</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span> <span class="ow">=</span> <span class="n">f</span> <span class="n">c</span>
-</pre></div>
+<pre><code>instance Arrow (→) where  
+  pure f  = f  
+  f ⋙ g  = g · f  
+  first f = f × id
+
+instance ArrowApply (→) where
+  app  ̃(f, c) = f c</code></pre>
 <p>We have:</p>
 <p><code>pure ((⋙ h) × id) ⋙ app              =</code> {definitions of <em>pure</em> and (&#8921;), for (→)}<br>
 <code>app . ((⋙ h) × id)                   =</code> {definitions of <em>app</em> and (&#8921;), for (→)}<br>
