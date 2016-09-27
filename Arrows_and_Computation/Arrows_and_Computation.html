@@ -215,7 +215,7 @@ Original date:   July 29, 2016</p>
 
 
 <div class="output_text output_subarea ">
-<pre>2016-09-23 14:06:28.768083 UTC</pre>
+<pre>2016-09-27 13:40:27.318702 UTC</pre>
 </div>
 
 </div>
@@ -233,7 +233,8 @@ Original date:   July 29, 2016</p>
 <li><a href="#ex1">Exercise 1 - *Arrow* instances for *Reader* and *Writer*.</a></li>
 <li><a href="#ex2">Exercise 2 - Attempted *Arrow* instance for *ListMap*.</a></li>
 <li><a href="#ex3">Exercise 3 - *Arrow* instance for *StreamtMap*.</a></li>
-<li><a href="#ex4">Exercise 4 - Show that a product Arrow is a *Functor*.</a></li>
+<li><a href="#ex4">Exercise 4 - Show that a::Arrow &#8905; f::(&#8594;) is a *Functor*.</a></li>
+<li><a href="#ex5">Exercise 5 - Verify the *ArrowApply* axioms for pure functions.</a></li>
 </ul>
 
 </div>
@@ -744,6 +745,66 @@ f &lt;* g = first f &gt;&gt;&gt; pure (id × g)</code></pre>
 <code>first f &gt;&gt;&gt; pure (id x g) &gt;&gt;&gt; first f' &gt;&gt;&gt; pure (id x g')     =</code> {association?}<br>
 <code>(first f &gt;&gt;&gt; pure (id x g)) &gt;&gt;&gt; (first f' &gt;&gt;&gt; pure (id x g')) =</code> {definition of <code>(&lt;*)</code>}<br>
 <code>(f &lt;* g) &gt;&gt;&gt; (f' &lt;* g')</code><br>
+&#9633;</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to Contents</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Exercise-5-">Exercise 5 <a name="ex5" /><a class="anchor-link" href="#Exercise-5-">&#182;</a></h2><p>Verify the <em>ArrowApply</em> axioms for pure functions.</p>
+<p>To show:</p>
+<div class="highlight"><pre><span class="nf">pure</span> <span class="p">((</span><span class="err">⋙</span> <span class="n">h</span><span class="p">)</span> <span class="err">×</span> <span class="n">id</span><span class="p">)</span> <span class="err">⋙</span> <span class="n">app</span> <span class="ow">=</span> <span class="n">app</span> <span class="err">⋙</span> <span class="n">h</span>
+<span class="nf">pure</span> <span class="p">(</span><span class="n">mkPair</span> <span class="err">×</span> <span class="n">id</span><span class="p">)</span> <span class="err">⋙</span> <span class="n">app</span> <span class="ow">=</span> <span class="n">pure</span> <span class="n">id</span>
+<span class="nf">mkPair</span> <span class="n">f</span>           <span class="err">⋙</span> <span class="n">app</span> <span class="ow">=</span> <span class="n">f</span>
+
+<span class="nf">mkPair</span> <span class="ow">::</span> <span class="kt">Arrow</span> <span class="n">α</span> <span class="err">⇒</span> <span class="n">β</span> <span class="err">→</span> <span class="n">α</span> <span class="n">γ</span> <span class="p">(</span><span class="n">β</span><span class="p">,</span> <span class="n">γ</span><span class="p">)</span>
+<span class="nf">mkPair</span> <span class="n">b</span> <span class="ow">=</span> <span class="n">pure</span> <span class="p">(</span><span class="n">λc</span> <span class="err">→</span> <span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">))</span>
+</pre></div>
+<p>Given:</p>
+<div class="highlight"><pre><span class="kr">instance</span> <span class="kt">Arrow</span> <span class="p">(</span><span class="err">→</span><span class="p">)</span> <span class="kr">where</span>  
+  <span class="n">pure</span> <span class="n">f</span>  <span class="ow">=</span> <span class="n">f</span>  
+  <span class="n">f</span> <span class="err">⋙</span> <span class="n">g</span>  <span class="ow">=</span> <span class="n">g</span> <span class="err">·</span> <span class="n">f</span>  
+  <span class="n">first</span> <span class="n">f</span> <span class="ow">=</span> <span class="n">f</span> <span class="err">×</span> <span class="n">id</span>
+
+<span class="kr">instance</span> <span class="kt">ArrowApply</span> <span class="p">(</span><span class="err">→</span><span class="p">)</span> <span class="kr">where</span>
+  <span class="n">app</span>  <span class="err">̃</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span> <span class="ow">=</span> <span class="n">f</span> <span class="n">c</span>
+</pre></div>
+<p>We have:</p>
+<p><code>pure ((⋙ h) × id) ⋙ app              =</code> {definitions of <em>pure</em> and (&#8921;), for (→)}<br>
+<code>app . ((⋙ h) × id)                   =</code> {definitions of <em>app</em> and (&#8921;), for (→)}<br>
+<code>(λ(f, c) → f c) . ((λg → h . g) × id) =</code> {definitions of composition and application}<br>
+<code>λ(f', a) → (h . f') a                 =</code> {definition of composition}<br>
+<code>λ(f', a) → h (f' a)                   =</code> {(Not sure how to justify this step.)}<br>
+<code>h . (λ(f', a) → f' a)                 =</code> {definitions of <em>app</em> and (&#8921;), for (→)}<br>
+<code>app ⋙ h</code><br>
+&#9633;</p>
+<p><code>pure (mkPair × id) ⋙ app      =</code> {definitions of <em>pure</em> and (&#8921;), for (→)}<br>
+<code>app . (mkPair × id)            =</code> {definitions of (×), <em>mkPair</em>, and <em>id</em>}<br>
+<code>λ(b, d) → app (λc → (b, c), d) =</code> {definition of <em>app</em> for (→)}<br>
+<code>λ(b, d) → (b, d)               =</code> {definition of <em>id</em>}<br>
+<code>id                             =</code> {definition of <em>pure</em> for (→)}<br>
+<code>pure id</code><br>
+&#9633;</p>
+<p><code>mkPair f ⋙ app     =</code> {definition of (⋙), for (→)}<br>
+<code>app . mkPair f      =</code> {definition of <em>mkPair</em>}<br>
+<code>app . (λx → (f, x)) =</code> {(reverse of unsure step, above.}<br>
+<code>λx → app (f, x)     =</code> {definition of <em>app</em>, for (→)}<br>
+<code>λx → f x            =</code> {beta (eta?) reduction}
+<code>f</code><br>
 &#9633;</p>
 
 </div>
