@@ -215,7 +215,7 @@ Original date:   July 29, 2016</p>
 
 
 <div class="output_text output_subarea ">
-<pre>2016-10-14 12:34:01.443932 UTC</pre>
+<pre>2016-10-22 13:23:48.708954 UTC</pre>
 </div>
 
 </div>
@@ -243,7 +243,13 @@ type from **Exercise 3**.</a><ul>
 <li><a href="#ex7.3">*StreamMap*</a></li>
 </ul>
 </li>
-<li><a href="#ex8">Exercise 8 - Failure of (⋙) to distribute over (|||), for *Auto* and *StreamMap*</a></li>
+<li><a href="#ex8">Exercise 8 - Failure of (⋙) to distribute over (|||), for *Auto* and *StreamMap*</a><ul>
+<li><a href="#ex8_auto">*Auto*</a></li>
+<li><a href="#ex8_streammap">*StreamMap*</a></li>
+</ul>
+</li>
+<li><a href="#ex9">Exercise 9 - *Arrow* instance for *Exception*</a></li>
+<li><a href="#ex10">Exercise 10 - Proving *first* is a functor, for *Exception*</a></li>
 <li><a href="#questions">Unanswered Questions</a></li>
 </ul>
 
@@ -1541,22 +1547,35 @@ True</pre>
 <h2 id="Exercise-8-">Exercise 8 <a name="ex8" /><a class="anchor-link" href="#Exercise-8-">&#182;</a></h2><p>Show that the equation</p>
 <p><code>(f ||| g) ⋙ h = (f ⋙ h) ||| (g ⋙ h)</code></p>
 <p>fails for the <em>Auto</em> and <em>StreamMap</em> arrows.</p>
-<h3 id="Auto"><em>Auto</em><a class="anchor-link" href="#Auto">&#182;</a></h3><p>Useful stuff, copied from the text:</p>
-<p>A f ≫ A g = A ( λb →
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Auto-"><em>Auto</em> <a name="ex8_auto" /><a class="anchor-link" href="#Auto-">&#182;</a></h3><p>Useful stuff, copied from the text:</p>
+
+<pre><code>A f ≫ A g = A ( λb →
     let (c, f′) = f b
         (d, g′) = g c
-    in  (d, f′ ≫ g′) )</p>
-<p>instance ArrowChoice Auto where
+    in  (d, f′ ≫ g′) )</code></pre>
+
+<pre><code>instance ArrowChoice Auto where
     left (A f) = A lf
         where lf (Left b)  = let (c, f′) = f b
                              in (Left c, left f′)
-              lf (Right d) = (Right d, left (A f))</p>
-<p>(&lt;+&gt;) :: ArrowChoice α ⇒ α β γ → α β′ γ′ → α (Either β β′) (Either γ γ′)
-f &lt;+&gt; g = left f ≫ right g</p>
-<p>(|||) :: ArrowChoice α ⇒ α β δ → α γ δ → α (Either β γ) δ
+              lf (Right d) = (Right d, left (A f))</code></pre>
+
+<pre><code>(&lt;+&gt;) :: ArrowChoice α ⇒ α β γ → α β′ γ′ → α (Either β β′) (Either γ γ′)
+f &lt;+&gt; g = left f ≫ right g</code></pre>
+
+<pre><code>(|||) :: ArrowChoice α ⇒ α β δ → α γ δ → α (Either β γ) δ
 f ||| g = f &lt;+&gt; g ≫ pure untag
 where untag (Left x)  = x
-      untag (Right y) = y</p>
+      untag (Right y) = y</code></pre>
 <p><code>(A f ||| A g) ⋙ A h                          =</code> &nbsp; &nbsp; {definition of (|||)}</p>
 <p><code>(A f &lt;+&gt; A g ⋙ pure untag) ⋙ A h             =</code> &nbsp; &nbsp; {definition of (&lt;+&gt;)}</p>
 <p><code>left (A f) ⋙ right (A g) ⋙ pure untag ⋙ A h =</code> &nbsp; &nbsp; {definition of <em>left</em>, for <em>Auto</em>}</p>
@@ -1569,22 +1588,272 @@ where untag (Left x)  = x
             Left  b → let (c, f') = f b
                       in (Left c, left f')
             Right d → (Right d, left (A f))
-   ) ⋙ right (A g) ⋙ pure untag ⋙ A h        =</code> &nbsp; &nbsp; {definition of (⋙), for <em>Auto</em>}</p>
+   ) ⋙ A ( λq → case q of
+            Right b → let (c, f') = f b
+                      in (Right c, right f')
+            Left  d → (Left d, right (A f))
+          )
+     ⋙ pure untag ⋙ A h                      =</code> &nbsp; &nbsp; {definition of (⋙), for <em>Auto</em>}</p>
+<p>Ooof! My head is smoking. I think I'll use the code approach, instead...<br>
+(Probably, a better approach, in general, when I'm being asked to <em>dis</em>prove something,<br>
+since that only requires exhibiting a single counterexample.)</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span class="kr">newtype</span> <span class="kt">Auto</span> <span class="n">a</span> <span class="n">b</span> <span class="ow">=</span> <span class="kt">A</span> <span class="p">{</span><span class="n">runA</span> <span class="ow">::</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="kt">Auto</span> <span class="n">a</span> <span class="n">b</span><span class="p">)}</span>
+
+<span class="kr">instance</span> <span class="kt">Arrow</span> <span class="kt">Auto</span> <span class="kr">where</span>
+    <span class="n">pure</span> <span class="n">f</span>      <span class="ow">=</span> <span class="kt">A</span> <span class="p">(</span><span class="nf">\</span><span class="n">b</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">f</span> <span class="n">b</span><span class="p">,</span> <span class="n">pure</span> <span class="n">f</span><span class="p">))</span>
+    <span class="kt">A</span> <span class="n">f</span> <span class="o">&gt;&gt;&gt;</span> <span class="kt">A</span> <span class="n">g</span> <span class="ow">=</span> <span class="kt">A</span> <span class="p">(</span><span class="nf">\</span><span class="n">b</span> <span class="ow">-&gt;</span> <span class="kr">let</span> <span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">f&#39;</span><span class="p">)</span> <span class="ow">=</span> <span class="n">f</span> <span class="n">b</span>
+                               <span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">g&#39;</span><span class="p">)</span> <span class="ow">=</span> <span class="n">g</span> <span class="n">c</span>
+                           <span class="kr">in</span>  <span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">f&#39;</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">g&#39;</span><span class="p">))</span>
+    <span class="n">first</span> <span class="p">(</span><span class="kt">A</span> <span class="n">f</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">A</span> <span class="p">(</span><span class="nf">\</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="kr">let</span> <span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">f&#39;</span><span class="p">)</span> <span class="ow">=</span> <span class="n">f</span> <span class="n">b</span>
+                                <span class="kr">in</span>  <span class="p">((</span><span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">),</span> <span class="n">first</span> <span class="n">f&#39;</span><span class="p">))</span>
+
+<span class="kr">instance</span> <span class="kt">ArrowChoice</span> <span class="kt">Auto</span> <span class="kr">where</span>
+    <span class="n">left</span> <span class="p">(</span><span class="kt">A</span> <span class="n">f</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">A</span> <span class="n">lf</span>
+        <span class="kr">where</span> <span class="n">lf</span> <span class="p">(</span><span class="kt">Left</span> <span class="n">b</span><span class="p">)</span>  <span class="ow">=</span> <span class="kr">let</span> <span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">f&#39;</span><span class="p">)</span> <span class="ow">=</span> <span class="n">f</span> <span class="n">b</span>
+                             <span class="kr">in</span> <span class="p">(</span><span class="kt">Left</span> <span class="n">c</span><span class="p">,</span> <span class="n">left</span> <span class="n">f&#39;</span><span class="p">)</span>
+              <span class="n">lf</span> <span class="p">(</span><span class="kt">Right</span> <span class="n">d</span><span class="p">)</span> <span class="ow">=</span> <span class="p">(</span><span class="kt">Right</span> <span class="n">d</span><span class="p">,</span> <span class="n">left</span> <span class="p">(</span><span class="kt">A</span> <span class="n">f</span><span class="p">))</span>
+
+<span class="p">(</span><span class="o">&lt;+&gt;</span><span class="p">)</span> <span class="ow">::</span> <span class="kt">ArrowChoice</span> <span class="n">a</span> <span class="ow">=&gt;</span> <span class="n">a</span> <span class="n">b</span> <span class="n">c</span> <span class="ow">-&gt;</span> <span class="n">a</span> <span class="n">b&#39;</span> <span class="n">c&#39;</span> <span class="ow">-&gt;</span> <span class="n">a</span> <span class="p">(</span><span class="kt">Either</span> <span class="n">b</span> <span class="n">b&#39;</span><span class="p">)</span> <span class="p">(</span><span class="kt">Either</span> <span class="n">c</span> <span class="n">c&#39;</span><span class="p">)</span>
+<span class="nf">f</span> <span class="o">&lt;+&gt;</span> <span class="n">g</span> <span class="ow">=</span> <span class="n">left</span> <span class="n">f</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">right</span> <span class="n">g</span>
+
+<span class="p">(</span><span class="o">|||</span><span class="p">)</span> <span class="ow">::</span> <span class="kt">ArrowChoice</span> <span class="n">a</span> <span class="ow">=&gt;</span> <span class="n">a</span> <span class="n">b</span> <span class="n">d</span> <span class="ow">-&gt;</span> <span class="n">a</span> <span class="n">c</span> <span class="n">d</span> <span class="ow">-&gt;</span> <span class="n">a</span> <span class="p">(</span><span class="kt">Either</span> <span class="n">b</span> <span class="n">c</span><span class="p">)</span> <span class="n">d</span>
+<span class="nf">f</span> <span class="o">|||</span> <span class="n">g</span> <span class="ow">=</span> <span class="n">f</span> <span class="o">&lt;+&gt;</span> <span class="n">g</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">pure</span> <span class="n">untag</span>
+    <span class="kr">where</span> <span class="n">untag</span> <span class="p">(</span><span class="kt">Left</span> <span class="n">x</span><span class="p">)</span>  <span class="ow">=</span> <span class="n">x</span>
+          <span class="n">untag</span> <span class="p">(</span><span class="kt">Right</span> <span class="n">y</span><span class="p">)</span> <span class="ow">=</span> <span class="n">y</span>
+
+<span class="nf">right</span> <span class="ow">::</span> <span class="kt">ArrowChoice</span> <span class="n">a</span> <span class="ow">=&gt;</span> <span class="n">a</span> <span class="n">b</span> <span class="n">c</span> <span class="ow">-&gt;</span> <span class="n">a</span> <span class="p">(</span><span class="kt">Either</span> <span class="n">d</span> <span class="n">b</span><span class="p">)</span> <span class="p">(</span><span class="kt">Either</span> <span class="n">d</span> <span class="n">c</span><span class="p">)</span>
+<span class="nf">right</span> <span class="n">f</span> <span class="ow">=</span> <span class="n">pure</span> <span class="n">mirror</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">left</span> <span class="n">f</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">pure</span> <span class="n">mirror</span>
+    <span class="kr">where</span> <span class="n">mirror</span> <span class="p">(</span><span class="kt">Left</span>  <span class="n">x</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">Right</span> <span class="n">x</span>
+          <span class="n">mirror</span> <span class="p">(</span><span class="kt">Right</span> <span class="n">y</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">Left</span>  <span class="n">y</span>
+
+<span class="nf">proc_pair</span> <span class="ow">::</span> <span class="kt">Auto</span> <span class="n">a</span> <span class="n">b</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+<span class="nf">proc_pair</span> <span class="n">a</span> <span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span> <span class="ow">=</span> <span class="kr">let</span> <span class="p">(</span><span class="n">y1</span><span class="p">,</span> <span class="n">a&#39;</span><span class="p">)</span>  <span class="ow">=</span> <span class="n">runA</span> <span class="n">a</span> <span class="n">x1</span>
+                           <span class="p">(</span><span class="n">y2</span><span class="p">,</span> <span class="n">a&#39;&#39;</span><span class="p">)</span> <span class="ow">=</span> <span class="n">runA</span> <span class="n">a&#39;</span> <span class="n">x2</span>
+                       <span class="kr">in</span>  <span class="p">(</span><span class="n">y1</span><span class="p">,</span> <span class="n">y2</span><span class="p">)</span>
+                       
+<span class="nf">eqA</span> <span class="ow">::</span> <span class="p">(</span><span class="kt">Eq</span> <span class="n">b</span><span class="p">)</span> <span class="ow">=&gt;</span> <span class="kt">Auto</span> <span class="n">a</span> <span class="n">b</span> <span class="ow">-&gt;</span> <span class="kt">Auto</span> <span class="n">a</span> <span class="n">b</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="kt">Bool</span>
+<span class="nf">eqA</span> <span class="n">a1</span> <span class="n">a2</span> <span class="n">pr</span> <span class="ow">=</span> <span class="n">proc_pair</span> <span class="n">a1</span> <span class="n">pr</span> <span class="o">==</span> <span class="n">proc_pair</span> <span class="n">a2</span> <span class="n">pr</span>
+
+<span class="nf">a1</span> <span class="ow">=</span> <span class="n">pure</span> <span class="p">(</span><span class="nf">\</span><span class="n">x</span> <span class="ow">-&gt;</span> <span class="mi">12</span><span class="p">)</span>
+<span class="nf">a2</span> <span class="ow">=</span> <span class="n">pure</span> <span class="n">id</span>
+<span class="nf">a3</span> <span class="ow">=</span> <span class="n">pure</span> <span class="p">(</span><span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+<span class="nf">a4</span> <span class="ow">=</span> <span class="n">pure</span> <span class="p">(</span><span class="o">*</span> <span class="mi">2</span><span class="p">)</span>
+<span class="nf">a5</span> <span class="ow">=</span> <span class="kt">A</span> <span class="p">(</span><span class="nf">\</span><span class="n">x</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">pure</span> <span class="n">id</span><span class="p">))</span>
+<span class="nf">as</span>  <span class="ow">=</span> <span class="p">[</span><span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">a3</span><span class="p">,</span> <span class="n">a4</span><span class="p">]</span>
+<span class="nf">as&#39;</span> <span class="ow">=</span> <span class="p">[</span><span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">a3</span><span class="p">,</span> <span class="n">a4</span><span class="p">,</span> <span class="n">a5</span><span class="p">]</span>
+
+<span class="nf">xs</span>  <span class="ow">=</span> <span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="mi">9</span><span class="p">]</span>
+<span class="nf">ps</span>  <span class="ow">=</span> <span class="n">map</span> <span class="kt">Left</span> <span class="n">xs</span> <span class="o">++</span> <span class="p">(</span><span class="n">map</span> <span class="kt">Right</span> <span class="n">xs</span><span class="p">)</span>
+<span class="nf">prs</span> <span class="ow">=</span> <span class="n">zip</span> <span class="n">ps</span> <span class="p">(</span><span class="n">tail</span> <span class="n">ps</span><span class="p">)</span>
+
+<span class="c1">-- This one uses as.</span>
+<span class="nf">assertion_a1</span> <span class="ow">=</span> <span class="n">and</span> <span class="p">[</span><span class="n">eqA</span> <span class="p">((</span><span class="n">a</span> <span class="o">|||</span> <span class="n">a&#39;</span><span class="p">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">a&#39;&#39;</span><span class="p">)</span> <span class="p">((</span><span class="n">a</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">a&#39;&#39;</span><span class="p">)</span> <span class="o">|||</span> <span class="p">(</span><span class="n">a&#39;</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">a&#39;&#39;</span><span class="p">))</span> <span class="n">pr</span>
+                    <span class="o">|</span> <span class="n">a</span> <span class="ow">&lt;-</span> <span class="n">as</span><span class="p">,</span> <span class="n">a&#39;</span> <span class="ow">&lt;-</span> <span class="n">as</span><span class="p">,</span> <span class="n">a&#39;&#39;</span> <span class="ow">&lt;-</span> <span class="n">as</span><span class="p">,</span> <span class="n">pr</span> <span class="ow">&lt;-</span> <span class="n">prs</span><span class="p">]</span>
+<span class="c1">-- This one uses as&#39;.</span>
+<span class="nf">assertion_a2</span> <span class="ow">=</span> <span class="n">and</span> <span class="p">[</span><span class="n">eqA</span> <span class="p">((</span><span class="n">a</span> <span class="o">|||</span> <span class="n">a&#39;</span><span class="p">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">a&#39;&#39;</span><span class="p">)</span> <span class="p">((</span><span class="n">a</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">a&#39;&#39;</span><span class="p">)</span> <span class="o">|||</span> <span class="p">(</span><span class="n">a&#39;</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">a&#39;&#39;</span><span class="p">))</span> <span class="n">pr</span>
+                    <span class="o">|</span> <span class="n">a</span> <span class="ow">&lt;-</span> <span class="n">as&#39;</span><span class="p">,</span> <span class="n">a&#39;</span> <span class="ow">&lt;-</span> <span class="n">as&#39;</span><span class="p">,</span> <span class="n">a&#39;&#39;</span> <span class="ow">&lt;-</span> <span class="n">as&#39;</span><span class="p">,</span> <span class="n">pr</span> <span class="ow">&lt;-</span> <span class="n">prs</span><span class="p">]</span>
+
+<span class="nf">main</span> <span class="ow">::</span> <span class="kt">IO</span> <span class="nb">()</span>
+<span class="nf">main</span> <span class="ow">=</span> <span class="kr">do</span>
+    <span class="n">putStrLn</span> <span class="s">&quot;Assertions:&quot;</span>
+    <span class="n">print</span> <span class="n">assertion_a1</span>
+    <span class="n">print</span> <span class="n">assertion_a2</span>
+
+<span class="nf">main</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+
+
+<div class="output_text output_subarea ">
+<pre>Assertions:
+True
+False</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>When only <em>pure</em> is used to create the Automata, the equality holds, because the function computed doesn't change.<br>
+But, with an automaton that changes the computation, the distribution of sequencing over the choice operator breaks.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to Contents</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="StreamMap-"><em>StreamMap</em> <a name="ex8_streammap" /><a class="anchor-link" href="#StreamMap-">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span class="nf">s</span> <span class="ow">=</span> <span class="p">(</span><span class="n">interleaveS</span> <span class="p">(</span><span class="n">fmap</span> <span class="kt">Left</span> <span class="n">s2</span><span class="p">)</span> <span class="p">(</span><span class="n">fmap</span> <span class="kt">Right</span> <span class="n">s1</span><span class="p">))</span>
+
+<span class="nf">assertion_sm17</span> <span class="ow">=</span> <span class="n">and</span> <span class="p">[</span><span class="n">eqSM</span> <span class="p">((</span><span class="n">sm</span> <span class="o">|||</span> <span class="n">sm&#39;</span><span class="p">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">sm&#39;&#39;</span><span class="p">)</span> <span class="p">((</span><span class="n">sm</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">sm&#39;&#39;</span><span class="p">)</span> <span class="o">|||</span> <span class="p">(</span><span class="n">sm&#39;</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">sm&#39;&#39;</span><span class="p">))</span> <span class="n">s</span>
+                      <span class="o">|</span> <span class="n">sm</span> <span class="ow">&lt;-</span> <span class="n">sms</span><span class="p">,</span> <span class="n">sm&#39;</span> <span class="ow">&lt;-</span> <span class="n">sms</span><span class="p">,</span> <span class="n">sm&#39;&#39;</span> <span class="ow">&lt;-</span> <span class="n">sms</span><span class="p">]</span>
+
+<span class="nf">main</span> <span class="ow">::</span> <span class="kt">IO</span> <span class="nb">()</span>
+<span class="nf">main</span> <span class="ow">=</span> <span class="kr">do</span>
+    <span class="n">putStrLn</span> <span class="s">&quot;Assertions:&quot;</span>
+    <span class="n">print</span> <span class="n">assertion_sm17</span>
+
+<span class="nf">main</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+
+
+<div class="output_text output_subarea ">
+<pre>Assertions:
+False</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to Contents</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Exercise-9-">Exercise 9 <a name="ex9" /><a class="anchor-link" href="#Exercise-9-">&#182;</a></h2><p>Given the following definition, which adds string-valued exceptions to an arrow:</p>
+<p><code>newtype Except α β γ = E (α β (Either String γ))</code></p>
+<p>Define the following instance:</p>
+<p><code>instance ArrowChoice α ⇒ Arrow (Except α)</code></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[12]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span class="kr">newtype</span> <span class="kt">Except</span> <span class="n">a</span> <span class="n">b</span> <span class="n">c</span> <span class="ow">=</span> <span class="kt">E</span> <span class="p">{</span><span class="n">runE</span> <span class="ow">::</span> <span class="n">a</span> <span class="n">b</span> <span class="p">(</span><span class="kt">Either</span> <span class="kt">String</span> <span class="n">c</span><span class="p">)}</span>
+
+<span class="kr">instance</span> <span class="kt">ArrowChoice</span> <span class="n">a</span> <span class="ow">=&gt;</span> <span class="kt">Arrow</span> <span class="p">(</span><span class="kt">Except</span> <span class="n">a</span><span class="p">)</span> <span class="kr">where</span>
+    <span class="n">pure</span> <span class="n">f</span>      <span class="ow">=</span> <span class="kt">E</span> <span class="p">(</span><span class="n">pure</span> <span class="p">(</span><span class="nf">\</span><span class="n">x</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="kt">Right</span> <span class="p">(</span><span class="n">f</span> <span class="n">x</span><span class="p">))))</span>
+    
+<span class="c1">--    E f &gt;&gt;&gt; E g = E (f &gt;&gt;&gt; (right g) &gt;&gt;&gt; (pure (\p -&gt; case p of</span>
+<span class="c1">--                                                        Left  s -&gt; Left s</span>
+<span class="c1">--                                                        Right x -&gt; x)))</span>
+<span class="c1">--    E f &gt;&gt;&gt; E g = E (f &gt;&gt;&gt; (right g) &gt;&gt;&gt; (right (pure untag)))</span>
+    <span class="kt">E</span> <span class="n">f</span> <span class="o">&gt;&gt;&gt;</span> <span class="kt">E</span> <span class="n">g</span> <span class="ow">=</span> <span class="kt">E</span> <span class="p">(</span><span class="n">f</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">right</span> <span class="p">(</span><span class="n">g</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">pure</span> <span class="n">untag</span><span class="p">))</span>
+      <span class="kr">where</span> <span class="n">untag</span> <span class="p">(</span><span class="kt">Right</span> <span class="n">y</span><span class="p">)</span> <span class="ow">=</span> <span class="n">y</span>
+
+
+
+<span class="c1">--    first f     = E (first (runE f) &gt;&gt;&gt; (pure (\(p, y) -&gt; case p of</span>
+<span class="c1">--                                                            Left s  -&gt; Left s</span>
+<span class="c1">--                                                            Right x -&gt; Right (x, y))))</span>
+    <span class="n">first</span> <span class="p">(</span><span class="kt">E</span> <span class="n">f</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">E</span> <span class="p">(</span><span class="n">first</span> <span class="n">f</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">pure</span> <span class="n">distr</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">left</span> <span class="p">(</span><span class="n">pure</span> <span class="n">fst</span><span class="p">))</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to Contents</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Exercise-10-">Exercise 10 <a name="ex10" /><a class="anchor-link" href="#Exercise-10-">&#182;</a></h2><p>Prove the functor axiom for first in the arrow defined in the previous exercise. This requires the distributivity axiom.</p>
+
+<pre><code>distr :: (Either α β, γ) → Either (α, γ) (β, γ)  
+distr (Left  a, c) = Left  (a, c)
+distr (Right b, c) = Right (b, c)</code></pre>
+<p><strong>distribution:</strong> &nbsp; <code>first (left f ) ⋙ pure distr = pure distr ⋙ left (first f )</code></p>
+<p><strong>To Prove:</strong> &nbsp; <code>first (f ⋙ g) = first f ⋙ first g</code></p>
+<p><code>first (E f ⋙ E g)                                                       =</code> &nbsp; &nbsp; {definition of (⋙), for <em>Exception</em>}</p>
+<p><code>first (E (f ⋙ right (g ⋙ pure untag)))                                 =</code> &nbsp; &nbsp; {definition of <em>first</em>, for <em>Exception</em>}</p>
+<p><code>E (first (f ⋙ right (g ⋙ pure untag)) ⋙ pure distr ⋙ left (pure fst)) =</code> &nbsp; &nbsp; {}</p>
 <p><code>=</code> &nbsp; &nbsp; {}</p>
 <p><code>=</code> &nbsp; &nbsp; {}</p>
 <p><code>=</code> &nbsp; &nbsp; {}</p>
 <p><code>=</code> &nbsp; &nbsp; {}</p>
 <p><code>=</code> &nbsp; &nbsp; {}</p>
-<h3 id="StreamMap"><em>StreamMap</em><a class="anchor-link" href="#StreamMap">&#182;</a></h3><p><code>=</code> &nbsp; &nbsp; {}</p>
 <p><code>=</code> &nbsp; &nbsp; {}</p>
-<p><code>=</code> &nbsp; &nbsp; {}</p>
-<p><code>=</code> &nbsp; &nbsp; {}</p>
-<p><code>=</code> &nbsp; &nbsp; {}</p>
-<p><code>=</code> &nbsp; &nbsp; {}</p>
-<p><code>=</code> &nbsp; &nbsp; {}</p>
-<p><code>=</code> &nbsp; &nbsp; {}</p>
-<p><code>=</code> &nbsp; &nbsp; {}</p>
-<p><code>=</code> &nbsp; &nbsp; {}</p>
+<p><code>E (first f ⋙ pure distr ⋙ left (pure fst) ⋙
+  right ((first g ⋙ pure distr ⋙ left (pure fst)) ⋙ pure untag))       =</code> &nbsp; &nbsp; {definition of (⋙), for <em>Exception</em>}</p>
+<p><code>E (first f ⋙ pure distr ⋙ left (pure fst)) ⋙
+  E (first g ⋙ pure distr ⋙ left (pure fst))                            =</code> &nbsp; &nbsp; {definition of <em>first</em>, for <em>Exception</em>}</p>
+<p><code>first (E f) ⋙ first (E g) =</code>
+&#9633;</p>
 
 </div>
 </div>
