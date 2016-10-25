@@ -215,7 +215,7 @@ Original date:   July 29, 2016</p>
 
 
 <div class="output_text output_subarea ">
-<pre>2016-10-22 13:23:48.708954 UTC</pre>
+<pre>2016-10-25 19:33:52.659665 UTC</pre>
 </div>
 
 </div>
@@ -251,6 +251,9 @@ type from **Exercise 3**.</a><ul>
 <li><a href="#ex9">Exercise 9 - *Arrow* instance for *Exception*</a></li>
 <li><a href="#ex10">Exercise 10 - Proving *first* is a functor, for *Exception*</a></li>
 <li><a href="#ex11">Exercise 11 - *ArrowLoop* instance for *StreamMap*</a></li>
+<li><a href="#ex12">Exercise 12 - Prove that loop (first f) = f.</a></li>
+<li><a href="#ex13">Exercise 13 - Show the two forms of *genSym* are equivalent.</a></li>
+<li><a href="#ex14">Exercise 14 - Prove the two forms of first translation rule equivalent.</a></li>
 <li><a href="#questions">Unanswered Questions</a></li>
 </ul>
 
@@ -1820,7 +1823,7 @@ False</pre>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[19]:</div>
+<div class="prompt input_prompt">In&nbsp;[13]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-haskell"><pre><span class="kt">:</span><span class="n">t</span> <span class="n">left</span> <span class="p">(</span><span class="n">pure</span> <span class="n">fst</span><span class="p">)</span>
@@ -2080,7 +2083,7 @@ distr (Right b, c) = Right (b, c)</code></pre>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[28]:</div>
+<div class="prompt input_prompt">In&nbsp;[14]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-haskell"><pre><span class="kr">class</span> <span class="kt">Arrow</span> <span class="n">a</span> <span class="ow">=&gt;</span> <span class="kt">ArrowLoop</span> <span class="n">a</span> <span class="kr">where</span>
@@ -2123,6 +2126,176 @@ distr (Right b, c) = Right (b, c)</code></pre>
                                in c)      =</code> &nbsp; &nbsp; {definition of <em>pure</em>, for <em>StreamMap</em>}</p>
 <p><code>pure (trace f)</code><br>
 &#9633;</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to Contents</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Exercise-12-">Exercise 12 <a name="ex12" /><a class="anchor-link" href="#Exercise-12-">&#182;</a></h2><p><em>Prove that <code>loop (first f) = f</code>.</em></p>
+<p><code>loop (first f)        =</code> &nbsp; &nbsp; {identity}</p>
+<p><code>loop (first f ⋙ idA) =</code> &nbsp; &nbsp; {left tightening}</p>
+<p><code>f ⋙ loop idA         =</code> &nbsp; &nbsp; {functor identity}</p>
+<p><code>f ⋙ loop (pure id)   =</code> &nbsp; &nbsp; {extension}</p>
+<p><code>f ⋙ pure (trace id)  =</code> &nbsp; &nbsp; {definition of <em>trace</em>}</p>
+<p><code>f ⋙ pure (λx → let (y,z) = id (x,z)
+                 in y) =</code> &nbsp; &nbsp; {definition of <em>id</em>}</p>
+<p><code>f ⋙ pure (λx → let (y,z) = (x,z)
+                 in y) =</code> &nbsp; &nbsp; {by inspection/evaluation}</p>
+<p><code>f ⋙ pure id           =</code> &nbsp; &nbsp; {functor identity}</p>
+<p><code>f ⋙ idA               =</code> &nbsp; &nbsp; {identity}</p>
+<p><code>f</code><br>
+&#9633;</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to Contents</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Exercise-13-">Exercise 13 <a name="ex13" /><a class="anchor-link" href="#Exercise-13-">&#182;</a></h2><p>Use the rules of Figure 2 to translate the above definition of <em>genSym</em> into ordinary Haskell, and use the axioms to simplify the result. Compare your answer with the point-free version.</p>
+<p><strong>Note: Proof justifications follow, as opposed to preceed, changes, below.</strong></p>
+
+<pre><code>genSym = proc () → do
+  n ← fetch −≺ ()
+  store −≺ n + 1
+  idA −≺ n</code></pre>
+
+<pre><code>genSym = ((proc () → fetch −≺ ()) &amp;&amp;&amp; idA) ⋙                          {third translation rule}
+  proc (n, ()) → do
+    store −≺ n + 1
+    idA −≺ n</code></pre>
+
+<pre><code>genSym = ((proc () → fetch −≺ ()) &amp;&amp;&amp; idA) ⋙
+  ((proc (n, ()) → store −≺ n + 1) &amp;&amp;&amp; idA) ⋙                         {third translation rule}
+    proc (_, (n, ())) → do
+      idA −≺ n</code></pre>
+
+<pre><code>genSym = ((proc () → fetch −≺ ()) &amp;&amp;&amp; idA) ⋙
+  ((proc (n, ()) → store −≺ n + 1) &amp;&amp;&amp; idA) ⋙
+    proc (_, (n, ())) → idA −≺ n                                      {third translation rule}</code></pre>
+
+<pre><code>genSym = ( (pure (λ() → ()) ⋙ fetch) &amp;&amp;&amp; idA ) ⋙                     {first translation rule}
+  ((proc (n, ()) → store −≺ n + 1) &amp;&amp;&amp; idA) ⋙
+    proc (_, (n, ())) → idA −≺ n</code></pre>
+
+<pre><code>genSym = pure dup ⋙ first (pure (λ() → ()) ⋙ fetch) ⋙ second idA  ⋙ {definitions of (&amp;&amp;&amp;) and (***)}
+  ((proc (n, ()) → store −≺ n + 1) &amp;&amp;&amp; idA) ⋙
+    proc (_, (n, ())) → idA −≺ n</code></pre>
+
+<pre><code>genSym = pure dup ⋙ first (pure id ⋙ fetch) ⋙                        {identity and definition of id}
+  ((proc (n, ()) → store −≺ n + 1) &amp;&amp;&amp; idA) ⋙
+    proc (_, (n, ())) → idA −≺ n</code></pre>
+
+<pre><code>genSym = pure dup ⋙ first (idA ⋙ fetch) ⋙                            {functor identity}
+  ((proc (n, ()) → store −≺ n + 1) &amp;&amp;&amp; idA) ⋙
+    proc (_, (n, ())) → idA −≺ n</code></pre>
+
+<pre><code>genSym = pure dup ⋙ first fetch ⋙                                     {identity}
+  ((proc (n, ()) → store −≺ n + 1) &amp;&amp;&amp; idA) ⋙
+    proc (_, (n, ())) → idA −≺ n</code></pre>
+
+<pre><code>genSym = pure dup ⋙ first fetch ⋙
+  ((pure (λ(n, ()) → n + 1) ⋙ store) &amp;&amp;&amp; idA) ⋙                       {first translation rule}
+    proc (_, (n, ())) → idA −≺ n</code></pre>
+
+<pre><code>genSym = pure dup ⋙ first fetch ⋙
+  pure dup ⋙ first (pure (λ(n, ()) → n + 1) ⋙ store) ⋙ second idA ⋙ {definitions of (&amp;&amp;&amp;) and (***)}
+  proc (_, (n, ())) → idA −≺ n</code></pre>
+
+<pre><code>genSym = pure dup ⋙ first fetch ⋙
+  pure dup ⋙ first (pure (λ(n, ()) → n + 1)) ⋙ first store ⋙         {identity and functor}
+  proc (_, (n, ())) → idA −≺ n</code></pre>
+
+<pre><code>genSym = pure dup ⋙ first fetch ⋙
+  pure dup ⋙ pure ( (λ(n,()) → n + 1) × id ) ⋙ first store ⋙         {extension}
+  proc (_, (n, ())) → idA −≺ n</code></pre>
+
+<pre><code>genSym = pure dup ⋙ first fetch ⋙
+  pure ( ((λ(n,()) → n + 1) × id) . dup ) ⋙ first store ⋙             {functor-composition}
+  proc (_, (n, ())) → idA −≺ n</code></pre>
+
+<pre><code>genSym = fetch ⋙                                                       {Eliminating superfluous duplication of ().}
+  pure ( ((λn → n + 1) × id) . dup ) ⋙ first store ⋙
+  proc (_, n) → idA −≺ n</code></pre>
+
+<pre><code>genSym = fetch ⋙
+  pure ( ((+ 1) × id) . dup ) ⋙ first store ⋙                         {eta reduction of lambda expression}
+  proc (_, n) → idA −≺ n</code></pre>
+
+<pre><code>genSym = fetch ⋙
+  pure (incr) ⋙ first store ⋙                                         {definition of incr}
+  proc (_, n) → idA −≺ n</code></pre>
+
+<pre><code>genSym = fetch ⋙
+  pure (incr) ⋙ first store ⋙
+  pure (λ(_, n) → n) ⋙ idA                                            {first translation rule}</code></pre>
+
+<pre><code>genSym = fetch ⋙
+  pure (incr) ⋙ first store ⋙
+  pure (λ(_, n) → n)                                                   {identity}</code></pre>
+
+<pre><code>genSym = fetch ⋙
+  pure (incr) ⋙ first store ⋙
+  pure (snd)                                                           {definition of snd}</code></pre>
+<p>&#9633;</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to Contents</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Exercise-14-">Exercise 14 <a name="ex14" /><a class="anchor-link" href="#Exercise-14-">&#182;</a></h2><p>Prove that when both translations of <code>proc p → f −≺ a</code> are possible, they are equal.</p>
+<p><strong>To prove:</strong><br>
+<code>pure (λp → a) ⋙ f = pure (λp → (f, a )) ⋙ app</code></p>
+<p><strong>Useful stuff:</strong><br>
+<code>mkPair f = pure (λa → (f, a))</code><br>
+<code>mkPair f &gt;&gt;&gt; app = f</code> (extensionality)</p>
+<p><strong>Proof:</strong></p>
+<p><code>pure (λp → a) ⋙ f                         =</code> &nbsp; &nbsp; {extensionality}</p>
+<p><code>pure (λp → a) ⋙ mkPair f ⋙ app           =</code> &nbsp; &nbsp; {definition of <em>mkPair</em>}</p>
+<p><code>pure (λp → a) ⋙ pure (λa → (f, a)) ⋙ app =</code> &nbsp; &nbsp; {functor-composition}</p>
+<p><code>pure (λa → (f, a) . λp → a) ⋙ app         =</code> &nbsp; &nbsp; {reverse uncurrying?}</p>
+<p><code>pure (λp → (f, a)) ⋙ app</code></p>
+<p>&#9633;</p>
 
 </div>
 </div>
