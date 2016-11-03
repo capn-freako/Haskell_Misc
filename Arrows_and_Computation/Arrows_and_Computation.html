@@ -215,7 +215,7 @@ Original date:   July 29, 2016</p>
 
 
 <div class="output_text output_subarea ">
-<pre>2016-10-25 19:33:52.659665 UTC</pre>
+<pre>2016-11-01 23:00:52.266548 UTC</pre>
 </div>
 
 </div>
@@ -254,6 +254,11 @@ type from **Exercise 3**.</a><ul>
 <li><a href="#ex12">Exercise 12 - Prove that loop (first f) = f.</a></li>
 <li><a href="#ex13">Exercise 13 - Show the two forms of *genSym* are equivalent.</a></li>
 <li><a href="#ex14">Exercise 14 - Prove the two forms of first translation rule equivalent.</a></li>
+<li><a href="#ex16">Exercise 16 - Define an *ArrowCircuit* instance for the *StreamMap* type from Exercise 3.</a></li>
+<li><a href="#ex17">Exercise 17 - Definition of *sort*.</a><ul>
+<li><a href="#ex17x">Extra Credit: Definition of *FFT*, using *Home* and friends.</a></li>
+</ul>
+</li>
 <li><a href="#questions">Unanswered Questions</a></li>
 </ul>
 
@@ -808,7 +813,7 @@ instance ArrowApply (→) where
 <code>app . ((⋙ h) × id)                   =</code> {definitions of <em>app</em> and (&#8921;), for (→)}<br>
 <code>(λ(f, c) → f c) . ((λg → h . g) × id) =</code> {definitions of composition and application}<br>
 <code>λ(f', a) → (h . f') a                 =</code> {definition of composition}<br>
-<code>λ(f', a) → h (f' a)                   =</code> {(Not sure how to justify this step.)}<br>
+<code>λ(f', a) → h (f' a)                   =</code> {ibid.}<br>
 <code>h . (λ(f', a) → f' a)                 =</code> {definitions of <em>app</em> and (&#8921;), for (→)}<br>
 <code>app ⋙ h</code><br>
 &#9633;</p>
@@ -2293,7 +2298,9 @@ distr (Right b, c) = Right (b, c)</code></pre>
 <p><code>pure (λp → a) ⋙ f                         =</code> &nbsp; &nbsp; {extensionality}</p>
 <p><code>pure (λp → a) ⋙ mkPair f ⋙ app           =</code> &nbsp; &nbsp; {definition of <em>mkPair</em>}</p>
 <p><code>pure (λp → a) ⋙ pure (λa → (f, a)) ⋙ app =</code> &nbsp; &nbsp; {functor-composition}</p>
-<p><code>pure (λa → (f, a) . λp → a) ⋙ app         =</code> &nbsp; &nbsp; {reverse uncurrying?}</p>
+<p><code>pure (λa → (f, a) . λp → a) ⋙ app         =</code> &nbsp; &nbsp; {renaming, for clarity}</p>
+<p><code>pure (λa' → (f, a') . λp → a) ⋙ app       =</code> &nbsp; &nbsp; {definition of composition}</p>
+<p><code>pure (λp → (λa' → (f, a')) a) ⋙ app       =</code> &nbsp; &nbsp; {Beta reduction (i.e. - application)}</p>
 <p><code>pure (λp → (f, a)) ⋙ app</code></p>
 <p>&#9633;</p>
 
@@ -2309,6 +2316,652 @@ distr (Right b, c) = Right (b, c)</code></pre>
 
 </div>
 </div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Exercise-16-">Exercise 16 <a name="ex16" /><a class="anchor-link" href="#Exercise-16-">&#182;</a></h2><p>Define an <em>ArrowCircuit</em> instance for the <em>StreamMap</em> type from <a href="#ex3">Exercise 3</a>.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[15]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span class="kr">class</span> <span class="kt">ArrowLoop</span> <span class="n">a</span> <span class="ow">=&gt;</span> <span class="kt">ArrowCircuit</span> <span class="n">a</span> <span class="kr">where</span>
+    <span class="n">delay</span> <span class="ow">::</span> <span class="n">b</span> <span class="ow">-&gt;</span> <span class="n">a</span> <span class="n">b</span> <span class="n">b</span>
+    
+<span class="kr">instance</span> <span class="kt">ArrowCircuit</span> <span class="kt">StreamMap</span> <span class="kr">where</span>
+    <span class="n">delay</span> <span class="n">x</span> <span class="ow">=</span> <span class="kt">SM</span> <span class="p">(</span><span class="nf">\</span><span class="n">st</span> <span class="ow">-&gt;</span> <span class="kt">Cons</span> <span class="n">x</span> <span class="n">st</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to Contents</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Exercise-17-">Exercise 17 <a name="ex17" /><a class="anchor-link" href="#Exercise-17-">&#182;</a></h2><p>Use the functions defined in this section to define an arrow:</p>
+<p><code>sort :: Ord β ⇒ Hom β β</code></p>
+<p>using a merge based on Batcher’s bitonic sorter, combined with <em>rev</em>.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[35]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span class="cm">{-# LANGUAGE Arrows #-}</span>
+
+<span class="kr">import</span> <span class="nn">Prelude</span> <span class="k">hiding</span> <span class="p">((</span><span class="o">.</span><span class="p">),</span> <span class="nf">id</span><span class="p">)</span>  <span class="c1">-- To accomodate &quot;Category&quot;.</span>
+
+<span class="kr">import</span> <span class="nn">Control.Arrow</span>             <span class="c1">-- Necessary, in order to use &#39;proc&#39;, below.</span>
+<span class="kr">import</span> <span class="nn">Control.Category</span>          <span class="c1">-- Prerequisite to &quot;Arrow&quot;.</span>
+
+<span class="kr">data</span> <span class="kt">BalTree</span> <span class="n">a</span> <span class="ow">=</span> <span class="kt">Zero</span> <span class="n">a</span> <span class="o">|</span> <span class="kt">Succ</span> <span class="p">(</span><span class="kt">BalTree</span> <span class="p">(</span><span class="kt">Pair</span> <span class="n">a</span><span class="p">))</span>
+    <span class="kr">deriving</span> <span class="p">(</span><span class="kt">Show</span><span class="p">)</span>
+    
+<span class="kr">type</span> <span class="kt">Pair</span> <span class="n">a</span> <span class="ow">=</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+
+<span class="kr">data</span> <span class="kt">Hom</span> <span class="n">a</span> <span class="n">b</span> <span class="ow">=</span> <span class="p">(</span><span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">b</span><span class="p">)</span> <span class="kt">:&amp;:</span> <span class="kt">Hom</span> <span class="p">(</span><span class="kt">Pair</span> <span class="n">a</span><span class="p">)(</span><span class="kt">Pair</span> <span class="n">b</span><span class="p">)</span>
+
+<span class="nf">apply</span> <span class="ow">::</span> <span class="kt">Hom</span> <span class="n">a</span> <span class="n">b</span> <span class="ow">-&gt;</span> <span class="kt">BalTree</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">BalTree</span> <span class="n">b</span>
+<span class="nf">apply</span> <span class="p">(</span><span class="n">f</span> <span class="kt">:&amp;:</span> <span class="n">fs</span><span class="p">)</span> <span class="p">(</span><span class="kt">Zero</span> <span class="n">x</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">Zero</span> <span class="p">(</span><span class="n">f</span> <span class="n">x</span><span class="p">)</span>
+<span class="nf">apply</span> <span class="p">(</span><span class="n">f</span> <span class="kt">:&amp;:</span> <span class="n">fs</span><span class="p">)</span> <span class="p">(</span><span class="kt">Succ</span> <span class="n">t</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">Succ</span> <span class="p">(</span><span class="n">apply</span> <span class="n">fs</span> <span class="n">t</span><span class="p">)</span>
+
+<span class="nf">prod</span> <span class="ow">::</span> <span class="p">(</span><span class="n">a</span> <span class="ow">-&gt;</span> <span class="n">a&#39;</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">b</span> <span class="ow">-&gt;</span> <span class="n">b&#39;</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">a&#39;</span><span class="p">,</span> <span class="n">b&#39;</span><span class="p">)</span>
+<span class="p">(</span><span class="n">f</span> <span class="p">`</span><span class="n">prod</span><span class="p">`</span> <span class="n">g</span><span class="p">)</span> <span class="o">~</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="ow">=</span> <span class="p">(</span><span class="n">f</span> <span class="n">x</span><span class="p">,</span> <span class="n">g</span> <span class="n">y</span><span class="p">)</span>
+
+<span class="kr">instance</span> <span class="kt">Category</span> <span class="kt">Hom</span> <span class="kr">where</span>
+    <span class="p">(</span><span class="n">g</span> <span class="kt">:&amp;:</span> <span class="n">gs</span><span class="p">)</span> <span class="o">.</span> <span class="p">(</span><span class="n">f</span> <span class="kt">:&amp;:</span> <span class="n">fs</span><span class="p">)</span> <span class="ow">=</span> <span class="p">(</span><span class="n">g</span> <span class="o">.</span> <span class="n">f</span> <span class="p">)</span> <span class="kt">:&amp;:</span> <span class="p">(</span><span class="n">gs</span> <span class="o">.</span> <span class="n">fs</span><span class="p">)</span>
+
+<span class="kr">instance</span> <span class="kt">Arrow</span> <span class="kt">Hom</span> <span class="kr">where</span>  <span class="c1">-- Now, using the &quot;real&quot; Arrow typeclass, by necessity.</span>
+    <span class="n">arr</span> <span class="n">f</span>            <span class="ow">=</span> <span class="n">f</span> <span class="kt">:&amp;:</span> <span class="n">arr</span> <span class="p">(</span><span class="n">f</span> <span class="p">`</span><span class="n">prod</span><span class="p">`</span> <span class="n">f</span> <span class="p">)</span>
+    <span class="n">first</span> <span class="p">(</span><span class="n">f</span> <span class="kt">:&amp;:</span> <span class="n">fs</span><span class="p">)</span> <span class="ow">=</span> <span class="p">(</span><span class="n">f</span> <span class="p">`</span><span class="n">prod</span><span class="p">`</span> <span class="n">id</span><span class="p">)</span> <span class="kt">:&amp;:</span> <span class="p">(</span><span class="n">arr</span> <span class="n">transpose</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">first</span> <span class="n">fs</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">arr</span> <span class="n">transpose</span><span class="p">)</span> 
+    <span class="c1">-- (&gt;&gt;&gt;) = flip (.)</span>
+    
+<span class="nf">transpose</span> <span class="ow">::</span> <span class="p">((</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">),(</span><span class="n">c</span><span class="p">,</span><span class="n">d</span><span class="p">))</span> <span class="ow">-&gt;</span> <span class="p">((</span><span class="n">a</span><span class="p">,</span><span class="n">c</span><span class="p">),(</span><span class="n">b</span><span class="p">,</span><span class="n">d</span><span class="p">))</span>
+<span class="nf">transpose</span> <span class="p">((</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">),(</span><span class="n">c</span><span class="p">,</span><span class="n">d</span><span class="p">))</span> <span class="ow">=</span> <span class="p">((</span><span class="n">a</span><span class="p">,</span><span class="n">c</span><span class="p">),(</span><span class="n">b</span><span class="p">,</span><span class="n">d</span><span class="p">))</span>
+
+<span class="nf">swap</span> <span class="ow">::</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+<span class="nf">swap</span> <span class="o">~</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="ow">=</span> <span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+
+<span class="nf">idA</span> <span class="ow">=</span> <span class="n">arr</span> <span class="n">id</span>
+
+<span class="nf">butterfly</span> <span class="ow">::</span> <span class="p">(</span><span class="kt">Pair</span> <span class="n">b</span> <span class="ow">-&gt;</span> <span class="kt">Pair</span> <span class="n">b</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="kt">Hom</span> <span class="n">b</span> <span class="n">b</span>
+<span class="nf">butterfly</span> <span class="n">f</span> <span class="ow">=</span> <span class="n">id</span> <span class="kt">:&amp;:</span> <span class="n">proc</span> <span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="kr">do</span>
+                <span class="n">o&#39;</span> <span class="ow">&lt;-</span> <span class="n">butterfly</span> <span class="n">f</span> <span class="o">-&lt;</span> <span class="n">o</span>
+                <span class="n">e&#39;</span> <span class="ow">&lt;-</span> <span class="n">butterfly</span> <span class="n">f</span> <span class="o">-&lt;</span> <span class="n">e</span>
+                <span class="n">idA</span> <span class="o">-&lt;</span> <span class="n">f</span> <span class="p">(</span><span class="n">o&#39;</span><span class="p">,</span> <span class="n">e&#39;</span><span class="p">)</span>
+
+<span class="nf">rev</span> <span class="ow">::</span> <span class="kt">Hom</span> <span class="n">b</span> <span class="n">b</span>
+<span class="nf">rev</span> <span class="ow">=</span> <span class="n">butterfly</span> <span class="n">swap</span>
+
+<span class="nf">unriffle</span> <span class="ow">::</span> <span class="kt">Hom</span> <span class="p">(</span><span class="kt">Pair</span> <span class="n">b</span><span class="p">)</span> <span class="p">(</span><span class="kt">Pair</span> <span class="n">b</span><span class="p">)</span>  <span class="c1">-- i.e. - de-interleave</span>
+<span class="nf">unriffle</span> <span class="ow">=</span> <span class="n">butterfly</span> <span class="n">transpose</span>
+
+<span class="nf">interleave</span> <span class="ow">::</span> <span class="kt">Hom</span> <span class="p">(</span><span class="kt">Pair</span> <span class="n">b</span><span class="p">)</span> <span class="p">(</span><span class="kt">Pair</span> <span class="n">b</span><span class="p">)</span>  <span class="c1">-- Doesn&#39;t work; see output, below.</span>
+<span class="nf">interleave</span> <span class="ow">=</span> <span class="n">butterfly</span> <span class="p">(</span><span class="n">transpose</span> <span class="o">.</span> <span class="n">swap</span><span class="p">)</span>
+
+<span class="nf">cmp</span> <span class="ow">::</span> <span class="kt">Ord</span> <span class="n">b</span> <span class="ow">=&gt;</span> <span class="p">(</span><span class="n">b</span><span class="p">,</span><span class="n">b</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">b</span><span class="p">,</span><span class="n">b</span><span class="p">)</span>
+<span class="nf">cmp</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span> <span class="ow">=</span> <span class="p">(</span><span class="n">min</span> <span class="n">x</span> <span class="n">y</span><span class="p">,</span> <span class="n">max</span> <span class="n">x</span> <span class="n">y</span><span class="p">)</span>
+
+<span class="nf">bisort</span> <span class="ow">::</span> <span class="kt">Ord</span> <span class="n">b</span> <span class="ow">=&gt;</span> <span class="kt">Hom</span> <span class="n">b</span> <span class="n">b</span>  <span class="c1">-- Batcher’s bitonic sorter</span>
+<span class="nf">bisort</span> <span class="ow">=</span> <span class="n">butterfly</span> <span class="n">cmp</span>
+    
+<span class="nf">sort</span> <span class="ow">::</span> <span class="kt">Ord</span> <span class="n">b</span> <span class="ow">=&gt;</span> <span class="kt">Hom</span> <span class="n">b</span> <span class="n">b</span>
+<span class="nf">sort</span> <span class="ow">=</span> <span class="n">sort&#39;</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">bisort</span>
+
+<span class="nf">sort&#39;</span> <span class="ow">::</span> <span class="kt">Ord</span> <span class="n">b</span> <span class="ow">=&gt;</span> <span class="kt">Hom</span> <span class="n">b</span> <span class="n">b</span>
+<span class="nf">sort&#39;</span> <span class="ow">=</span> <span class="n">id</span> <span class="kt">:&amp;:</span> <span class="p">(</span> <span class="p">(</span><span class="n">sort</span> <span class="o">***</span> <span class="p">(</span><span class="n">sort</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">rev</span><span class="p">))</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">unriffle</span> <span class="p">)</span>
+
+<span class="nf">t1</span> <span class="ow">=</span> <span class="kt">Succ</span> <span class="p">(</span><span class="kt">Succ</span> <span class="p">(</span><span class="kt">Succ</span> <span class="p">(</span><span class="kt">Zero</span> <span class="p">(((</span><span class="mi">9</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span> <span class="p">((</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">))))))</span>  <span class="c1">-- bitonic</span>
+<span class="nf">t2</span> <span class="ow">=</span> <span class="kt">Succ</span> <span class="p">(</span><span class="kt">Succ</span> <span class="p">(</span><span class="kt">Succ</span> <span class="p">(</span><span class="kt">Zero</span> <span class="p">(((</span><span class="mi">9</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span> <span class="p">((</span><span class="mi">8</span><span class="p">,</span> <span class="mi">7</span><span class="p">),</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">))))))</span>  <span class="c1">-- tritonic</span>
+<span class="nf">t3</span> <span class="ow">=</span> <span class="kt">Succ</span> <span class="p">(</span><span class="kt">Succ</span> <span class="p">(</span><span class="kt">Succ</span> <span class="p">(</span><span class="kt">Zero</span> <span class="p">(((</span><span class="mi">9</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span> <span class="p">((</span><span class="mi">8</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">))))))</span>  <span class="c1">-- quadtonic</span>
+<span class="nf">t4</span> <span class="ow">=</span> <span class="kt">Succ</span> <span class="p">(</span><span class="kt">Succ</span> <span class="p">(</span><span class="kt">Succ</span> <span class="p">(</span><span class="kt">Zero</span> <span class="p">(((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)),</span> <span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">))))))</span>  <span class="c1">-- index reflective :: BalTree Int</span>
+<span class="nf">t5</span> <span class="ow">=</span> <span class="kt">Succ</span> <span class="p">(</span><span class="kt">Succ</span> <span class="p">(</span><span class="kt">Zero</span> <span class="p">(((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)),</span> <span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">)))))</span>         <span class="c1">-- index reflective :: BalTree (Pair Int)</span>
+<span class="nf">t6</span> <span class="ow">=</span> <span class="kt">Succ</span> <span class="p">(</span><span class="kt">Zero</span> <span class="p">(((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)),</span> <span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">))))</span>                <span class="c1">-- index reflective :: BalTree (Pair (Pair Int))</span>
+
+<span class="nf">main</span> <span class="ow">::</span> <span class="kt">IO</span> <span class="nb">()</span>
+<span class="nf">main</span> <span class="ow">=</span> <span class="kr">do</span>
+    <span class="n">putStrLn</span> <span class="s">&quot;Applying bisort to bitonic sequence:&quot;</span>
+    <span class="n">print</span> <span class="o">$</span> <span class="n">apply</span> <span class="n">bisort</span> <span class="n">t1</span>
+    <span class="n">putStrLn</span> <span class="s">&quot;Applying bisort to tritonic sequence:&quot;</span>
+    <span class="n">print</span> <span class="o">$</span> <span class="n">apply</span> <span class="n">bisort</span> <span class="n">t2</span>
+    <span class="n">putStrLn</span> <span class="s">&quot;Applying bisort to quadtonic sequence:&quot;</span>
+    <span class="n">print</span> <span class="o">$</span> <span class="n">apply</span> <span class="n">bisort</span> <span class="n">t3</span>
+    <span class="n">putStrLn</span> <span class="s">&quot;Applying sort to bitonic sequence:&quot;</span>
+    <span class="n">print</span> <span class="o">$</span> <span class="n">apply</span> <span class="n">sort</span> <span class="n">t1</span>
+    <span class="n">putStrLn</span> <span class="s">&quot;Applying sort to tritonic sequence:&quot;</span>
+    <span class="n">print</span> <span class="o">$</span> <span class="n">apply</span> <span class="n">sort</span> <span class="n">t2</span>
+    <span class="n">putStrLn</span> <span class="s">&quot;Applying sort to quadtonic sequence:&quot;</span>
+    <span class="n">print</span> <span class="o">$</span> <span class="n">apply</span> <span class="n">sort</span> <span class="n">t3</span>
+    <span class="n">putStrLn</span> <span class="s">&quot;Applying rev to index reflective sequence:&quot;</span>
+    <span class="n">print</span> <span class="o">$</span> <span class="n">apply</span> <span class="n">rev</span> <span class="n">t4</span>
+    <span class="n">putStrLn</span> <span class="s">&quot;Applying unriffle to index reflective sequence:&quot;</span>
+    <span class="n">print</span> <span class="o">$</span> <span class="n">apply</span> <span class="n">unriffle</span> <span class="n">t5</span>
+    <span class="n">putStrLn</span> <span class="s">&quot;Applying unriffle to index reflective sequence of Pairs:&quot;</span>
+    <span class="n">print</span> <span class="o">$</span> <span class="n">apply</span> <span class="n">unriffle</span> <span class="n">t6</span>
+    <span class="n">putStrLn</span> <span class="s">&quot;Applying interleave to unriffle output:&quot;</span>
+    <span class="n">print</span> <span class="o">$</span> <span class="n">apply</span> <span class="p">(</span><span class="n">unriffle</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">interleave</span><span class="p">)</span> <span class="n">t5</span>
+    <span class="n">putStrLn</span> <span class="s">&quot;Testing (***), by attempting to add 1 to only the odds:&quot;</span>
+    <span class="n">print</span> <span class="o">$</span> <span class="n">apply</span> <span class="p">(</span><span class="n">arr</span> <span class="n">id</span> <span class="o">***</span> <span class="p">(</span><span class="n">arr</span> <span class="p">(</span><span class="o">+</span><span class="mi">1</span><span class="p">)))</span> <span class="n">t5</span>
+    
+<span class="nf">main</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+
+
+<div class="output_text output_subarea ">
+<pre>Applying bisort to bitonic sequence:
+Succ (Succ (Succ (Zero (((1,2),(4,5)),((6,7),(8,9))))))
+Applying bisort to tritonic sequence:
+Succ (Succ (Succ (Zero (((1,2),(4,8)),((3,5),(7,9))))))
+Applying bisort to quadtonic sequence:
+Succ (Succ (Succ (Zero (((1,2),(3,8)),((4,5),(7,9))))))
+Applying sort to bitonic sequence:
+Succ (Succ (Succ (Zero (((1,2),(4,5)),((6,7),(8,9))))))
+Applying sort to tritonic sequence:
+Succ (Succ (Succ (Zero (((1,2),(3,4)),((5,7),(8,9))))))
+Applying sort to quadtonic sequence:
+Succ (Succ (Succ (Zero (((1,2),(3,4)),((5,7),(8,9))))))
+Applying rev to index reflective sequence:
+Succ (Succ (Succ (Zero (((7,6),(5,4)),((3,2),(1,0))))))
+Applying unriffle to index reflective sequence:
+Succ (Succ (Zero (((0,2),(4,6)),((1,3),(5,7)))))
+Applying unriffle to index reflective sequence of Pairs:
+Succ (Zero (((0,1),(4,5)),((2,3),(6,7))))
+Applying interleave to unriffle output:
+Succ (Succ (Zero (((5,1),(4,0)),((7,3),(6,2)))))
+Testing (***), by attempting to add 1 to only the odds:
+Succ (Succ (Zero (((0,2),(2,4)),((4,6),(6,8)))))</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to Contents</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Exercise-17a-">Exercise 17a <a name="ex17a" /><a class="anchor-link" href="#Exercise-17a-">&#182;</a></h3><p>Breaking down <em>butterfly</em>, using the simplest non-trivial input case.</p>
+<p><code>apply (butterfly f) Succ (Zero ((0,1)))
+    where butterfly f = id :&amp;: proc (o, e) -&gt; do
+                                 o' &lt;- butterfly f -&lt; o
+                                 e' &lt;- butterfly f -&lt; e
+                                 idA -&lt; f (o', e')                   =</code> &nbsp; &nbsp; {definition of <em>apply</em>}</p>
+<p><code>Succ (apply fs (Zero (0,1)))
+  where fs = proc (o,e) -&gt; do
+               o' &lt;- butterfly f -&lt; o
+               e' &lt;- butterfly f -&lt; e
+               idA -&lt; f (o', e')
+{3rd rule} = ((proc (o,e) → butterfly f -&lt; o) &amp;&amp;&amp; idA ) ⋙
+               proc (o', (o,e)) → do
+                 e' &lt;- butterfly f -&lt; e
+                 idA -&lt; f (o', e')
+{3rd rule} = ((proc (o,e) → butterfly f -&lt; o) &amp;&amp;&amp; idA ) ⋙
+               ((proc (o', (o,e)) → butterfly f -&lt; e) &amp;&amp;&amp; idA) ⋙
+                 proc (e', (o', (o,e))) → idA -&lt; f (o', e')
+{(&amp;&amp;&amp;)}    = arr dup ⋙ first (proc (o,e) → butterfly f -&lt; o) ⋙
+               arr dup ⋙ first (proc (o', (o,e)) → butterfly f -&lt; e) ⋙
+                 proc (e', (o', (o,e))) → idA -&lt; f (o', e')
+{1st rule} = arr dup ⋙ first (pure (λ(o,e) → o) ⋙ butterfly f) ⋙
+               arr dup ⋙ first (arr (λ(o',(o,e)) → e) ⋙ butterfly f) ⋙
+                 arr (λ(e', (o', (o,e))) → (o',e')) ⋙ arr f         =</code> &nbsp; &nbsp; {functor}</p>
+<p><code>Succ (apply fs (Zero (0,1)))
+  where fs = arr dup ⋙ first (arr (λ(o,e) → o)) ⋙ first (butterfly f) ⋙
+               arr dup ⋙ first (arr (λ(o',(o,e)) → e)) ⋙ first (butterfly f) ⋙
+                 arr (λ(e', (o', (o,e))) → (o',e')) ⋙ arr f         =</code> &nbsp; &nbsp; {extension}</p>
+<p><code>Succ (apply fs (Zero (0,1)))
+  where fs = arr dup ⋙ arr ((λ(o,e) → o) × id) ⋙ first (butterfly f) ⋙
+               arr dup ⋙ arr ((λ(o',(o,e)) → e) × id) ⋙ first (butterfly f) ⋙
+                 arr (λ(e', (o', (o,e))) → (o',e')) ⋙ arr f         =</code> &nbsp; &nbsp; {functor-composition}</p>
+<p><code>Succ (apply fs (Zero (0,1)))
+  where fs = arr ( ((λ(o,e) → o) × id) . dup ) ⋙ first (butterfly f) ⋙
+               arr ( ((λ(o',(o,e)) → e) × id) . dup ) ⋙ first (butterfly f) ⋙
+                 arr ( f . (λ(e', (o', (o,e))) → (o',e')) )          =</code> &nbsp; &nbsp; {various function definitions}</p>
+<p><code>Succ (apply fs (Zero (0,1)))
+  where fs = arr (fst &amp; id) ⋙ first (butterfly f) ⋙
+               arr ((snd . snd) &amp; id) ⋙ first (butterfly f) ⋙
+                 arr ( f . swap . (fst &amp; (fst . snd)) )
+        f &amp; g = (f × g) . dup                                        =</code> &nbsp; &nbsp; {definition of <em>first</em>}</p>
+<p><code>Succ (apply fs (Zero (0,1)))
+  where fs = arr (fst &amp; id) ⋙ ((id × id) :&amp;: (arr transpose ⋙ first fs ⋙ arr transpose)) ⋙
+               arr ((snd . snd) &amp; id) ⋙ ((id × id) :&amp;: (arr transpose ⋙ first fs ⋙ arr transpose)) ⋙
+                 arr ( f . swap . (fst &amp; (fst . snd)) )
+        f &amp; g = (f × g) . dup                                        =</code> &nbsp; &nbsp; {definition of <em>arr</em>}</p>
+<p><code>Succ (apply fs (Zero (0,1)))
+  where fs = ( (fst &amp; id) :&amp;: (arr ((fst &amp; id) × (fst &amp; id))) ) ⋙
+               ( (id × id) :&amp;: (arr transpose ⋙ first fs ⋙ arr transpose) ) ⋙
+               ( ((snd . snd) &amp; id) :&amp;: (arr (((snd . snd) &amp; id) × ((snd . snd) &amp; id))) ) ⋙
+               ( (id × id) :&amp;: (arr transpose ⋙ first fs ⋙ arr transpose) ) ⋙
+               ( (f . swap . (fst &amp; (fst . snd))) :&amp;: ((f . swap . (fst &amp; (fst . snd))) × (f . (fst &amp; (fst . snd)))) )
+        f &amp; g = (f × g) . dup                                        =</code> &nbsp; &nbsp; {definition of (⋙)}</p>
+<p><code>Succ (apply fs (Zero (0,1)))
+  where fs = ( ( (fst &amp; id) ⋙ (id × id) ⋙ ((snd . snd) &amp; id) ⋙ (id × id) ⋙ (f . swap . (fst &amp; (fst . snd))) ) :&amp;: _ )
+        f &amp; g = (f × g) . dup                                        =</code> &nbsp; &nbsp; {identity}</p>
+<p><code>Succ (apply fs (Zero (0,1)))
+  where fs = ( ( (fst &amp; id) ⋙ ((snd . snd) &amp; id) ⋙ (f . swap . (fst &amp; (fst . snd))) ) :&amp;: _ )
+        f &amp; g = (f × g) . dup                                        =</code> &nbsp; &nbsp; {definition of (⋙)}</p>
+<p><code>Succ (apply fs (Zero (0,1)))
+  where fs = ( (f . swap . (fst &amp; (fst . snd))) .  ((snd . snd) &amp; id) . (fst &amp; id) ) :&amp;: _
+        f &amp; g = (f × g) . dup                                        =</code> &nbsp; &nbsp; {evaluation}</p>
+<p><code>Succ (Zero (f' (0,1)))
+  where f' = (f . swap . (fst &amp; (fst . snd))) .  ((snd . snd) &amp; id) . (fst &amp; id)
+        f &amp; g = (f × g) . dup                                        =</code> &nbsp; &nbsp; {evaluation}</p>
+<p><code>Succ (Zero (f' (0,1)))
+  where f' = λ(o,e) → (f . swap . (fst &amp; (fst . snd))) ( ((snd . snd) &amp; id) ( (fst &amp; id) (o,e) ))
+        f &amp; g = (f × g) . dup                                        =</code> &nbsp; &nbsp; {evaluation}</p>
+<p><code>Succ (Zero (f' (0,1)))
+  where f' = λ(o,e) → (f . swap . (fst &amp; (fst . snd))) ( ((snd . snd) &amp; id) ( (o, (o,e)) ))
+        f &amp; g = (f × g) . dup                                        =</code> &nbsp; &nbsp; {evaluation}</p>
+<p><code>Succ (Zero (f' (0,1)))
+  where f' = λ(o,e) → (f . swap . (fst &amp; (fst . snd))) (e, (o, (o,e)))
+        f &amp; g = (f × g) . dup                                        =</code> &nbsp; &nbsp; {evaluation}</p>
+<p><code>Succ (Zero (f' (0,1)))
+  where f' = λ(o,e) → (f . swap) (e, o)                              =</code> &nbsp; &nbsp; {evaluation}</p>
+<p><code>Succ (Zero (f' (0,1)))
+  where f' = λ(o,e) → f (o, e)                                       =</code> &nbsp; &nbsp; {eta reduction}</p>
+<p><code>Succ (Zero (f' (0,1)))
+  where f' = f                                                       =</code> &nbsp; &nbsp; {substitution}</p>
+<p><code>Succ (Zero (f (0,1)))</code></p>
+<p>□</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to Contents</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Exercise-17b-">Exercise 17b <a name="ex17b" /><a class="anchor-link" href="#Exercise-17b-">&#182;</a></h3><p>Breaking down <em>bisort</em>, in order to understand why it only works on bitonic sequences.</p>
+<p><code>apply bisort (Succ (Succ (Zero ((1,4), (2,3)))))                   =</code> &nbsp; &nbsp; {definition of <em>bisort</em>}</p>
+<p><code>apply (butterfly cmp) (Succ (Succ (Zero ((1,4), (2,3)))))
+    where cmp (x,y)   = (min x y, max x y)          
+          butterfly f = id :&amp;: proc (o, e) -&gt; do
+                                 o' &lt;- butterfly f -&lt; o
+                                 e' &lt;- butterfly f -&lt; e
+                                 idA -&lt; f (o', e')                 =</code> &nbsp; &nbsp; {definition of <em>apply</em>}</p>
+<p><code>Succ (apply fs (Succ (Zero ((1,4), (2,3)))))
+  where fs = proc (o,e) -&gt; do
+               o' &lt;- butterfly cmp -&lt; o
+               e' &lt;- butterfly cmp -&lt; e
+               idA -&lt; cmp (o', e')
+{3rd rule} = ((proc (o,e) → butterfly cmp -&lt; o) &amp;&amp;&amp; idA ) ⋙
+               proc (o', (o,e)) → do
+                 e' &lt;- butterfly cmp -&lt; e
+                 idA -&lt; cmp (o', e')
+{3rd rule} = ((proc (o,e) → butterfly cmp -&lt; o) &amp;&amp;&amp; idA ) ⋙
+               ((proc (o', (o,e)) → butterfly cmp -&lt; e) &amp;&amp;&amp; idA) ⋙
+                 proc (e', (o', (o,e))) → idA -&lt; cmp (o', e')
+{(&amp;&amp;&amp;)}    = pure dup ⋙ first (proc (o,e) → butterfly cmp -&lt; o) ⋙
+               pure dup ⋙ first (proc (o', (o,e)) → butterfly cmp -&lt; e) ⋙
+                 proc (e', (o', (o,e))) → idA -&lt; cmp (o', e')
+{1st rule} = pure dup ⋙ first (pure (λ(o,e) → o) ⋙ butterfly cmp) ⋙
+               pure dup ⋙ first (pure (λ(o',(o,e)) → e) ⋙ butterfly cmp) ⋙
+                 pure (λ(e', (o', (o,e))) → (o',e')) ⋙ pure cmp     =</code> &nbsp; &nbsp; {functor}</p>
+<p><code>Succ (apply fs (Succ (Zero ((1,4), (2,3)))))
+  where fs = pure dup ⋙ first (pure (λ(o,e) → o)) ⋙ first (butterfly cmp) ⋙
+               pure dup ⋙ first (pure (λ(o',(o,e)) → e)) ⋙ first (butterfly cmp) ⋙
+                 pure (λ(e', (o', (o,e))) → (o',e')) ⋙ pure cmp     =</code> &nbsp; &nbsp; {extension}</p>
+<p><code>Succ (apply fs (Succ (Zero ((1,4), (2,3)))))
+  where fs = pure dup ⋙ pure ((λ(o,e) → o) × id) ⋙ first (butterfly cmp) ⋙
+               pure dup ⋙ pure ((λ(o',(o,e)) → e) × id) ⋙ first (butterfly cmp) ⋙
+                 pure (λ(e', (o', (o,e))) → (o',e')) ⋙ pure cmp     =</code> &nbsp; &nbsp; {functor-composition}</p>
+<p><code>Succ (apply fs (Succ (Zero ((1,4), (2,3)))))
+  where fs = pure ( ((λ(o,e) → o) × id) . dup ) ⋙ first (butterfly cmp) ⋙
+               pure ( ((λ(o',(o,e)) → e) × id) . dup ) ⋙ first (butterfly cmp) ⋙
+                 pure ( cmp . (λ(e', (o', (o,e))) → (o',e')) )       =</code> &nbsp; &nbsp; {various function definitions}</p>
+<p><code>Succ (apply fs (Succ (Zero ((1,4), (2,3)))))
+  where fs = pure (fst &amp; id) ⋙ first (butterfly cmp) ⋙
+               pure ((snd . snd) &amp; id) ⋙ first (butterfly cmp) ⋙
+                 pure ( cmp . swap . (fst &amp; (fst . snd)) )
+        f &amp; g = (f × g) . dup                                        =</code> &nbsp; &nbsp; {cmp . swap = cmp}</p>
+<p><code>Succ (apply fs (Succ (Zero ((1,4), (2,3)))))
+  where fs = pure (fst &amp; id) ⋙ first (butterfly cmp) ⋙
+               pure ((snd . snd) &amp; id) ⋙ first (butterfly cmp) ⋙
+                 pure ( cmp . (fst &amp; (fst . snd)) )
+        f &amp; g = (f × g) . dup                                        =</code> &nbsp; &nbsp; {definition of <em>first</em>}</p>
+<p><code>Succ (apply fs (Succ (Zero ((1,4), (2,3)))))
+  where fs = pure (fst &amp; id) ⋙ ((id × id) :&amp;: (pure transpose ⋙ first fs ⋙ pure transpose)) ⋙
+               pure ((snd . snd) &amp; id) ⋙ ((id × id) :&amp;: (pure transpose ⋙ first fs ⋙ pure transpose)) ⋙
+                 pure ( cmp . (fst &amp; (fst . snd)) )
+        f &amp; g = (f × g) . dup                                        =</code> &nbsp; &nbsp; {definition of <em>first</em>}</p>
+<p>Giving up.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to Contents</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Exercise-17x-">Exercise 17x <a name="ex17x" /><a class="anchor-link" href="#Exercise-17x-">&#182;</a></h3><p>Extra credit: attempt at FFT implementation, using <em>Hom</em> and associated functionality.</p>
+<h4 id="The-Discrete-Fourier-Transform-(DFT)-">The Discrete Fourier Transform (DFT) <a name="fft" /><a class="anchor-link" href="#The-Discrete-Fourier-Transform-(DFT)-">&#182;</a></h4><p>The <a href="https://en.wikipedia.org/wiki/Discrete_Fourier_transform">discrete Fourier transform (DFT)</a> is used to assess the spectral content of a set of samples of a time varying function, taken at uniformly spaced time intervals. It is defined as:</p>
+$$
+DFT \{x_n\} = \{X_n\} \quad | \quad X_n = \sum_{m=0}^{N-1} x_m \cdot e^{-j\frac{2\pi}{N}nm}
+$$<h4 id="The-Fast-Fourier-Transform-(FFT)-">The Fast Fourier Transform (FFT) <a name="fft" /><a class="anchor-link" href="#The-Fast-Fourier-Transform-(FFT)-">&#182;</a></h4><p>By splitting the sum, above, into two parts: taking the even and odd
+members of the original sequence, respectively, we get:</p>
+$$
+X_n = \sum_{m=0}^{\frac{N}{2} - 1} x_{2m} \cdot e^{-j\frac{2\pi}{N}n2m} + \sum_{m=0}^{\frac{N}{2} - 1} x_{2m+1} \cdot e^{-j\frac{2\pi}{N}n(2m+1)}
+$$$$
+= \sum_{m=0}^{\frac{N}{2} - 1} x_{2m} \cdot e^{-j\frac{2\pi}{N}n2m} + e^{-j\frac{2\pi}{N}n}\sum_{m=0}^{\frac{N}{2} - 1} x_{2m+1} \cdot e^{-j\frac{2\pi}{N}n2m}
+$$<p>which can be rewritten (by a simple change of variable):</p>
+$$
+X_n = \sum_{m=0}^{N' - 1} x^e_m \cdot e^{-j\frac{2\pi}{N'}nm} + e^{-j\frac{2\pi}{N}n}\sum_{m=0}^{N' - 1} x^o_m \cdot e^{-j\frac{2\pi}{N'}nm}
+$$<p>where $N' = \frac{N}{2}$ and $x^e$ and $x^o$ are the
+sequences formed by taking the even and odd samples, respectively, of
+the original input sequence.</p>
+<p>Equivalently, by noticing that $e^{-j\frac{2\pi}{N}(\frac{N}{2}+n)} = -e^{-j\frac{2\pi}{N}n}$, we can write:</p>
+$$
+DFT \{x_n\} = (DFT \{x^e_m\} + W^M \cdot DFT \{x^o_m\}) \quad \text{`concat`} \quad (DFT \{x^e_m\} - W^M \cdot DFT \{x^o_m\})
+$$<p>where $(\cdot)$ denotes <em>vector dot product</em>, and $W^m = \{w_m\} \quad \vert \quad w_m = e^{-j\frac{2\pi}{N}m}; \quad m \in [0,\frac{N}{2})$, is affectionately known as the "twiddle" vector, the lone unsightly wart on an otherwise beautiful and elegant mathematical expression.</p>
+<p>Applying the technique, above, recursively until no further breakdown is possible yields an <em>order of operation</em> reduction, from $O(N^2)$ to $O(N log(N))$, and this prompts the name: <em>fast Fourier transform (FFT)</em>.</p>
+<p>This optimization technique, first discovered by Gauss in the early 1800's, was made convenient to the numerical computing World, by Cooley and Tukey in <a href="http://www.ams.org/journals/mcom/1965-19-090/S0025-5718-1965-0178586-1/S0025-5718-1965-0178586-1.pdf">their 1965 paper</a>.</p>
+<p>The logarithmic "divide and conquer" nature of the expression, above, strongly suggests an implementation based on homogeneous functions...</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[53]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span class="cm">{-# LANGUAGE GeneralizedNewtypeDeriving #-}</span>
+
+<span class="kr">import</span> <span class="nn">Control.Monad</span>
+<span class="kr">import</span> <span class="nn">Data.Complex</span>
+<span class="kr">import</span> <span class="nn">System.Random</span>
+<span class="kr">import</span> <span class="nn">Text.Printf</span>
+<span class="kr">import</span> <span class="nn">Test.QuickCheck.Arbitrary</span>
+
+<span class="cm">{-|</span>
+<span class="cm">A custom double precision floating point type, which overides the &#39;Show&#39;</span>
+<span class="cm">and &#39;Eq&#39; instances, in order to:</span>
+
+<span class="cm">    * Limit precision to 3 places after the decimal.</span>
+
+<span class="cm">    * Print ridiculously small numbers as simply zero.</span>
+
+<span class="cm">    * Define equality as difference being less than some threshold.</span>
+<span class="cm">-}</span>
+<span class="kr">newtype</span> <span class="kt">PrettyDouble</span> <span class="ow">=</span> <span class="kt">PrettyDouble</span> <span class="p">{</span>
+    <span class="n">uglyDouble</span> <span class="ow">::</span> <span class="kt">Double</span>
+  <span class="p">}</span> <span class="kr">deriving</span> <span class="p">(</span><span class="kt">Ord</span><span class="p">,</span> <span class="kt">Fractional</span><span class="p">,</span> <span class="kt">Floating</span><span class="p">,</span> <span class="kt">Real</span><span class="p">,</span> <span class="kt">RealFrac</span><span class="p">,</span> <span class="kt">RealFloat</span><span class="p">,</span> <span class="kt">Enum</span><span class="p">,</span> <span class="kt">Arbitrary</span><span class="p">,</span> <span class="kt">CoArbitrary</span><span class="p">,</span> <span class="kt">Random</span><span class="p">)</span>
+
+<span class="kr">instance</span> <span class="kt">Show</span> <span class="kt">PrettyDouble</span> <span class="kr">where</span>
+    <span class="n">show</span> <span class="ow">=</span> <span class="n">printf</span> <span class="s">&quot;%6.3g&quot;</span> <span class="o">.</span> <span class="n">zeroThresh</span> <span class="o">.</span> <span class="n">uglyDouble</span>
+        <span class="kr">where</span> <span class="n">zeroThresh</span> <span class="n">y</span> <span class="ow">=</span>
+                <span class="kr">if</span> <span class="n">abs</span> <span class="n">y</span> <span class="o">&lt;</span> <span class="mf">1.0e-10</span>
+                <span class="kr">then</span> <span class="mf">0.0</span>
+                <span class="kr">else</span> <span class="n">y</span>
+
+<span class="kr">instance</span> <span class="kt">Eq</span> <span class="kt">PrettyDouble</span> <span class="kr">where</span>
+    <span class="n">z1&#39;</span> <span class="o">==</span> <span class="n">z2&#39;</span> <span class="ow">=</span> <span class="n">abs</span> <span class="p">(</span><span class="n">z1</span> <span class="o">-</span> <span class="n">z2</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1.0e-3</span>
+        <span class="kr">where</span> <span class="n">z1</span> <span class="ow">=</span> <span class="n">uglyDouble</span> <span class="n">z1&#39;</span>
+              <span class="n">z2</span> <span class="ow">=</span> <span class="n">uglyDouble</span> <span class="n">z2&#39;</span>
+              
+<span class="kr">instance</span> <span class="kt">Num</span> <span class="kt">PrettyDouble</span> <span class="kr">where</span>
+    <span class="n">x</span> <span class="o">+</span> <span class="n">y</span>         <span class="ow">=</span> <span class="kt">PrettyDouble</span> <span class="o">$</span> <span class="n">uglyDouble</span> <span class="n">x</span> <span class="o">+</span> <span class="n">uglyDouble</span> <span class="n">y</span>
+    <span class="n">x</span> <span class="o">-</span> <span class="n">y</span>         <span class="ow">=</span> <span class="kt">PrettyDouble</span> <span class="o">$</span> <span class="n">uglyDouble</span> <span class="n">x</span> <span class="o">-</span> <span class="n">uglyDouble</span> <span class="n">y</span>
+    <span class="n">x</span> <span class="o">*</span> <span class="n">y</span>         <span class="ow">=</span> <span class="kt">PrettyDouble</span> <span class="o">$</span> <span class="n">uglyDouble</span> <span class="n">x</span> <span class="o">*</span> <span class="n">uglyDouble</span> <span class="n">y</span>
+    <span class="n">abs</span> <span class="n">x</span>         <span class="ow">=</span> <span class="kt">PrettyDouble</span> <span class="o">$</span> <span class="n">abs</span> <span class="o">$</span> <span class="n">uglyDouble</span> <span class="n">x</span>
+    <span class="n">signum</span> <span class="n">x</span>      <span class="ow">=</span> <span class="kt">PrettyDouble</span> <span class="o">$</span> <span class="n">signum</span> <span class="o">$</span> <span class="n">uglyDouble</span> <span class="n">x</span>
+    <span class="n">fromInteger</span> <span class="n">n</span> <span class="ow">=</span> <span class="kt">PrettyDouble</span> <span class="o">$</span> <span class="n">fromIntegral</span> <span class="n">n</span>
+
+<span class="c1">-- The DFT forms the specification for the FFT.</span>
+<span class="nf">dft</span> <span class="ow">::</span> <span class="kt">RealFloat</span> <span class="n">a</span> <span class="ow">=&gt;</span> <span class="p">[</span><span class="kt">Complex</span> <span class="n">a</span><span class="p">]</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="kt">Complex</span> <span class="n">a</span><span class="p">]</span>
+<span class="nf">dft</span> <span class="n">xs</span> <span class="ow">=</span> <span class="p">[</span> <span class="n">sum</span> <span class="p">[</span> <span class="n">x</span> <span class="o">*</span> <span class="n">exp</span><span class="p">((</span><span class="mf">0.0</span> <span class="kt">:+</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.0</span><span class="p">))</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">/</span> <span class="n">lenXs</span> <span class="o">*</span> <span class="n">fromIntegral</span><span class="p">(</span><span class="n">k</span> <span class="o">*</span> <span class="n">n</span><span class="p">))</span>
+                 <span class="o">|</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span> <span class="ow">&lt;-</span> <span class="n">zip</span> <span class="n">xs</span> <span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="p">]</span>
+               <span class="p">]</span>
+           <span class="o">|</span> <span class="n">k</span> <span class="ow">&lt;-</span> <span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="p">(</span><span class="n">length</span> <span class="n">xs</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)]</span>
+         <span class="p">]</span>
+    <span class="kr">where</span> <span class="n">lenXs</span> <span class="ow">=</span> <span class="n">fromIntegral</span> <span class="o">$</span> <span class="n">length</span> <span class="n">xs</span>
+
+<span class="c1">-- FFT implementation</span>
+<span class="c1">-- Note my reversal of Ross&#39; even/odd convention, below.</span>
+<span class="c1">-- I did this, to remain consistent with the explanation, above, which came from a pre-existing work.</span>
+<span class="nf">fft</span> <span class="ow">::</span> <span class="kt">RealFloat</span> <span class="n">b</span> <span class="ow">=&gt;</span> <span class="kt">Hom</span> <span class="p">(</span><span class="kt">Complex</span> <span class="n">b</span><span class="p">)</span> <span class="p">(</span><span class="kt">Complex</span> <span class="n">b</span><span class="p">)</span>
+<span class="nf">fft</span> <span class="ow">=</span> <span class="n">id</span> <span class="kt">:&amp;:</span> <span class="n">proc</span> <span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">o</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="kr">do</span>
+                <span class="n">e&#39;</span> <span class="ow">&lt;-</span> <span class="n">fft</span>             <span class="o">-&lt;</span> <span class="n">e</span>
+                <span class="n">o&#39;</span> <span class="ow">&lt;-</span> <span class="n">fft</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">twiddle</span> <span class="o">-&lt;</span> <span class="n">o</span>
+                <span class="n">unriffle</span> <span class="o">-&lt;</span> <span class="n">f</span> <span class="p">(</span><span class="n">e&#39;</span><span class="p">,</span> <span class="n">o&#39;</span><span class="p">)</span>
+    <span class="kr">where</span> <span class="n">f</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="ow">=</span> <span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">y</span><span class="p">,</span> <span class="n">x</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span>
+
+<span class="nf">twiddle</span> <span class="ow">::</span> <span class="kt">RealFloat</span> <span class="n">b</span> <span class="ow">=&gt;</span> <span class="kt">Hom</span> <span class="p">(</span><span class="kt">Complex</span> <span class="n">b</span><span class="p">)</span> <span class="p">(</span><span class="kt">Complex</span> <span class="n">b</span><span class="p">)</span>
+<span class="nf">twiddle</span> <span class="ow">=</span> <span class="n">id</span> <span class="kt">:&amp;:</span> <span class="n">twiddle&#39;</span> <span class="mi">1</span>
+
+<span class="nf">twiddle&#39;</span> <span class="ow">::</span> <span class="kt">RealFloat</span> <span class="n">b</span> <span class="ow">=&gt;</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Hom</span> <span class="p">(</span><span class="kt">Pair</span> <span class="p">(</span><span class="kt">Complex</span> <span class="n">b</span><span class="p">))</span> <span class="p">(</span><span class="kt">Pair</span> <span class="p">(</span><span class="kt">Complex</span> <span class="n">b</span><span class="p">))</span>
+<span class="nf">twiddle&#39;</span> <span class="n">n</span> <span class="ow">=</span> <span class="p">(</span><span class="n">id</span> <span class="o">***</span> <span class="p">(</span><span class="o">*</span> <span class="n">phi</span><span class="p">))</span> <span class="kt">:&amp;:</span> <span class="p">(((</span><span class="n">twiddle&#39;</span> <span class="n">n&#39;</span><span class="p">)</span> <span class="o">***</span> <span class="p">((</span><span class="n">twiddle&#39;</span> <span class="n">n&#39;</span><span class="p">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="p">(</span><span class="n">arr</span> <span class="p">((</span><span class="o">*</span> <span class="n">phi</span><span class="p">)</span> <span class="p">`</span><span class="n">prod</span><span class="p">`</span> <span class="p">(</span><span class="o">*</span> <span class="n">phi</span><span class="p">)))))</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">unriffle</span><span class="p">)</span>
+    <span class="kr">where</span> <span class="n">phi</span> <span class="ow">=</span> <span class="n">cis</span> <span class="p">(</span><span class="o">-</span><span class="n">pi</span> <span class="o">/</span> <span class="p">(</span><span class="n">fromIntegral</span> <span class="p">(</span><span class="mi">2</span> <span class="o">^</span> <span class="n">n</span><span class="p">)))</span>
+          <span class="n">n&#39;</span>  <span class="ow">=</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span>
+
+<span class="c1">-- Testing machinery</span>
+<span class="c1">-- Conversion to list, for comparison to specification (i.e. - DFT)</span>
+<span class="nf">btToList</span> <span class="ow">::</span> <span class="kt">BalTree</span> <span class="n">b</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="n">b</span><span class="p">]</span>
+<span class="nf">btToList</span> <span class="ow">=</span> <span class="n">btToList&#39;</span> <span class="o">.</span> <span class="n">convertTree</span>
+
+<span class="c1">-- Tree of pairs seems to be much more convenient, in some circumstances.</span>
+<span class="kr">data</span> <span class="kt">BalTree&#39;</span> <span class="n">b</span> <span class="ow">=</span> <span class="kt">Zero&#39;</span> <span class="n">b</span>
+                <span class="o">|</span> <span class="kt">Succ&#39;</span> <span class="p">(</span><span class="kt">Pair</span> <span class="p">(</span><span class="kt">BalTree&#39;</span> <span class="n">b</span><span class="p">))</span>
+    <span class="kr">deriving</span> <span class="p">(</span><span class="kt">Show</span><span class="p">)</span>
+    
+<span class="nf">apply&#39;</span> <span class="ow">::</span> <span class="kt">Hom</span> <span class="n">a</span> <span class="n">b</span> <span class="ow">-&gt;</span> <span class="kt">BalTree&#39;</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="kt">BalTree&#39;</span> <span class="n">b</span>
+<span class="nf">apply&#39;</span> <span class="p">(</span><span class="n">f</span> <span class="kt">:&amp;:</span> <span class="n">fs</span><span class="p">)</span> <span class="p">(</span><span class="kt">Zero&#39;</span> <span class="n">x</span><span class="p">)</span>        <span class="ow">=</span> <span class="kt">Zero&#39;</span> <span class="p">(</span><span class="n">f</span> <span class="n">x</span><span class="p">)</span>
+<span class="nf">apply&#39;</span> <span class="p">(</span><span class="n">f</span> <span class="kt">:&amp;:</span> <span class="n">fs</span><span class="p">)</span> <span class="p">(</span><span class="kt">Succ&#39;</span> <span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">))</span> <span class="ow">=</span> <span class="kt">Succ&#39;</span> <span class="p">((</span><span class="n">apply&#39;</span> <span class="p">(</span><span class="n">f</span> <span class="kt">:&amp;:</span> <span class="n">fs</span><span class="p">)</span> <span class="n">t1</span><span class="p">),</span> <span class="p">(</span><span class="n">apply&#39;</span> <span class="p">(</span><span class="n">f</span> <span class="kt">:&amp;:</span> <span class="n">fs</span><span class="p">)</span> <span class="n">t2</span><span class="p">))</span>
+
+<span class="nf">btToList&#39;</span> <span class="ow">::</span> <span class="kt">BalTree&#39;</span> <span class="n">b</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="n">b</span><span class="p">]</span>
+<span class="nf">btToList&#39;</span> <span class="p">(</span><span class="kt">Zero&#39;</span> <span class="n">x</span><span class="p">)</span>        <span class="ow">=</span> <span class="p">[</span><span class="n">x</span><span class="p">]</span>
+<span class="nf">btToList&#39;</span> <span class="p">(</span><span class="kt">Succ&#39;</span> <span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">))</span> <span class="ow">=</span> <span class="n">btToList&#39;</span> <span class="n">t1</span> <span class="o">++</span> <span class="p">(</span><span class="n">btToList&#39;</span> <span class="n">t2</span><span class="p">)</span>
+
+<span class="c1">-- We&#39;ll need conversion functions back and forth.</span>
+<span class="c1">-- (I probably could have just lifted this from Conal Elliott&#39;s recent work,</span>
+<span class="c1">-- but decided it&#39;d be a good exercise to do it myself.)</span>
+<span class="nf">invertTree</span> <span class="ow">::</span> <span class="kt">BalTree&#39;</span> <span class="n">b</span> <span class="ow">-&gt;</span> <span class="kt">BalTree</span> <span class="n">b</span>
+<span class="nf">invertTree</span> <span class="p">(</span><span class="kt">Zero&#39;</span> <span class="n">x</span><span class="p">)</span>        <span class="ow">=</span> <span class="kt">Zero</span> <span class="n">x</span>
+<span class="nf">invertTree</span> <span class="p">(</span><span class="kt">Succ&#39;</span> <span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">))</span> <span class="ow">=</span> <span class="n">joinTrees</span> <span class="p">(</span><span class="n">invertTree</span> <span class="n">t1</span><span class="p">,</span> <span class="n">invertTree</span> <span class="n">t2</span><span class="p">)</span>
+
+<span class="nf">joinTrees</span> <span class="ow">::</span> <span class="kt">Pair</span> <span class="p">(</span><span class="kt">BalTree</span> <span class="n">b</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="kt">BalTree</span> <span class="n">b</span>
+<span class="nf">joinTrees</span> <span class="p">(</span><span class="kt">Zero</span> <span class="n">x</span><span class="p">,</span>   <span class="kt">Zero</span> <span class="n">y</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">Succ</span> <span class="p">(</span><span class="kt">Zero</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
+<span class="nf">joinTrees</span> <span class="p">(</span><span class="kt">Succ</span> <span class="n">t1</span><span class="p">,</span> <span class="kt">Succ</span> <span class="n">t2</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">Succ</span> <span class="p">(</span><span class="n">joinTrees</span> <span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">))</span>
+
+<span class="nf">convertTree</span> <span class="ow">::</span> <span class="kt">BalTree</span> <span class="n">b</span> <span class="ow">-&gt;</span> <span class="kt">BalTree&#39;</span> <span class="n">b</span>
+<span class="nf">convertTree</span> <span class="p">(</span><span class="kt">Zero</span> <span class="n">x</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">Zero&#39;</span> <span class="n">x</span>
+<span class="nf">convertTree</span> <span class="p">(</span><span class="kt">Succ</span> <span class="n">t</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">Succ&#39;</span> <span class="o">$</span> <span class="p">(</span><span class="n">convertTree</span> <span class="p">`</span><span class="n">prod</span><span class="p">`</span> <span class="n">convertTree</span><span class="p">)</span> <span class="p">(</span><span class="n">transposeTree</span> <span class="n">t</span><span class="p">)</span>
+
+<span class="nf">transposeTree</span> <span class="ow">::</span> <span class="kt">BalTree</span> <span class="p">(</span><span class="kt">Pair</span> <span class="n">b</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="kt">Pair</span> <span class="p">(</span><span class="kt">BalTree</span> <span class="n">b</span><span class="p">)</span>
+<span class="nf">transposeTree</span> <span class="p">(</span><span class="kt">Zero</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span> <span class="ow">=</span> <span class="p">(</span><span class="kt">Zero</span> <span class="n">x</span><span class="p">,</span> <span class="kt">Zero</span> <span class="n">y</span><span class="p">)</span>
+<span class="nf">transposeTree</span> <span class="p">(</span><span class="kt">Succ</span> <span class="n">t</span><span class="p">)</span>      <span class="ow">=</span> <span class="p">(</span><span class="kt">Succ</span> <span class="p">`</span><span class="n">prod</span><span class="p">`</span> <span class="kt">Succ</span><span class="p">)</span> <span class="p">(</span><span class="n">transposeTree</span> <span class="n">t</span><span class="p">)</span>
+
+<span class="nf">unriffleTree</span> <span class="ow">::</span> <span class="kt">BalTree</span> <span class="n">b</span> <span class="ow">-&gt;</span> <span class="kt">BalTree</span> <span class="n">b</span>
+<span class="nf">unriffleTree</span> <span class="p">(</span><span class="kt">Zero</span> <span class="n">x</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">Zero</span> <span class="n">x</span>
+<span class="nf">unriffleTree</span> <span class="p">(</span><span class="kt">Succ</span> <span class="n">t</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">Succ</span> <span class="p">(</span><span class="n">apply</span> <span class="n">unriffle</span> <span class="n">t</span><span class="p">)</span>
+
+<span class="c1">-- Build a tree of depth &#39;n&#39;, taking values from supplied list, sequentially.</span>
+<span class="c1">-- This is awfully clunky, moving through an incorrectly assembled Pair of BalTrees first.</span>
+<span class="c1">-- However, I couldn&#39;t figure out a better way of coping with an infinitely long input list.</span>
+<span class="nf">buildTree</span> <span class="ow">::</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="ow">-&gt;</span> <span class="kt">BalTree</span> <span class="n">b</span>
+<span class="nf">buildTree</span> <span class="n">n</span> <span class="ow">=</span> <span class="p">(</span><span class="n">unriffleTree</span> <span class="o">.</span> <span class="n">invertTree</span> <span class="o">.</span> <span class="n">buildTree&#39;</span> <span class="n">n</span><span class="p">)</span>
+
+<span class="nf">buildTree&#39;</span> <span class="ow">::</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="ow">-&gt;</span> <span class="kt">BalTree&#39;</span> <span class="n">b</span>
+<span class="nf">buildTree&#39;</span> <span class="kr">_</span> <span class="kt">[]</span>     <span class="ow">=</span> <span class="ne">error</span> <span class="s">&quot;Exhausted input!&quot;</span>
+<span class="nf">buildTree&#39;</span> <span class="mi">0</span> <span class="p">(</span><span class="n">x</span><span class="kt">:</span><span class="n">xs</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">Zero&#39;</span> <span class="n">x</span>
+<span class="nf">buildTree&#39;</span> <span class="n">n</span> <span class="n">xs</span>     <span class="ow">=</span> <span class="kt">Succ&#39;</span> <span class="p">((</span><span class="n">buildTree&#39;</span> <span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">(</span><span class="n">evens</span> <span class="n">xs</span><span class="p">)),</span> <span class="p">(</span><span class="n">buildTree&#39;</span> <span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">(</span><span class="n">odds</span> <span class="n">xs</span><span class="p">)))</span>
+
+<span class="nf">evens</span> <span class="ow">::</span> <span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="n">a</span><span class="p">]</span>
+<span class="nf">evens</span> <span class="kt">[]</span>     <span class="ow">=</span> <span class="kt">[]</span>
+<span class="nf">evens</span> <span class="p">(</span><span class="n">x</span><span class="kt">:</span><span class="n">xs</span><span class="p">)</span> <span class="ow">=</span> <span class="n">x</span> <span class="kt">:</span> <span class="p">(</span><span class="n">odds</span> <span class="n">xs</span><span class="p">)</span>
+
+<span class="nf">odds</span> <span class="ow">::</span> <span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="n">a</span><span class="p">]</span>
+<span class="nf">odds</span> <span class="kt">[]</span>     <span class="ow">=</span> <span class="kt">[]</span>
+<span class="nf">odds</span> <span class="p">(</span><span class="n">x</span><span class="kt">:</span><span class="n">xs</span><span class="p">)</span> <span class="ow">=</span> <span class="n">evens</span> <span class="n">xs</span>
+
+<span class="c1">-- Some test sequences:</span>
+<span class="c1">-- Needed, to exercise twiddle().</span>
+<span class="nf">ones</span>  <span class="ow">=</span> <span class="n">repeat</span> <span class="p">(</span><span class="kt">PrettyDouble</span> <span class="mf">1.0</span><span class="p">)</span>
+<span class="c1">-- Odd triangle wave, at fundamental frequency.</span>
+<span class="nf">test1</span> <span class="ow">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.25</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.75</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.75</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.25</span><span class="p">]</span> <span class="ow">::</span> <span class="p">[</span><span class="kt">PrettyDouble</span><span class="p">]</span>
+
+<span class="nf">main</span> <span class="ow">=</span> <span class="kr">do</span>
+  <span class="n">g</span> <span class="ow">&lt;-</span> <span class="n">getStdGen</span>
+  <span class="kr">let</span> <span class="n">rands</span> <span class="ow">=</span> <span class="p">(</span><span class="n">randoms</span> <span class="n">g</span> <span class="ow">::</span> <span class="p">[</span><span class="kt">PrettyDouble</span><span class="p">])</span>
+  <span class="n">forM_</span> <span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="mi">5</span><span class="p">]</span> <span class="p">(</span><span class="nf">\</span><span class="n">n</span> <span class="ow">-&gt;</span> <span class="kr">do</span>
+      <span class="kr">let</span> <span class="n">t</span> <span class="ow">=</span> <span class="n">buildTree</span> <span class="n">n</span> <span class="p">(</span><span class="n">map</span> <span class="p">(</span><span class="kt">:+</span> <span class="mf">0.0</span><span class="p">)</span> <span class="n">rands</span><span class="p">)</span>
+      <span class="n">print</span> <span class="o">$</span> <span class="n">btToList</span> <span class="p">(</span><span class="n">apply</span> <span class="n">fft</span> <span class="n">t</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="n">dft</span> <span class="p">(</span><span class="n">btToList</span> <span class="n">t</span><span class="p">))</span>
+      <span class="p">)</span>
+  
+<span class="nf">main</span>
+
+  <span class="cm">{-</span>
+<span class="cm">  let t     = buildTree 4 (map (:+ 0.0) ones)</span>
+<span class="cm">  let l     = btToList t</span>
+<span class="cm">  let ref   = dft l</span>
+<span class="cm">  let dut   = apply fft t</span>
+<span class="cm">  putStr &quot;DFT: &quot;</span>
+<span class="cm">  print ref</span>
+<span class="cm">  putStr &quot;FFT: &quot;</span>
+<span class="cm">  print $ btToList dut</span>
+<span class="cm">  -}</span>
+  
+  <span class="cm">{-</span>
+<span class="cm">  putStrLn &quot;twiddles:&quot;</span>
+<span class="cm">  forM_ [0..5] (\n -&gt; do</span>
+<span class="cm">      let t = buildTree n (map (:+ 0.0) ones)</span>
+<span class="cm">      print $ btToList $ apply twiddle t</span>
+<span class="cm">  -}</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+
+
+<div class="output_text output_subarea ">
+<pre>True
+True
+True
+True
+False
+False</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to Contents</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[22]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span class="nf">pd</span> <span class="ow">=</span> <span class="kt">PrettyDouble</span> <span class="mf">1.0</span>
+<span class="nf">pd</span> <span class="kt">:+</span> <span class="mf">0.0</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+
+
+<div class="output_text output_subarea ">
+<pre> 1.000 :+  0.000</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
 </div>
 <div class="cell border-box-sizing text_cell rendered">
 <div class="prompt input_prompt">
