@@ -256,7 +256,12 @@ type from **Exercise 3**.</a><ul>
 <li><a href="#ex14">Exercise 14 - Prove the two forms of first translation rule equivalent.</a></li>
 <li><a href="#ex16">Exercise 16 - Define an *ArrowCircuit* instance for the *StreamMap* type from Exercise 3.</a></li>
 <li><a href="#ex17">Exercise 17 - Definition of *sort*.</a><ul>
-<li><a href="#ex17x">Extra Credit: Definition of *FFT*, using *Home* and friends.</a></li>
+<li><a href="#ex17a">Exercise 17a: Breakdown of *proc* notation for *butterfly*.</a></li>
+<li><a href="#ex17b">Exercise 17b: Attempted breakdown of *proc* notation for *bisort*.</a></li>
+<li><a href="#ex17x">Extra Credit: Definition of *FFT*, using *Home* and friends.</a><ul>
+<li><a href="#ex17x_discussion">Discussion of *FFT* solution.</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#questions">Unanswered Questions</a></li>
@@ -2368,7 +2373,7 @@ distr (Right b, c) = Right (b, c)</code></pre>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[35]:</div>
+<div class="prompt input_prompt">In&nbsp;[2]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-haskell"><pre><span class="cm">{-# LANGUAGE Arrows #-}</span>
@@ -2379,7 +2384,7 @@ distr (Right b, c) = Right (b, c)</code></pre>
 <span class="kr">import</span> <span class="nn">Control.Category</span>          <span class="c1">-- Prerequisite to &quot;Arrow&quot;.</span>
 
 <span class="kr">data</span> <span class="kt">BalTree</span> <span class="n">a</span> <span class="ow">=</span> <span class="kt">Zero</span> <span class="n">a</span> <span class="o">|</span> <span class="kt">Succ</span> <span class="p">(</span><span class="kt">BalTree</span> <span class="p">(</span><span class="kt">Pair</span> <span class="n">a</span><span class="p">))</span>
-    <span class="kr">deriving</span> <span class="p">(</span><span class="kt">Show</span><span class="p">)</span>
+    <span class="kr">deriving</span> <span class="p">(</span><span class="kt">Show</span><span class="p">,</span> <span class="kt">Eq</span><span class="p">)</span>
     
 <span class="kr">type</span> <span class="kt">Pair</span> <span class="n">a</span> <span class="ow">=</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
 
@@ -2407,6 +2412,17 @@ distr (Right b, c) = Right (b, c)</code></pre>
 <span class="nf">swap</span> <span class="o">~</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="ow">=</span> <span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
 
 <span class="nf">idA</span> <span class="ow">=</span> <span class="n">arr</span> <span class="n">id</span>
+
+<span class="nf">scan</span> <span class="ow">::</span> <span class="kt">Num</span> <span class="n">b</span> <span class="ow">=&gt;</span> <span class="p">(</span><span class="n">b</span> <span class="ow">-&gt;</span> <span class="n">b</span> <span class="ow">-&gt;</span> <span class="n">b</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="kt">Hom</span> <span class="n">b</span> <span class="n">b</span>
+<span class="nf">scan</span> <span class="n">f</span> <span class="ow">=</span> <span class="n">id</span> <span class="kt">:&amp;:</span> <span class="n">proc</span> <span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="kr">do</span>
+                 <span class="n">e&#39;</span> <span class="ow">&lt;-</span> <span class="n">scan</span> <span class="n">f</span> <span class="o">-&lt;</span> <span class="n">f</span> <span class="n">o</span> <span class="n">e</span>
+                 <span class="n">el</span> <span class="ow">&lt;-</span> <span class="n">rsh</span> <span class="mi">0</span>  <span class="o">-&lt;</span> <span class="n">e&#39;</span>
+                 <span class="n">idA</span> <span class="o">-&lt;</span> <span class="p">(</span><span class="n">f</span> <span class="n">el</span> <span class="n">o</span><span class="p">,</span> <span class="n">e&#39;</span><span class="p">)</span>
+
+<span class="nf">rsh</span> <span class="ow">::</span> <span class="n">b</span> <span class="ow">-&gt;</span> <span class="kt">Hom</span> <span class="n">b</span> <span class="n">b</span>
+<span class="nf">rsh</span> <span class="n">v</span> <span class="ow">=</span> <span class="n">const</span> <span class="n">v</span> <span class="kt">:&amp;:</span> <span class="n">proc</span> <span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="kr">do</span>
+                     <span class="n">o&#39;</span> <span class="ow">&lt;-</span> <span class="n">rsh</span> <span class="n">v</span> <span class="o">-&lt;</span> <span class="n">e</span>
+                     <span class="n">idA</span> <span class="o">-&lt;</span> <span class="p">(</span><span class="n">o&#39;</span><span class="p">,</span> <span class="n">o</span><span class="p">)</span>
 
 <span class="nf">butterfly</span> <span class="ow">::</span> <span class="p">(</span><span class="kt">Pair</span> <span class="n">b</span> <span class="ow">-&gt;</span> <span class="kt">Pair</span> <span class="n">b</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="kt">Hom</span> <span class="n">b</span> <span class="n">b</span>
 <span class="nf">butterfly</span> <span class="n">f</span> <span class="ow">=</span> <span class="n">id</span> <span class="kt">:&amp;:</span> <span class="n">proc</span> <span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="kr">do</span>
@@ -2730,10 +2746,12 @@ $$<p>where $(\cdot)$ denotes <em>vector dot product</em>, and $W^m = \{w_m\} \qu
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[53]:</div>
+<div class="prompt input_prompt">In&nbsp;[33]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-haskell"><pre><span class="cm">{-# LANGUAGE GeneralizedNewtypeDeriving #-}</span>
+<div class=" highlight hl-haskell"><pre><span class="cm">{-# LANGUAGE GeneralizedNewtypeDeriving</span>
+<span class="cm">             TupleSections</span>
+<span class="cm">  #-}</span>
 
 <span class="kr">import</span> <span class="nn">Control.Monad</span>
 <span class="kr">import</span> <span class="nn">Data.Complex</span>
@@ -2789,18 +2807,28 @@ $$<p>where $(\cdot)$ denotes <em>vector dot product</em>, and $W^m = \{w_m\} \qu
 <span class="c1">-- I did this, to remain consistent with the explanation, above, which came from a pre-existing work.</span>
 <span class="nf">fft</span> <span class="ow">::</span> <span class="kt">RealFloat</span> <span class="n">b</span> <span class="ow">=&gt;</span> <span class="kt">Hom</span> <span class="p">(</span><span class="kt">Complex</span> <span class="n">b</span><span class="p">)</span> <span class="p">(</span><span class="kt">Complex</span> <span class="n">b</span><span class="p">)</span>
 <span class="nf">fft</span> <span class="ow">=</span> <span class="n">id</span> <span class="kt">:&amp;:</span> <span class="n">proc</span> <span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">o</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="kr">do</span>
-                <span class="n">e&#39;</span> <span class="ow">&lt;-</span> <span class="n">fft</span>             <span class="o">-&lt;</span> <span class="n">e</span>
-                <span class="n">o&#39;</span> <span class="ow">&lt;-</span> <span class="n">fft</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">twiddle</span> <span class="o">-&lt;</span> <span class="n">o</span>
+                <span class="n">e&#39;</span> <span class="ow">&lt;-</span> <span class="n">fft</span>           <span class="o">-&lt;</span> <span class="n">e</span>
+                <span class="n">o&#39;</span> <span class="ow">&lt;-</span> <span class="n">doTwiddle</span> <span class="n">fft</span> <span class="o">-&lt;</span> <span class="n">o</span>
                 <span class="n">unriffle</span> <span class="o">-&lt;</span> <span class="n">f</span> <span class="p">(</span><span class="n">e&#39;</span><span class="p">,</span> <span class="n">o&#39;</span><span class="p">)</span>
     <span class="kr">where</span> <span class="n">f</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="ow">=</span> <span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">y</span><span class="p">,</span> <span class="n">x</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span>
 
-<span class="nf">twiddle</span> <span class="ow">::</span> <span class="kt">RealFloat</span> <span class="n">b</span> <span class="ow">=&gt;</span> <span class="kt">Hom</span> <span class="p">(</span><span class="kt">Complex</span> <span class="n">b</span><span class="p">)</span> <span class="p">(</span><span class="kt">Complex</span> <span class="n">b</span><span class="p">)</span>
-<span class="nf">twiddle</span> <span class="ow">=</span> <span class="n">id</span> <span class="kt">:&amp;:</span> <span class="n">twiddle&#39;</span> <span class="mi">1</span>
+<span class="c1">-- From Ross:</span>
+<span class="nf">twiddle</span> <span class="ow">=</span> <span class="n">roots</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
 
-<span class="nf">twiddle&#39;</span> <span class="ow">::</span> <span class="kt">RealFloat</span> <span class="n">b</span> <span class="ow">=&gt;</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Hom</span> <span class="p">(</span><span class="kt">Pair</span> <span class="p">(</span><span class="kt">Complex</span> <span class="n">b</span><span class="p">))</span> <span class="p">(</span><span class="kt">Pair</span> <span class="p">(</span><span class="kt">Complex</span> <span class="n">b</span><span class="p">))</span>
-<span class="nf">twiddle&#39;</span> <span class="n">n</span> <span class="ow">=</span> <span class="p">(</span><span class="n">id</span> <span class="o">***</span> <span class="p">(</span><span class="o">*</span> <span class="n">phi</span><span class="p">))</span> <span class="kt">:&amp;:</span> <span class="p">(((</span><span class="n">twiddle&#39;</span> <span class="n">n&#39;</span><span class="p">)</span> <span class="o">***</span> <span class="p">((</span><span class="n">twiddle&#39;</span> <span class="n">n&#39;</span><span class="p">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="p">(</span><span class="n">arr</span> <span class="p">((</span><span class="o">*</span> <span class="n">phi</span><span class="p">)</span> <span class="p">`</span><span class="n">prod</span><span class="p">`</span> <span class="p">(</span><span class="o">*</span> <span class="n">phi</span><span class="p">)))))</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">unriffle</span><span class="p">)</span>
-    <span class="kr">where</span> <span class="n">phi</span> <span class="ow">=</span> <span class="n">cis</span> <span class="p">(</span><span class="o">-</span><span class="n">pi</span> <span class="o">/</span> <span class="p">(</span><span class="n">fromIntegral</span> <span class="p">(</span><span class="mi">2</span> <span class="o">^</span> <span class="n">n</span><span class="p">)))</span>
-          <span class="n">n&#39;</span>  <span class="ow">=</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span>
+<span class="nf">roots</span> <span class="ow">::</span> <span class="kt">RealFloat</span> <span class="n">b</span> <span class="ow">=&gt;</span> <span class="kt">Complex</span> <span class="n">b</span> <span class="ow">-&gt;</span> <span class="kt">Hom</span> <span class="nb">()</span> <span class="p">(</span><span class="kt">Complex</span> <span class="n">b</span><span class="p">)</span>
+<span class="nf">roots</span> <span class="n">r</span> <span class="ow">=</span> <span class="n">const</span> <span class="mi">1</span> <span class="kt">:&amp;:</span> <span class="n">proc</span> <span class="kr">_</span> <span class="ow">-&gt;</span> <span class="kr">do</span>
+            <span class="n">x</span> <span class="ow">&lt;-</span> <span class="n">roots</span> <span class="n">r&#39;</span> <span class="o">-&lt;</span> <span class="nb">()</span>
+            <span class="n">unriffle</span> <span class="o">-&lt;</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="o">*</span><span class="n">r&#39;</span><span class="p">)</span>
+ <span class="kr">where</span>
+   <span class="n">r&#39;</span> <span class="ow">=</span> <span class="kr">if</span> <span class="n">imagPart</span> <span class="n">s</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="kr">then</span> <span class="o">-</span><span class="n">s</span> <span class="kr">else</span> <span class="n">s</span>
+   <span class="n">s</span>  <span class="ow">=</span> <span class="n">sqrt</span> <span class="n">r</span>
+<span class="c1">-- end From Ross</span>
+
+<span class="nf">doTwiddle</span> <span class="ow">::</span> <span class="kt">RealFloat</span> <span class="n">b</span> <span class="ow">=&gt;</span> <span class="kt">Hom</span> <span class="p">(</span><span class="kt">Complex</span> <span class="n">b</span><span class="p">)</span> <span class="p">(</span><span class="kt">Complex</span> <span class="n">b</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="kt">Hom</span> <span class="p">(</span><span class="kt">Complex</span> <span class="n">b</span><span class="p">)</span> <span class="p">(</span><span class="kt">Complex</span> <span class="n">b</span><span class="p">)</span>
+<span class="nf">doTwiddle</span> <span class="n">f</span> <span class="ow">=</span> <span class="n">arr</span> <span class="p">(,</span><span class="nb">()</span><span class="p">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="p">(</span><span class="n">f</span> <span class="o">***</span> <span class="n">twiddle</span><span class="p">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">arr</span> <span class="p">(</span><span class="n">uncurry</span> <span class="p">(</span><span class="o">*</span><span class="p">))</span>
+
+<span class="nf">inSucc</span> <span class="ow">::</span> <span class="kt">Hom</span> <span class="p">(</span><span class="kt">Pair</span> <span class="n">b</span><span class="p">)</span> <span class="p">(</span><span class="kt">Pair</span> <span class="n">b</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="kt">Hom</span> <span class="n">b</span> <span class="n">b</span>
+<span class="nf">inSucc</span> <span class="n">f</span> <span class="ow">=</span> <span class="n">id</span> <span class="kt">:&amp;:</span> <span class="n">f</span>
 
 <span class="c1">-- Testing machinery</span>
 <span class="c1">-- Conversion to list, for comparison to specification (i.e. - DFT)</span>
@@ -2847,12 +2875,17 @@ $$<p>where $(\cdot)$ denotes <em>vector dot product</em>, and $W^m = \{w_m\} \qu
 <span class="c1">-- This is awfully clunky, moving through an incorrectly assembled Pair of BalTrees first.</span>
 <span class="c1">-- However, I couldn&#39;t figure out a better way of coping with an infinitely long input list.</span>
 <span class="nf">buildTree</span> <span class="ow">::</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="ow">-&gt;</span> <span class="kt">BalTree</span> <span class="n">b</span>
-<span class="nf">buildTree</span> <span class="n">n</span> <span class="ow">=</span> <span class="p">(</span><span class="n">unriffleTree</span> <span class="o">.</span> <span class="n">invertTree</span> <span class="o">.</span> <span class="n">buildTree&#39;</span> <span class="n">n</span><span class="p">)</span>
+<span class="nf">buildTree</span> <span class="n">n</span> <span class="ow">=</span> <span class="n">invertTree</span> <span class="o">.</span> <span class="n">buildTree&#39;</span> <span class="n">n</span>
 
 <span class="nf">buildTree&#39;</span> <span class="ow">::</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="ow">-&gt;</span> <span class="kt">BalTree&#39;</span> <span class="n">b</span>
 <span class="nf">buildTree&#39;</span> <span class="kr">_</span> <span class="kt">[]</span>     <span class="ow">=</span> <span class="ne">error</span> <span class="s">&quot;Exhausted input!&quot;</span>
 <span class="nf">buildTree&#39;</span> <span class="mi">0</span> <span class="p">(</span><span class="n">x</span><span class="kt">:</span><span class="n">xs</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">Zero&#39;</span> <span class="n">x</span>
-<span class="nf">buildTree&#39;</span> <span class="n">n</span> <span class="n">xs</span>     <span class="ow">=</span> <span class="kt">Succ&#39;</span> <span class="p">((</span><span class="n">buildTree&#39;</span> <span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">(</span><span class="n">evens</span> <span class="n">xs</span><span class="p">)),</span> <span class="p">(</span><span class="n">buildTree&#39;</span> <span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">(</span><span class="n">odds</span> <span class="n">xs</span><span class="p">)))</span>
+<span class="nf">buildTree&#39;</span> <span class="n">n</span> <span class="n">xs</span>     <span class="ow">=</span> <span class="n">mergeTrees</span> <span class="p">((</span><span class="n">buildTree&#39;</span> <span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">(</span><span class="n">evens</span> <span class="n">xs</span><span class="p">)),</span> <span class="p">(</span><span class="n">buildTree&#39;</span> <span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">(</span><span class="n">odds</span> <span class="n">xs</span><span class="p">)))</span>
+
+<span class="nf">mergeTrees</span> <span class="ow">::</span> <span class="kt">Pair</span> <span class="p">(</span><span class="kt">BalTree&#39;</span> <span class="n">b</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="kt">BalTree&#39;</span> <span class="n">b</span>
+<span class="nf">mergeTrees</span> <span class="p">(</span><span class="kt">Zero&#39;</span> <span class="n">x</span><span class="p">,</span>  <span class="kt">Zero&#39;</span> <span class="n">y</span><span class="p">)</span>              <span class="ow">=</span> <span class="kt">Succ&#39;</span> <span class="p">(</span><span class="kt">Zero&#39;</span> <span class="n">x</span><span class="p">,</span> <span class="kt">Zero&#39;</span> <span class="n">y</span><span class="p">)</span>
+<span class="nf">mergeTrees</span> <span class="p">(</span><span class="kt">Succ&#39;</span> <span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">),</span> <span class="kt">Succ&#39;</span> <span class="p">(</span><span class="n">t3</span><span class="p">,</span> <span class="n">t4</span><span class="p">))</span> <span class="ow">=</span> <span class="kt">Succ&#39;</span> <span class="p">(</span><span class="n">mergeTrees</span> <span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t3</span><span class="p">),</span> <span class="n">mergeTrees</span> <span class="p">(</span><span class="n">t2</span><span class="p">,</span> <span class="n">t4</span><span class="p">))</span>
+<span class="nf">mergeTrees</span> <span class="p">(</span><span class="kr">_</span><span class="p">,</span>        <span class="kr">_</span><span class="p">)</span>                    <span class="ow">=</span> <span class="ne">error</span> <span class="s">&quot;Attempt to merge unbalanced trees!&quot;</span>
 
 <span class="nf">evens</span> <span class="ow">::</span> <span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="n">a</span><span class="p">]</span>
 <span class="nf">evens</span> <span class="kt">[]</span>     <span class="ow">=</span> <span class="kt">[]</span>
@@ -2861,6 +2894,11 @@ $$<p>where $(\cdot)$ denotes <em>vector dot product</em>, and $W^m = \{w_m\} \qu
 <span class="nf">odds</span> <span class="ow">::</span> <span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="n">a</span><span class="p">]</span>
 <span class="nf">odds</span> <span class="kt">[]</span>     <span class="ow">=</span> <span class="kt">[]</span>
 <span class="nf">odds</span> <span class="p">(</span><span class="n">x</span><span class="kt">:</span><span class="n">xs</span><span class="p">)</span> <span class="ow">=</span> <span class="n">evens</span> <span class="n">xs</span>
+
+<span class="nf">twiddleRef</span> <span class="ow">::</span> <span class="kt">RealFloat</span> <span class="n">b</span> <span class="ow">=&gt;</span> <span class="p">[</span><span class="kt">Complex</span> <span class="n">b</span><span class="p">]</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="kt">Complex</span> <span class="n">b</span><span class="p">]</span>
+<span class="nf">twiddleRef</span> <span class="n">xs</span> <span class="ow">=</span> <span class="n">map</span> <span class="p">(</span><span class="n">uncurry</span> <span class="p">(</span><span class="o">*</span><span class="p">))</span> <span class="o">$</span> <span class="n">zip</span> <span class="n">xs</span> <span class="p">[</span><span class="n">theta</span> <span class="o">**</span> <span class="n">m</span> <span class="o">|</span> <span class="n">m</span> <span class="ow">&lt;-</span> <span class="n">map</span> <span class="p">((</span><span class="kt">:+</span> <span class="mf">0.0</span><span class="p">)</span> <span class="o">.</span> <span class="n">fromIntegral</span><span class="p">)</span> <span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="p">(</span><span class="n">m&#39;</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)]]</span>
+                                            <span class="kr">where</span> <span class="n">theta</span> <span class="ow">=</span> <span class="n">cis</span> <span class="p">(</span><span class="o">-</span><span class="n">pi</span> <span class="o">/</span> <span class="p">(</span><span class="n">fromIntegral</span> <span class="n">m&#39;</span><span class="p">))</span>
+                                                  <span class="n">m&#39;</span>    <span class="ow">=</span> <span class="n">length</span> <span class="n">xs</span>
 
 <span class="c1">-- Some test sequences:</span>
 <span class="c1">-- Needed, to exercise twiddle().</span>
@@ -2873,28 +2911,14 @@ $$<p>where $(\cdot)$ denotes <em>vector dot product</em>, and $W^m = \{w_m\} \qu
   <span class="kr">let</span> <span class="n">rands</span> <span class="ow">=</span> <span class="p">(</span><span class="n">randoms</span> <span class="n">g</span> <span class="ow">::</span> <span class="p">[</span><span class="kt">PrettyDouble</span><span class="p">])</span>
   <span class="n">forM_</span> <span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="mi">5</span><span class="p">]</span> <span class="p">(</span><span class="nf">\</span><span class="n">n</span> <span class="ow">-&gt;</span> <span class="kr">do</span>
       <span class="kr">let</span> <span class="n">t</span> <span class="ow">=</span> <span class="n">buildTree</span> <span class="n">n</span> <span class="p">(</span><span class="n">map</span> <span class="p">(</span><span class="kt">:+</span> <span class="mf">0.0</span><span class="p">)</span> <span class="n">rands</span><span class="p">)</span>
+      <span class="n">putStrLn</span> <span class="o">$</span> <span class="s">&quot;Tree depth: &quot;</span> <span class="o">++</span> <span class="p">(</span><span class="n">show</span> <span class="n">n</span><span class="p">)</span>
+      <span class="n">putStr</span> <span class="s">&quot;</span><span class="se">\t</span><span class="s">Testing twiddles...&quot;</span>
+      <span class="n">print</span> <span class="o">$</span> <span class="n">btToList</span> <span class="p">(</span><span class="n">apply</span> <span class="p">(</span><span class="n">arr</span> <span class="p">(,</span><span class="nb">()</span><span class="p">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="p">(</span><span class="n">idA</span> <span class="o">***</span> <span class="n">twiddle</span><span class="p">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">arr</span> <span class="p">(</span><span class="n">uncurry</span> <span class="p">(</span><span class="o">*</span><span class="p">)))</span> <span class="n">t</span><span class="p">)</span> <span class="o">==</span> <span class="n">twiddleRef</span> <span class="p">(</span><span class="n">btToList</span> <span class="n">t</span><span class="p">)</span>
+      <span class="n">putStr</span> <span class="s">&quot;</span><span class="se">\t</span><span class="s">Testing FFT...&quot;</span>
       <span class="n">print</span> <span class="o">$</span> <span class="n">btToList</span> <span class="p">(</span><span class="n">apply</span> <span class="n">fft</span> <span class="n">t</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="n">dft</span> <span class="p">(</span><span class="n">btToList</span> <span class="n">t</span><span class="p">))</span>
       <span class="p">)</span>
-  
-<span class="nf">main</span>
 
-  <span class="cm">{-</span>
-<span class="cm">  let t     = buildTree 4 (map (:+ 0.0) ones)</span>
-<span class="cm">  let l     = btToList t</span>
-<span class="cm">  let ref   = dft l</span>
-<span class="cm">  let dut   = apply fft t</span>
-<span class="cm">  putStr &quot;DFT: &quot;</span>
-<span class="cm">  print ref</span>
-<span class="cm">  putStr &quot;FFT: &quot;</span>
-<span class="cm">  print $ btToList dut</span>
-<span class="cm">  -}</span>
-  
-  <span class="cm">{-</span>
-<span class="cm">  putStrLn &quot;twiddles:&quot;</span>
-<span class="cm">  forM_ [0..5] (\n -&gt; do</span>
-<span class="cm">      let t = buildTree n (map (:+ 0.0) ones)</span>
-<span class="cm">      print $ btToList $ apply twiddle t</span>
-<span class="cm">  -}</span>
+<span class="nf">main</span>
 </pre></div>
 
 </div>
@@ -2909,12 +2933,24 @@ $$<p>where $(\cdot)$ denotes <em>vector dot product</em>, and $W^m = \{w_m\} \qu
 
 
 <div class="output_text output_subarea ">
-<pre>True
-True
-True
-True
-False
-False</pre>
+<pre>Tree depth: 0
+	Testing twiddles...True
+	Testing FFT...True
+Tree depth: 1
+	Testing twiddles...True
+	Testing FFT...True
+Tree depth: 2
+	Testing twiddles...True
+	Testing FFT...True
+Tree depth: 3
+	Testing twiddles...True
+	Testing FFT...True
+Tree depth: 4
+	Testing twiddles...True
+	Testing FFT...True
+Tree depth: 5
+	Testing twiddles...True
+	Testing FFT...True</pre>
 </div>
 
 </div>
@@ -2933,13 +2969,36 @@ False</pre>
 </div>
 </div>
 </div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Discussion-">Discussion <a name="ex17x_discussion" /><a class="anchor-link" href="#Discussion-">&#182;</a></h4><p>I could not get the code, above, working, until Ross gave me his <em>twiddle</em> definition.
+My own attempts at <em>twiddle</em> worked, only for tree depths less than 3. I just didn't get it.</p>
+<p>Obviously, the "meat" of Ross' twiddle implementation lies in his <em>roots</em> function, which is wonderfully clever and elegant. So, I'm taking one last dive into an Arrow notation breakdown exercise (Ugh!), in order to try and gain an intuitive understanding of <em>roots</em>, before moving on.</p>
+<p>I'll take the following as my test case, as it is the simplest non-trivial one:<br>
+(<code>Zero x</code> and <code>Succ (Zero (x,y))</code> get serviced by the <em>const 1</em> of the <em>roots r</em> and <em>roots r'</em>, respectively, and are, thus, straightforward.)</p>
+<p><code>apply (roots r) (Succ (Succ (Zero ((w,x),(y,z)))))</code></p>
+<p>First, and without any Arrow notation breakdown, the (incorrect) intuition I had about how this was working:</p>
+<p>Application of <code>(roots r)</code> to <code>Succ (Succ (Zero...</code> is "serviced" by the third nested <code>const 1</code>, which means that the "x" in this line of code:</p>
+<p><code>x &lt;- roots r' -&lt; ()</code></p>
+<p>receives a <em>pair</em>. This seems to fit, because, then, the following line of code (ignoring the <em>unriffle</em>, which is due to the nature of the <em>BalTree</em> data structure and not the roots algorithm):</p>
+<p><code>unriffle -&lt; (x, x*r')</code></p>
+<p>will yield a pair of pairs in which the <em>intra</em>-pair phase spacing is the same for both pairs, and equal to half the <em>inter</em>-pair phase spacing, which is exactly what we want. (There is an implicit <em>r''</em> coming out of the recursive call to <em>roots</em>, which is the lower half plane square root of <em>r'</em>, that determines the <em>intra</em>-pair phase spacing.)</p>
+<p>At first, this all seems very easy to explain, until...</p>
+
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[22]:</div>
+<div class="prompt input_prompt">In&nbsp;[38]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-haskell"><pre><span class="nf">pd</span> <span class="ow">=</span> <span class="kt">PrettyDouble</span> <span class="mf">1.0</span>
-<span class="nf">pd</span> <span class="kt">:+</span> <span class="mf">0.0</span>
+<div class=" highlight hl-haskell"><pre><span class="cm">{-# LANGUAGE FlexibleContexts #-}</span>
+
+<span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span>
 </pre></div>
 
 </div>
@@ -2952,9 +3011,312 @@ False</pre>
 
 <div class="output_area"><div class="prompt"></div>
 
+<div class="output_html rendered_html output_subarea ">
+<style>/* Styles used for the Hoogle display in the pager */
+.hoogle-doc {
+display: block;
+padding-bottom: 1.3em;
+padding-left: 0.4em;
+}
+.hoogle-code {
+display: block;
+font-family: monospace;
+white-space: pre;
+}
+.hoogle-text {
+display: block;
+}
+.hoogle-name {
+color: green;
+font-weight: bold;
+}
+.hoogle-head {
+font-weight: bold;
+}
+.hoogle-sub {
+display: block;
+margin-left: 0.4em;
+}
+.hoogle-package {
+font-weight: bold;
+font-style: italic;
+}
+.hoogle-module {
+font-weight: bold;
+}
+.hoogle-class {
+font-weight: bold;
+}
+.get-type {
+color: green;
+font-weight: bold;
+font-family: monospace;
+display: block;
+white-space: pre-wrap;
+}
+.show-type {
+color: green;
+font-weight: bold;
+font-family: monospace;
+margin-left: 1em;
+}
+.mono {
+font-family: monospace;
+display: block;
+}
+.err-msg {
+color: red;
+font-style: italic;
+font-family: monospace;
+white-space: pre;
+display: block;
+}
+#unshowable {
+color: red;
+font-weight: bold;
+}
+.err-msg.in.collapse {
+padding-top: 0.7em;
+}
+.highlight-code {
+white-space: pre;
+font-family: monospace;
+}
+.suggestion-warning { 
+font-weight: bold;
+color: rgb(200, 130, 0);
+}
+.suggestion-error { 
+font-weight: bold;
+color: red;
+}
+.suggestion-name {
+font-weight: bold;
+}
+</style><span class='err-msg'>No instance for (Num (t0, t1)) arising from a use of ‘it’<br/>In the first argument of ‘print’, namely ‘it’<br/>In a stmt of an interactive GHCi command: print it</span>
+</div>
 
-<div class="output_text output_subarea ">
-<pre> 1.000 :+  0.000</pre>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>...we realize that Haskell doesn't allow multiplication of a pair by a scalar!</p>
+<p>So, then, what's going on?! Let's desugar the <em>proc</em> and find out...</p>
+<p>Taking <code>(roots r)@(f :&amp;: fs)</code>, ignoring the <em>unriffle</em>, and desugaring the <em>fs</em>:</p>
+<p>r'  = lower half plane square root of r<br>
+r'' = lower half plane square root of r'</p>
+<p><code>proc _ → do
+  x ← roots r' −≺ ()
+  idA −≺ (x, x * r')                         =</code> &nbsp; &nbsp; {3rd translation rule}</p>
+<p><code>(proc _ → (roots r' −≺ ())) &amp;&amp;&amp; idA &gt;&gt;&gt;
+  proc (x, _) → do
+    idA −≺ (x, x*r')                         =</code> &nbsp; &nbsp; {2nd translation rule}</p>
+<p><code>(proc _ → (roots r' −≺ ())) &amp;&amp;&amp; idA &gt;&gt;&gt;
+  (proc (x, _) → idA −≺ (x, x*r'))           =</code> &nbsp; &nbsp; {definition of (&amp;&amp;&amp;)}</p>
+<p><code>arr dup &gt;&gt;&gt; ((proc _ → (roots r' −≺ ())) *** idA) &gt;&gt;&gt;
+  (proc (x, _) → idA −≺ (x, x*r'))           =</code> &nbsp; &nbsp; {definition of (<code>***</code>)}</p>
+<p><code>arr dup &gt;&gt;&gt; first (proc _ → (roots r' −≺ ())) &gt;&gt;&gt; second idA &gt;&gt;&gt;
+  (proc (x, _) → idA −≺ (x, x*r'))           =</code> &nbsp; &nbsp; {identity}</p>
+<p><code>arr dup &gt;&gt;&gt; first (proc _ → (roots r' −≺ ())) &gt;&gt;&gt;
+  (proc (x, _) → idA −≺ (x, x*r'))           =</code> &nbsp; &nbsp; {1st translation rule}</p>
+<p><code>arr dup &gt;&gt;&gt; first (arr (λ_ → ()) &gt;&gt;&gt; roots r') &gt;&gt;&gt;
+  arr (λ(x, _) → (x, x * r')) &gt;&gt;&gt; idA        =</code> &nbsp; &nbsp; {identity}</p>
+<p><code>arr dup &gt;&gt;&gt; first (arr (λ_ → ()) &gt;&gt;&gt; roots r') &gt;&gt;&gt;
+  arr (λ(x, _) → (x, x * r'))                =</code> &nbsp; &nbsp; {definition of <em>roots</em>}</p>
+<p><code>arr dup &gt;&gt;&gt; first (arr (λ_ → ()) &gt;&gt;&gt; (const 1 :&amp;: fs')) &gt;&gt;&gt;
+  arr (λ(x, _) → (x, x * r'))
+    where fs' = proc _ → do
+                  x' ← roots r'' −≺ ((),())
+                  idA −≺ (x', x' * r'')      =</code> &nbsp; &nbsp; {definitions of <em>const</em>, <em>fst</em>, <em>dup</em>, and (×)}</p>
+<p><code>arr dup &gt;&gt;&gt; first (arr (const ()) &gt;&gt;&gt; (const 1 :&amp;: fs')) &gt;&gt;&gt;
+  arr ((id × (* r')) . dup . fst)
+    where fs' = proc _ → do
+                  x' ← roots r'' −≺ ((),())
+                  idA −≺ (x', x' * r'')      =</code> &nbsp; &nbsp; {definition of <em>arr</em>, for <em>Hom</em>}</p>
+<p><code>(dup :&amp;: arr (dup × dup)) &gt;&gt;&gt; first ((const () :&amp;: arr (const () × const ())) &gt;&gt;&gt; (const 1 :&amp;: fs')) &gt;&gt;&gt;
+  (g :&amp;: arr (g × g))
+    where fs' = proc _ → do
+                  x' ← roots r'' −≺ ((),())
+                  idA −≺ (x', x' * r'')
+          g   = (id × (* r')) . dup . fst    =</code> &nbsp; &nbsp; {definition of (&gt;&gt;&gt;), for <em>Hom</em>}</p>
+<p><code>(dup :&amp;: arr (dup × dup)) &gt;&gt;&gt; first ((const 1 . const ()) :&amp;: (arr (const () × const ()) &gt;&gt;&gt; fs')) &gt;&gt;&gt;
+  (g :&amp;: arr (g × g))
+    where fs' = proc _ → do
+                  x' ← roots r'' −≺ ((),())
+                  idA −≺ (x', x' * r'')
+          g   = (id × (* r')) . dup . fst    =</code> &nbsp; &nbsp; {definition of <em>first</em>, for <em>Hom</em>}</p>
+<p><code>(dup :&amp;: arr (dup × dup)) &gt;&gt;&gt;
+  ((const 1 × id) :&amp;: (pure transpose &gt;&gt;&gt; arr (const () × const ()) &gt;&gt;&gt; fs' &gt;&gt;&gt; pure transpose)) &gt;&gt;&gt;
+  (g :&amp;: arr (g × g))
+    where fs' = proc _ → do
+                  x' ← roots r'' −≺ ((),())
+                  idA −≺ (x', x' * r'')
+          g   = (id × (* r')) . dup . fst    =</code> &nbsp; &nbsp; {definition of (&gt;&gt;&gt;), for <em>Hom</em>}</p>
+<p><code>(((const 1 × id) . dup) :&amp;:
+  (arr (dup × dup)) &gt;&gt;&gt; (pure transpose &gt;&gt;&gt; arr (const () × const ()) &gt;&gt;&gt; fs' &gt;&gt;&gt; pure transpose))) &gt;&gt;&gt;
+  (g :&amp;: arr (g × g))
+    where fs' = proc _ → do
+                  x' ← roots r'' −≺ ((),())
+                  idA −≺ (x', x' * r'')
+          g   = (id × (* r')) . dup . fst    =</code> &nbsp; &nbsp; {definition of (&gt;&gt;&gt;), for <em>Hom</em>}</p>
+<p><code>(g . ((const 1 × id) . dup)) :&amp;:
+  ((arr (dup × dup)) &gt;&gt;&gt; (pure transpose &gt;&gt;&gt; arr (const () × const ()) &gt;&gt;&gt; fs' &gt;&gt;&gt; pure transpose) &gt;&gt;&gt; arr (g × g))
+    where fs' = proc _ → do
+                  x' ← roots r'' −≺ ((),())
+                  idA −≺ (x', x' * r'')
+          g   = (id × (* r')) . dup . fst</code></p>
+<p>Now, we're interested in the right side of (:&amp;:), above, because we're taking <code>Succ (Succ (Zero ((w,x),(y,z))))</code> as our test case, and the above is a breakdown of <code>fs</code>, <em>not</em> <code>f :&amp;: fs</code>. In other words, we've already "peeked" inside the first (:&amp;:). Taking the right side of (:&amp;:), above, as <code>f'' :&amp;: fs''</code>, we need to apply <code>f''</code> to <code>((w,x),(y,z))</code>:</p>
+<p><code>(g × g) . transpose . h . (const () × const ()) . transpose . (dup × dup) ((w,x),(y,z))
+  where fs' = h :&amp;: hs                       =</code> &nbsp; &nbsp; {application}</p>
+<p><code>(g × g) . transpose . h . (const () × const ()) . transpose (((w,x),(w,x)),((y,z),(y,z)))
+  where fs' = h :&amp;: hs                       =</code> &nbsp; &nbsp; {application}</p>
+<p><code>(g × g) . transpose . h . (const () × const ()) (((w,x),(y,z)),((w,x),(y,z)))
+  where fs' = h :&amp;: hs                       =</code> &nbsp; &nbsp; {application}</p>
+<p><code>(g × g) . transpose . h ((),())
+  where fs' = h :&amp;: hs                       =</code> &nbsp; &nbsp; {definition of <em>h</em>}</p>
+<p>(<em>h</em>, above, can be determined, by noting that <em>fs'</em> has precisely the same form as <em>fs</em>, with only its internal variable names changed:</p>
+<p><code>h = (id × (* r'')) . dup . fst . (const 1 × id) . dup</code></p>
+<p>)</p>
+<p><code>(g × g) . transpose . (id × (* r'')) . dup . fst . (const 1 × id) . dup ((),())      =</code> &nbsp; &nbsp; {application}</p>
+<p><code>(g × g) . transpose . (id × (* r'')) . dup . fst . (const 1 × id) (((),()),((),()))  =</code> &nbsp; &nbsp; {application}</p>
+<p><code>(g × g) . transpose . (id × (* r'')) . dup . fst (1, ((), ()))                       =</code> &nbsp; &nbsp; {application}</p>
+<p><code>(g × g) . transpose . (id × (* r'')) . dup 1                                         =</code> &nbsp; &nbsp; {application}</p>
+<p><code>(g × g) . transpose . (id × (* r'')) (1, 1)                                          =</code> &nbsp; &nbsp; {application}</p>
+<p><code>(g × g) . transpose (1, r'')                                                         =</code> &nbsp; &nbsp; {application}</p>
+<p><code>(g × g) (1, r'')                                                                     =</code> &nbsp; &nbsp; {application}</p>
+<p><code>(g 1, g r'')                                                                         =</code> &nbsp; &nbsp; {definition of <em>g</em>}</p>
+<p><code>((1, r'), (r'', r' * r''))</code></p>
+<p>Then, applying the <em>unriffle</em> we agreed to ignore at the start:</p>
+<p><code>((1, r''), (r', r' * r''))</code></p>
+<p>gives us the correct result!</p>
+<p>Note that, in the final steps above, I've assumed that <em>transpose</em> and <em>fst</em> can handle receiving a single pair (as opposed to a pair of pairs), and a scalar (as opposed to a pair), respectively, performing a null operation in those cases. I'm pretty sure this is <em>not</em> okay, as I don't think it would type check. It's not clear to me where I've lost one level of arity, or how.</p>
+<p>So, somehow, the Arrow machinery allows a strictly incorrect intuition about the computation to be valid for the purpose of <em>reasoning</em> about the computation. This prompts two questions:</p>
+<ol>
+<li>Is this the intent of the <em>Arrow</em> typeclass, along with its axioms and <em>proc</em> notation?</li>
+<li>Does it hold, in general? That is, is it generally safe to think of the functions inside the <em>proc</em> body as applicable to <em>vectors</em>, when reasoning about the computation, even though those functions can only ever really be applied to <em>scalars</em>? (Certainly, this holds for both <em>fft</em> and <em>roots</em>, above.)</li>
+</ol>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to Contents</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[42]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span class="nf">fst</span> <span class="mi">0</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+
+<div class="output_html rendered_html output_subarea ">
+<style>/* Styles used for the Hoogle display in the pager */
+.hoogle-doc {
+display: block;
+padding-bottom: 1.3em;
+padding-left: 0.4em;
+}
+.hoogle-code {
+display: block;
+font-family: monospace;
+white-space: pre;
+}
+.hoogle-text {
+display: block;
+}
+.hoogle-name {
+color: green;
+font-weight: bold;
+}
+.hoogle-head {
+font-weight: bold;
+}
+.hoogle-sub {
+display: block;
+margin-left: 0.4em;
+}
+.hoogle-package {
+font-weight: bold;
+font-style: italic;
+}
+.hoogle-module {
+font-weight: bold;
+}
+.hoogle-class {
+font-weight: bold;
+}
+.get-type {
+color: green;
+font-weight: bold;
+font-family: monospace;
+display: block;
+white-space: pre-wrap;
+}
+.show-type {
+color: green;
+font-weight: bold;
+font-family: monospace;
+margin-left: 1em;
+}
+.mono {
+font-family: monospace;
+display: block;
+}
+.err-msg {
+color: red;
+font-style: italic;
+font-family: monospace;
+white-space: pre;
+display: block;
+}
+#unshowable {
+color: red;
+font-weight: bold;
+}
+.err-msg.in.collapse {
+padding-top: 0.7em;
+}
+.highlight-code {
+white-space: pre;
+font-family: monospace;
+}
+.suggestion-warning { 
+font-weight: bold;
+color: rgb(200, 130, 0);
+}
+.suggestion-error { 
+font-weight: bold;
+color: red;
+}
+.suggestion-name {
+font-weight: bold;
+}
+</style><span class='err-msg'>Could not deduce (Num (a, b0))<br/>from the context (Num (a, b)) bound by the inferred type for ‘it’: Num (a, b) => a at <interactive>:1:1-5<br/>The type variable ‘b0’ is ambiguous<br/>When checking that ‘it’ has the inferred type<br/>  it :: forall a b. Num (a, b) => a<br/>Probable cause: the inferred type is ambiguous</span>
 </div>
 
 </div>
