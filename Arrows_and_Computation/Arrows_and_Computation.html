@@ -258,12 +258,14 @@ type from **Exercise 3**.</a><ul>
 <li><a href="#ex17">Exercise 17 - Definition of *sort*.</a><ul>
 <li><a href="#ex17a">Exercise 17a: Breakdown of *proc* notation for *butterfly*.</a></li>
 <li><a href="#ex17b">Exercise 17b: Attempted breakdown of *proc* notation for *bisort*.</a></li>
-<li><a href="#ex17x">Extra Credit: Definition of *FFT*, using *Home* and friends.</a><ul>
+<li><a href="#ex17x">Extra Credit: Definition of *FFT*, using *Hom* and friends.</a><ul>
 <li><a href="#ex17x_discussion">Discussion of *FFT* solution.</a></li>
 </ul>
 </li>
 </ul>
 </li>
+<li><a href="#ex18">Exercise 18 - Define *StateT*, without arrow notation.</a></li>
+<li><a href="#ex19">Exercise 19 - Arrow instance for *AutoFunctor*.</a></li>
 <li><a href="#questions">Unanswered Questions</a></li>
 </ul>
 
@@ -3205,6 +3207,309 @@ r'' = lower half plane square root of r'</p>
 
 </div>
 </div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to Contents</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Exercise-18-">Exercise 18 <a name="ex18" /><a class="anchor-link" href="#Exercise-18-">&#182;</a></h2><p>Rewrite the definition of <em>StateT</em> without arrow notation.</p>
+
+<pre><code>newtype StateT σ α ι o = ST (α (σ, ι) (σ, o))
+
+instance Arrow α ⇒ Arrow (StateT σ α) where  
+  pure f = ST (proc (s, b) → idA −≺ (s, f b))  
+  ST f ≫ ST g = ST (f ≫ g)  
+  first (ST f) = ST (proc(s,(b,d)) → do  
+    (s′, c) ← f −≺ (s, b)  
+    idA −≺ (s′,(c,d)))</code></pre>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[45]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span class="kr">newtype</span> <span class="kt">StateT</span> <span class="n">s</span> <span class="n">a</span> <span class="n">b</span> <span class="n">c</span> <span class="ow">=</span> <span class="kt">ST</span> <span class="p">(</span><span class="n">a</span> <span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">c</span><span class="p">))</span>
+
+<span class="kr">instance</span> <span class="kt">Category</span> <span class="p">(</span><span class="kt">StateT</span> <span class="n">s</span> <span class="n">a</span><span class="p">)</span> <span class="kr">where</span>
+    <span class="c1">-- ST f &gt;&gt;&gt; ST g = ST (f &gt;&gt;&gt; g)</span>
+    <span class="kt">ST</span> <span class="n">g</span> <span class="o">.</span> <span class="kt">ST</span> <span class="n">f</span> <span class="ow">=</span> <span class="kt">ST</span> <span class="p">(</span><span class="n">g</span> <span class="o">.</span> <span class="n">f</span><span class="p">)</span>
+
+<span class="kr">instance</span> <span class="kt">Arrow</span> <span class="n">a</span> <span class="ow">=&gt;</span> <span class="kt">Arrow</span> <span class="p">(</span><span class="kt">StateT</span> <span class="n">s</span> <span class="n">a</span><span class="p">)</span> <span class="kr">where</span>
+    <span class="c1">-- arr f = ST (\(s, b) -&gt; (s, f b))</span>
+    <span class="n">arr</span> <span class="n">f</span>         <span class="ow">=</span> <span class="kt">ST</span> <span class="p">(</span><span class="n">id</span> <span class="p">`</span><span class="n">prod</span><span class="p">`</span> <span class="n">f</span><span class="p">)</span>
+    <span class="n">first</span> <span class="p">(</span><span class="kt">ST</span> <span class="n">f</span><span class="p">)</span>  <span class="ow">=</span> <span class="kt">ST</span> <span class="p">(</span> <span class="c1">-- ((proc (s, (b, d)) -&gt; f -&lt; (s, b)) &amp;&amp;&amp; idA) &gt;&gt;&gt; proc ((s&#39;, c), (s, (b, d))) -&gt; (s&#39;, (c, d)))</span>
+                         <span class="c1">-- arr dup &gt;&gt;&gt; ((proc (s, (b, d)) -&gt; f -&lt; (s, b)) *** idA) &gt;&gt;&gt; proc ((s&#39;, c), (s, (b, d))) -&gt; (s&#39;, (c, d)))</span>
+                         <span class="c1">-- arr dup &gt;&gt;&gt; first (proc (s, (b, d)) -&gt; f -&lt; (s, b)) &gt;&gt;&gt; proc ((s&#39;, c), (s, (b, d))) -&gt; (s&#39;, (c, d)))</span>
+                         <span class="c1">-- arr dup &gt;&gt;&gt; first (\(s, (b, d)) -&gt; f (s, b)) &gt;&gt;&gt; \((s&#39;, c), (s, (b, d))) -&gt; (s&#39;, (c, d)))</span>
+                         <span class="p">((</span><span class="n">fst</span> <span class="o">.</span> <span class="n">fst</span><span class="p">)</span> <span class="p">`</span><span class="n">prod</span><span class="p">`</span> <span class="p">((</span><span class="n">snd</span> <span class="o">.</span> <span class="n">fst</span><span class="p">)</span> <span class="p">`</span><span class="n">prod</span><span class="p">`</span> <span class="p">(</span><span class="n">snd</span> <span class="o">.</span> <span class="n">snd</span> <span class="o">.</span> <span class="n">snd</span><span class="p">)))</span> <span class="o">.</span> <span class="n">dup</span> <span class="o">.</span> <span class="p">((</span><span class="n">f</span> <span class="o">.</span> <span class="p">(</span><span class="n">id</span> <span class="p">`</span><span class="n">prod</span><span class="p">`</span> <span class="n">fst</span><span class="p">))</span> <span class="p">`</span><span class="n">prod</span><span class="p">`</span> <span class="n">id</span><span class="p">)</span> <span class="o">.</span> <span class="n">dup</span><span class="p">)</span>
+        <span class="kr">where</span> <span class="n">dup</span> <span class="n">b</span> <span class="ow">=</span> <span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+
+<div class="output_html rendered_html output_subarea ">
+<style>/* Styles used for the Hoogle display in the pager */
+.hoogle-doc {
+display: block;
+padding-bottom: 1.3em;
+padding-left: 0.4em;
+}
+.hoogle-code {
+display: block;
+font-family: monospace;
+white-space: pre;
+}
+.hoogle-text {
+display: block;
+}
+.hoogle-name {
+color: green;
+font-weight: bold;
+}
+.hoogle-head {
+font-weight: bold;
+}
+.hoogle-sub {
+display: block;
+margin-left: 0.4em;
+}
+.hoogle-package {
+font-weight: bold;
+font-style: italic;
+}
+.hoogle-module {
+font-weight: bold;
+}
+.hoogle-class {
+font-weight: bold;
+}
+.get-type {
+color: green;
+font-weight: bold;
+font-family: monospace;
+display: block;
+white-space: pre-wrap;
+}
+.show-type {
+color: green;
+font-weight: bold;
+font-family: monospace;
+margin-left: 1em;
+}
+.mono {
+font-family: monospace;
+display: block;
+}
+.err-msg {
+color: red;
+font-style: italic;
+font-family: monospace;
+white-space: pre;
+display: block;
+}
+#unshowable {
+color: red;
+font-weight: bold;
+}
+.err-msg.in.collapse {
+padding-top: 0.7em;
+}
+.highlight-code {
+white-space: pre;
+font-family: monospace;
+}
+.suggestion-warning { 
+font-weight: bold;
+color: rgb(200, 130, 0);
+}
+.suggestion-error { 
+font-weight: bold;
+color: red;
+}
+.suggestion-name {
+font-weight: bold;
+}
+</style><span class='err-msg'>Couldn't match type ‘a’ with ‘(->)’<br/>  ‘a’ is a rigid type variable bound by the instance declaration at <interactive>:5:10<br/>Expected type: a (s, b) (s, c)<br/>  Actual type: (s, b) -> (s, c)<br/>Relevant bindings include arr :: (b -> c) -> interactive:IHaskell618.StateT s a b c (bound at <interactive>:7:5)<br/>In the first argument of ‘IHaskell618.ST’, namely ‘(id `prod` f)’<br/>In the expression: interactive:IHaskell618.ST (id `prod` f)<br/>In an equation for ‘arr’: arr f = interactive:IHaskell618.ST (id `prod` f)<br/><br/>Couldn't match type ‘d’ with ‘(a1, d)’<br/>  ‘d’ is a rigid type variable bound by the type signature for first :: interactive:IHaskell618.StateT s a b c -> interactive:IHaskell618.StateT s a (b, d) (c, d) at <interactive>:8:5<br/>Expected type: a (s, (b, d)) ((s, (b, d)), (s, (b, (a1, d))))<br/>  Actual type: (s, (b, d)) -> ((s, (b, d)), (s, (b, d)))<br/>Relevant bindings include first :: interactive:IHaskell618.StateT s a b c -> interactive:IHaskell618.StateT s a (b, d) (c, d) (bound at <interactive>:8:5)<br/>In the second argument of ‘(.)’, namely ‘dup’<br/>In the second argument of ‘(.)’, namely ‘((f . (id `prod` fst)) `prod` id) . dup’<br/><br/>No instance for (Category a) arising from a use of ‘.’<br/>In the first argument of ‘IHaskell618.ST’, namely ‘(g . f)’<br/>In the expression: interactive:IHaskell618.ST (g . f)<br/>In an equation for ‘.’: (interactive:IHaskell618.ST g) . (interactive:IHaskell618.ST f) = interactive:IHaskell618.ST (g . f)</span>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to Contents</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Exercise-19-">Exercise 19 <a name="ex19" /><a class="anchor-link" href="#Exercise-19-">&#182;</a></h2><p>Given the following definition,</p>
+
+<pre><code>newtype AutoFunctor α ι o = A (α ι (o, AutoFunctor α ι o))</code></pre>
+<p>write the following instance, using arrow notation (or not):</p>
+
+<pre><code>instance Arrow α ⇒ Arrow (AutoFunctor α)</code></pre>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[76]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span class="kr">newtype</span> <span class="kt">AutoFunctor</span> <span class="n">a</span> <span class="n">b</span> <span class="n">c</span> <span class="ow">=</span> <span class="kt">A</span> <span class="p">{</span><span class="n">runA</span> <span class="ow">::</span> <span class="n">a</span> <span class="n">b</span> <span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="kt">AutoFunctor</span> <span class="n">a</span> <span class="n">b</span> <span class="n">c</span><span class="p">)}</span>
+
+<span class="kr">instance</span> <span class="kt">Arrow</span> <span class="n">a</span> <span class="ow">=&gt;</span> <span class="kt">Category</span> <span class="p">(</span><span class="kt">AutoFunctor</span> <span class="n">a</span><span class="p">)</span> <span class="kr">where</span>
+    <span class="kt">A</span> <span class="n">g</span> <span class="o">.</span> <span class="kt">A</span> <span class="n">f</span> <span class="ow">=</span> <span class="kt">A</span> <span class="p">(</span><span class="n">proc</span> <span class="n">x</span> <span class="ow">-&gt;</span> <span class="kr">do</span>
+                     <span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">f&#39;</span><span class="p">)</span> <span class="ow">&lt;-</span> <span class="n">f</span> <span class="o">-&lt;</span> <span class="n">x</span>
+                     <span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">g&#39;</span><span class="p">)</span> <span class="ow">&lt;-</span> <span class="n">g</span> <span class="o">-&lt;</span> <span class="n">y</span>
+                     <span class="n">idA</span> <span class="o">-&lt;</span> <span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">g&#39;</span> <span class="o">.</span> <span class="n">f&#39;</span><span class="p">)</span>
+                  <span class="p">)</span>
+    
+<span class="kr">instance</span> <span class="kt">Arrow</span> <span class="n">a</span> <span class="ow">=&gt;</span> <span class="kt">Arrow</span> <span class="p">(</span><span class="kt">AutoFunctor</span> <span class="n">a</span><span class="p">)</span> <span class="kr">where</span>
+    <span class="n">arr</span> <span class="n">f</span>       <span class="ow">=</span> <span class="kt">A</span> <span class="p">(</span><span class="n">arr</span> <span class="p">((,</span> <span class="p">(</span><span class="n">arr</span> <span class="n">f</span><span class="p">))</span> <span class="o">.</span> <span class="n">f</span><span class="p">))</span>
+    <span class="n">first</span> <span class="p">(</span><span class="kt">A</span> <span class="n">f</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">A</span> <span class="p">(</span><span class="n">proc</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="kr">do</span>
+                       <span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">f&#39;</span><span class="p">)</span> <span class="ow">&lt;-</span> <span class="n">f</span> <span class="o">-&lt;</span> <span class="n">x</span>
+                       <span class="n">idA</span> <span class="o">-&lt;</span> <span class="p">((</span><span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">),</span> <span class="n">first</span> <span class="n">f&#39;</span><span class="p">)</span>
+                    <span class="p">)</span>
+
+<span class="nf">eqA</span> <span class="ow">::</span> <span class="kt">AutoFunctor</span> <span class="n">a</span> <span class="n">b</span> <span class="n">c</span> <span class="ow">-&gt;</span> <span class="kt">AutoFunctor</span> <span class="n">a</span> <span class="n">b</span> <span class="n">c</span> <span class="ow">-&gt;</span> <span class="n">b</span> <span class="ow">-&gt;</span> <span class="kt">Bool</span>
+<span class="nf">eqA</span> <span class="n">f</span> <span class="n">g</span> <span class="n">x</span> <span class="ow">=</span> <span class="n">runA</span> <span class="n">f</span> <span class="n">x</span> <span class="o">==</span> <span class="n">runA</span> <span class="n">g</span> <span class="n">x</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+
+<div class="output_html rendered_html output_subarea ">
+<style>/* Styles used for the Hoogle display in the pager */
+.hoogle-doc {
+display: block;
+padding-bottom: 1.3em;
+padding-left: 0.4em;
+}
+.hoogle-code {
+display: block;
+font-family: monospace;
+white-space: pre;
+}
+.hoogle-text {
+display: block;
+}
+.hoogle-name {
+color: green;
+font-weight: bold;
+}
+.hoogle-head {
+font-weight: bold;
+}
+.hoogle-sub {
+display: block;
+margin-left: 0.4em;
+}
+.hoogle-package {
+font-weight: bold;
+font-style: italic;
+}
+.hoogle-module {
+font-weight: bold;
+}
+.hoogle-class {
+font-weight: bold;
+}
+.get-type {
+color: green;
+font-weight: bold;
+font-family: monospace;
+display: block;
+white-space: pre-wrap;
+}
+.show-type {
+color: green;
+font-weight: bold;
+font-family: monospace;
+margin-left: 1em;
+}
+.mono {
+font-family: monospace;
+display: block;
+}
+.err-msg {
+color: red;
+font-style: italic;
+font-family: monospace;
+white-space: pre;
+display: block;
+}
+#unshowable {
+color: red;
+font-weight: bold;
+}
+.err-msg.in.collapse {
+padding-top: 0.7em;
+}
+.highlight-code {
+white-space: pre;
+font-family: monospace;
+}
+.suggestion-warning { 
+font-weight: bold;
+color: rgb(200, 130, 0);
+}
+.suggestion-error { 
+font-weight: bold;
+color: red;
+}
+.suggestion-name {
+font-weight: bold;
+}
+</style><span class='err-msg'>Couldn't match type ‘a’ with ‘(->)’<br/>  ‘a’ is a rigid type variable bound by<br/>      the type signature for interactive:IHaskell709.eqA :: interactive:IHaskell709.AutoFunctor a b c -> interactive:IHaskell709.AutoFunctor a b c -> b -> Bool at <interactive>:14:8<br/>Expected type: b -> (c, interactive:IHaskell709.AutoFunctor a b c)<br/>  Actual type: a b (c, interactive:IHaskell709.AutoFunctor a b c)<br/>Relevant bindings include<br/>  g :: interactive:IHaskell709.AutoFunctor a b c (bound at <interactive>:15:7)<br/>  f :: interactive:IHaskell709.AutoFunctor a b c (bound at <interactive>:15:5)<br/>  eqA :: interactive:IHaskell709.AutoFunctor a b c -> interactive:IHaskell709.AutoFunctor a b c -> b -> Bool (bound at <interactive>:15:1)<br/>The function ‘IHaskell709.runA’ is applied to two arguments,<br/>but its type ‘IHaskell709.AutoFunctor a b c -> a b (c, interactive:IHaskell709.AutoFunctor a b c)’ has only one<br/>In the first argument of ‘(==)’, namely ‘IHaskell709.runA f x’<br/>In the expression: interactive:IHaskell709.runA f x == interactive:IHaskell709.runA g x</span>
+</div>
+
+</div>
+
+</div>
+</div>
+
 </div>
 <div class="cell border-box-sizing text_cell rendered">
 <div class="prompt input_prompt">
