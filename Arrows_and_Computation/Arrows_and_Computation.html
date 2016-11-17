@@ -3387,7 +3387,7 @@ font-weight: bold;
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[76]:</div>
+<div class="prompt input_prompt">In&nbsp;[95]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-haskell"><pre><span class="kr">newtype</span> <span class="kt">AutoFunctor</span> <span class="n">a</span> <span class="n">b</span> <span class="n">c</span> <span class="ow">=</span> <span class="kt">A</span> <span class="p">{</span><span class="n">runA</span> <span class="ow">::</span> <span class="n">a</span> <span class="n">b</span> <span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="kt">AutoFunctor</span> <span class="n">a</span> <span class="n">b</span> <span class="n">c</span><span class="p">)}</span>
@@ -3406,8 +3406,66 @@ font-weight: bold;
                        <span class="n">idA</span> <span class="o">-&lt;</span> <span class="p">((</span><span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">),</span> <span class="n">first</span> <span class="n">f&#39;</span><span class="p">)</span>
                     <span class="p">)</span>
 
-<span class="nf">eqA</span> <span class="ow">::</span> <span class="kt">AutoFunctor</span> <span class="n">a</span> <span class="n">b</span> <span class="n">c</span> <span class="ow">-&gt;</span> <span class="kt">AutoFunctor</span> <span class="n">a</span> <span class="n">b</span> <span class="n">c</span> <span class="ow">-&gt;</span> <span class="n">b</span> <span class="ow">-&gt;</span> <span class="kt">Bool</span>
-<span class="nf">eqA</span> <span class="n">f</span> <span class="n">g</span> <span class="n">x</span> <span class="ow">=</span> <span class="n">runA</span> <span class="n">f</span> <span class="n">x</span> <span class="o">==</span> <span class="n">runA</span> <span class="n">g</span> <span class="n">x</span>
+<span class="c1">-- eqA :: ArrowApply a =&gt; AutoFunctor a b c -&gt; AutoFunctor a b c -&gt; b -&gt; Bool</span>
+<span class="c1">-- eqA f g x = app (runA f, x) == app (runA g, x)</span>
+
+<span class="nf">eqAF</span> <span class="ow">::</span> <span class="kt">Eq</span> <span class="n">c</span> <span class="ow">=&gt;</span> <span class="kt">AutoFunctor</span> <span class="p">(</span><span class="ow">-&gt;</span><span class="p">)</span> <span class="n">b</span> <span class="n">c</span> <span class="ow">-&gt;</span> <span class="kt">AutoFunctor</span> <span class="p">(</span><span class="ow">-&gt;</span><span class="p">)</span> <span class="n">b</span> <span class="n">c</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="ow">-&gt;</span> <span class="kt">Bool</span>
+<span class="nf">eqAF</span> <span class="n">f</span> <span class="n">g</span> <span class="n">xs</span> <span class="ow">=</span> <span class="n">procList</span> <span class="p">(</span><span class="n">runA</span> <span class="n">f</span><span class="p">)</span> <span class="n">xs</span> <span class="o">==</span> <span class="n">procList</span> <span class="p">(</span><span class="n">runA</span> <span class="n">g</span><span class="p">)</span> <span class="n">xs</span>
+  <span class="kr">where</span> <span class="n">procList</span> <span class="kr">_</span> <span class="kt">[]</span>     <span class="ow">=</span> <span class="kt">[]</span>
+        <span class="n">procList</span> <span class="n">f</span> <span class="p">(</span><span class="n">x</span><span class="kt">:</span><span class="n">xs</span><span class="p">)</span> <span class="ow">=</span> <span class="kr">let</span> <span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">f&#39;</span><span class="p">)</span> <span class="ow">=</span> <span class="n">f</span> <span class="n">x</span>
+                            <span class="kr">in</span>  <span class="n">y</span> <span class="kt">:</span> <span class="p">(</span><span class="n">procList</span> <span class="p">(</span><span class="n">runA</span> <span class="n">f&#39;</span><span class="p">)</span> <span class="n">xs</span><span class="p">)</span>
+
+<span class="nf">xs</span>  <span class="ow">=</span> <span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="mi">9</span><span class="p">]</span>
+<span class="nf">ys</span>  <span class="ow">=</span> <span class="n">zip</span> <span class="n">xs</span> <span class="o">$</span> <span class="n">reverse</span> <span class="n">xs</span>
+<span class="nf">zs</span>  <span class="ow">=</span> <span class="n">zip</span> <span class="n">ys</span> <span class="n">xs</span>
+<span class="nf">afs</span> <span class="ow">=</span> <span class="p">[</span><span class="n">arr</span> <span class="p">(</span><span class="n">const</span> <span class="mi">1</span><span class="p">),</span> <span class="n">arr</span> <span class="n">id</span><span class="p">,</span> <span class="n">arr</span> <span class="p">(</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span> <span class="n">arr</span> <span class="p">(</span><span class="o">*</span><span class="mi">2</span><span class="p">)]</span>
+<span class="nf">fs</span>  <span class="ow">=</span> <span class="p">[</span><span class="n">const</span> <span class="mi">1</span><span class="p">,</span> <span class="n">id</span><span class="p">,</span> <span class="p">(</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="o">*</span><span class="mi">2</span><span class="p">)]</span>
+
+<span class="c1">-- Functor identity</span>
+<span class="nf">assertion_af1</span> <span class="ow">=</span> <span class="n">and</span> <span class="p">[</span> <span class="kr">let</span> <span class="n">a</span>  <span class="ow">=</span> <span class="n">idA</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">af</span>
+                          <span class="n">a&#39;</span> <span class="ow">=</span> <span class="n">af</span>  <span class="o">&gt;&gt;&gt;</span> <span class="n">idA</span>
+                      <span class="kr">in</span> <span class="n">eqAF</span> <span class="n">af</span> <span class="n">a</span> <span class="n">xs</span> <span class="o">&amp;&amp;</span> <span class="n">eqAF</span> <span class="n">af</span> <span class="n">a&#39;</span> <span class="n">xs</span> <span class="o">|</span> <span class="n">af</span> <span class="ow">&lt;-</span> <span class="n">afs</span><span class="p">]</span>
+    <span class="kr">where</span> <span class="n">idA</span> <span class="ow">=</span> <span class="n">arr</span> <span class="n">id</span>
+
+<span class="c1">-- Functor composition</span>
+<span class="nf">assertion_af2</span> <span class="ow">=</span> <span class="n">and</span> <span class="p">[</span> <span class="n">eqAF</span> <span class="p">(</span><span class="n">arr</span> <span class="p">(</span><span class="n">g</span> <span class="o">.</span> <span class="n">f</span><span class="p">))</span> <span class="p">(</span><span class="n">arr</span> <span class="n">f</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">arr</span> <span class="n">g</span><span class="p">)</span> <span class="n">xs</span> <span class="o">|</span> <span class="n">g</span> <span class="ow">&lt;-</span> <span class="n">fs</span><span class="p">,</span> <span class="n">f</span> <span class="ow">&lt;-</span> <span class="n">fs</span> <span class="p">]</span>
+
+<span class="c1">-- Associativity</span>
+<span class="nf">assertion_af3</span> <span class="ow">=</span> <span class="n">and</span> <span class="p">[</span> <span class="n">eqAF</span> <span class="p">((</span><span class="n">af1</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">af2</span><span class="p">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">af3</span><span class="p">)</span> <span class="p">(</span><span class="n">af1</span> <span class="o">&gt;&gt;&gt;</span> <span class="p">(</span><span class="n">af2</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">af3</span><span class="p">))</span> <span class="n">xs</span> <span class="o">|</span>
+                        <span class="n">af1</span> <span class="ow">&lt;-</span> <span class="n">afs</span><span class="p">,</span> <span class="n">af2</span> <span class="ow">&lt;-</span> <span class="n">afs</span><span class="p">,</span> <span class="n">af3</span> <span class="ow">&lt;-</span> <span class="n">afs</span> <span class="p">]</span>
+
+<span class="c1">-- Extension</span>
+<span class="nf">assertion_af4</span> <span class="ow">=</span> <span class="n">and</span> <span class="p">[</span> <span class="n">eqAF</span> <span class="p">(</span><span class="n">first</span> <span class="p">(</span><span class="n">arr</span> <span class="n">f</span><span class="p">))</span> <span class="p">(</span><span class="n">arr</span> <span class="p">(</span><span class="n">f</span> <span class="p">`</span><span class="n">prod</span><span class="p">`</span> <span class="n">id</span><span class="p">))</span> <span class="n">ys</span> <span class="o">|</span> <span class="n">f</span> <span class="ow">&lt;-</span> <span class="n">fs</span> <span class="p">]</span>
+
+<span class="c1">-- Functor</span>
+<span class="nf">assertion_af5</span> <span class="ow">=</span> <span class="n">and</span> <span class="p">[</span> <span class="n">eqAF</span> <span class="p">(</span><span class="n">first</span> <span class="p">(</span><span class="n">af</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">af&#39;</span><span class="p">))</span> <span class="p">(</span><span class="n">first</span> <span class="n">af</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">first</span> <span class="n">af&#39;</span><span class="p">)</span> <span class="n">ys</span> <span class="o">|</span>
+                        <span class="n">af</span> <span class="ow">&lt;-</span> <span class="n">afs</span><span class="p">,</span> <span class="n">af&#39;</span> <span class="ow">&lt;-</span> <span class="n">afs</span> <span class="p">]</span>
+
+<span class="c1">-- Exchange</span>
+<span class="nf">assertion_af6</span> <span class="ow">=</span> <span class="n">and</span> <span class="p">[</span> <span class="n">eqAF</span> <span class="p">(</span><span class="n">first</span> <span class="n">af</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">arr</span> <span class="p">(</span><span class="n">id</span> <span class="p">`</span><span class="n">prod</span><span class="p">`</span> <span class="n">f</span><span class="p">))</span> <span class="p">(</span><span class="n">arr</span> <span class="p">(</span><span class="n">id</span> <span class="p">`</span><span class="n">prod</span><span class="p">`</span> <span class="n">f</span><span class="p">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">first</span> <span class="n">af</span><span class="p">)</span> <span class="n">ys</span> <span class="o">|</span>
+                        <span class="n">af</span> <span class="ow">&lt;-</span> <span class="n">afs</span><span class="p">,</span> <span class="n">f</span> <span class="ow">&lt;-</span> <span class="n">fs</span> <span class="p">]</span>
+
+<span class="c1">-- Unit</span>
+<span class="nf">assertion_af7</span> <span class="ow">=</span> <span class="n">and</span> <span class="p">[</span> <span class="n">eqAF</span> <span class="p">(</span><span class="n">first</span> <span class="n">af</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">arr</span> <span class="n">fst</span><span class="p">)</span> <span class="p">(</span><span class="n">arr</span> <span class="n">fst</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">af</span><span class="p">)</span> <span class="n">ys</span> <span class="o">|</span> <span class="n">af</span> <span class="ow">&lt;-</span> <span class="n">afs</span> <span class="p">]</span>
+
+<span class="c1">-- Association</span>
+<span class="nf">assertion_af8</span> <span class="ow">=</span> <span class="n">and</span> <span class="p">[</span> <span class="n">eqAF</span> <span class="p">(</span><span class="n">first</span> <span class="p">(</span><span class="n">first</span> <span class="n">af</span><span class="p">)</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">arr</span> <span class="n">assoc</span><span class="p">)</span> <span class="p">(</span><span class="n">arr</span> <span class="n">assoc</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">first</span> <span class="n">af</span><span class="p">)</span> <span class="n">zs</span> <span class="o">|</span> <span class="n">af</span> <span class="ow">&lt;-</span> <span class="n">afs</span> <span class="p">]</span>
+  <span class="kr">where</span> <span class="n">assoc</span> <span class="ow">::</span> <span class="p">((</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">),</span> <span class="n">c</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">))</span>
+        <span class="n">assoc</span> <span class="o">~</span><span class="p">(</span><span class="o">~</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="n">z</span><span class="p">)</span> <span class="ow">=</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">))</span>
+
+
+<span class="nf">main</span> <span class="ow">::</span> <span class="kt">IO</span> <span class="nb">()</span>
+<span class="nf">main</span> <span class="ow">=</span> <span class="kr">do</span>
+    <span class="n">print</span> <span class="n">assertion_af1</span>
+    <span class="n">print</span> <span class="n">assertion_af2</span>
+    <span class="n">print</span> <span class="n">assertion_af3</span>
+    <span class="n">print</span> <span class="n">assertion_af4</span>
+    <span class="n">print</span> <span class="n">assertion_af5</span>
+    <span class="n">print</span> <span class="n">assertion_af6</span>
+    <span class="n">print</span> <span class="n">assertion_af7</span>
+    <span class="n">print</span> <span class="n">assertion_af8</span>
+
+<span class="nf">main</span>
 </pre></div>
 
 </div>
@@ -3420,89 +3478,16 @@ font-weight: bold;
 
 <div class="output_area"><div class="prompt"></div>
 
-<div class="output_html rendered_html output_subarea ">
-<style>/* Styles used for the Hoogle display in the pager */
-.hoogle-doc {
-display: block;
-padding-bottom: 1.3em;
-padding-left: 0.4em;
-}
-.hoogle-code {
-display: block;
-font-family: monospace;
-white-space: pre;
-}
-.hoogle-text {
-display: block;
-}
-.hoogle-name {
-color: green;
-font-weight: bold;
-}
-.hoogle-head {
-font-weight: bold;
-}
-.hoogle-sub {
-display: block;
-margin-left: 0.4em;
-}
-.hoogle-package {
-font-weight: bold;
-font-style: italic;
-}
-.hoogle-module {
-font-weight: bold;
-}
-.hoogle-class {
-font-weight: bold;
-}
-.get-type {
-color: green;
-font-weight: bold;
-font-family: monospace;
-display: block;
-white-space: pre-wrap;
-}
-.show-type {
-color: green;
-font-weight: bold;
-font-family: monospace;
-margin-left: 1em;
-}
-.mono {
-font-family: monospace;
-display: block;
-}
-.err-msg {
-color: red;
-font-style: italic;
-font-family: monospace;
-white-space: pre;
-display: block;
-}
-#unshowable {
-color: red;
-font-weight: bold;
-}
-.err-msg.in.collapse {
-padding-top: 0.7em;
-}
-.highlight-code {
-white-space: pre;
-font-family: monospace;
-}
-.suggestion-warning { 
-font-weight: bold;
-color: rgb(200, 130, 0);
-}
-.suggestion-error { 
-font-weight: bold;
-color: red;
-}
-.suggestion-name {
-font-weight: bold;
-}
-</style><span class='err-msg'>Couldn't match type ‘a’ with ‘(->)’<br/>  ‘a’ is a rigid type variable bound by<br/>      the type signature for interactive:IHaskell709.eqA :: interactive:IHaskell709.AutoFunctor a b c -> interactive:IHaskell709.AutoFunctor a b c -> b -> Bool at <interactive>:14:8<br/>Expected type: b -> (c, interactive:IHaskell709.AutoFunctor a b c)<br/>  Actual type: a b (c, interactive:IHaskell709.AutoFunctor a b c)<br/>Relevant bindings include<br/>  g :: interactive:IHaskell709.AutoFunctor a b c (bound at <interactive>:15:7)<br/>  f :: interactive:IHaskell709.AutoFunctor a b c (bound at <interactive>:15:5)<br/>  eqA :: interactive:IHaskell709.AutoFunctor a b c -> interactive:IHaskell709.AutoFunctor a b c -> b -> Bool (bound at <interactive>:15:1)<br/>The function ‘IHaskell709.runA’ is applied to two arguments,<br/>but its type ‘IHaskell709.AutoFunctor a b c -> a b (c, interactive:IHaskell709.AutoFunctor a b c)’ has only one<br/>In the first argument of ‘(==)’, namely ‘IHaskell709.runA f x’<br/>In the expression: interactive:IHaskell709.runA f x == interactive:IHaskell709.runA g x</span>
+
+<div class="output_text output_subarea ">
+<pre>True
+True
+True
+True
+True
+True
+True
+True</pre>
 </div>
 
 </div>
@@ -3523,10 +3508,10 @@ font-weight: bold;
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[42]:</div>
+<div class="prompt input_prompt">In&nbsp;[77]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-haskell"><pre><span class="nf">fst</span> <span class="mi">0</span>
+<div class=" highlight hl-haskell"><pre><span class="kt">:</span><span class="n">t</span> <span class="n">on</span>
 </pre></div>
 
 </div>
@@ -3621,7 +3606,7 @@ color: red;
 .suggestion-name {
 font-weight: bold;
 }
-</style><span class='err-msg'>Could not deduce (Num (a, b0))<br/>from the context (Num (a, b)) bound by the inferred type for ‘it’: Num (a, b) => a at <interactive>:1:1-5<br/>The type variable ‘b0’ is ambiguous<br/>When checking that ‘it’ has the inferred type<br/>  it :: forall a b. Num (a, b) => a<br/>Probable cause: the inferred type is ambiguous</span>
+</style><span class='err-msg'>Not in scope: ‘on’<br/>Perhaps you meant ‘or’ (imported from Prelude)</span>
 </div>
 
 </div>
