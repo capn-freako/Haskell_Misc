@@ -215,7 +215,7 @@ Original date:   July 29, 2016</p>
 
 
 <div class="output_text output_subarea ">
-<pre>2016-11-01 23:00:52.266548 UTC</pre>
+<pre>2016-11-18 03:41:50.316901 UTC</pre>
 </div>
 
 </div>
@@ -1560,6 +1560,16 @@ True</pre>
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to Contents</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Exercise-8-">Exercise 8 <a name="ex8" /><a class="anchor-link" href="#Exercise-8-">&#182;</a></h2><p>Show that the equation</p>
 <p><code>(f ||| g) ⋙ h = (f ⋙ h) ||| (g ⋙ h)</code></p>
 <p>fails for the <em>Auto</em> and <em>StreamMap</em> arrows.</p>
@@ -2369,13 +2379,14 @@ distr (Right b, c) = Right (b, c)</code></pre>
 <h2 id="Exercise-17-">Exercise 17 <a name="ex17" /><a class="anchor-link" href="#Exercise-17-">&#182;</a></h2><p>Use the functions defined in this section to define an arrow:</p>
 <p><code>sort :: Ord β ⇒ Hom β β</code></p>
 <p>using a merge based on Batcher’s bitonic sorter, combined with <em>rev</em>.</p>
+<p><strong>Note: At this point, you need to restart the kernel and then only execute cells, below this text. This is because we must, now, invoke the "real" Arrow typeclass, in order to support proc notation.</strong></p>
 
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[2]:</div>
+<div class="prompt input_prompt">In&nbsp;[1]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-haskell"><pre><span class="cm">{-# LANGUAGE Arrows #-}</span>
@@ -2402,11 +2413,12 @@ distr (Right b, c) = Right (b, c)</code></pre>
 <span class="kr">instance</span> <span class="kt">Category</span> <span class="kt">Hom</span> <span class="kr">where</span>
     <span class="p">(</span><span class="n">g</span> <span class="kt">:&amp;:</span> <span class="n">gs</span><span class="p">)</span> <span class="o">.</span> <span class="p">(</span><span class="n">f</span> <span class="kt">:&amp;:</span> <span class="n">fs</span><span class="p">)</span> <span class="ow">=</span> <span class="p">(</span><span class="n">g</span> <span class="o">.</span> <span class="n">f</span> <span class="p">)</span> <span class="kt">:&amp;:</span> <span class="p">(</span><span class="n">gs</span> <span class="o">.</span> <span class="n">fs</span><span class="p">)</span>
 
-<span class="kr">instance</span> <span class="kt">Arrow</span> <span class="kt">Hom</span> <span class="kr">where</span>  <span class="c1">-- Now, using the &quot;real&quot; Arrow typeclass, by necessity.</span>
+<span class="kr">instance</span> <span class="kt">Control</span><span class="o">.</span><span class="kt">Arrow</span><span class="o">.</span><span class="kt">Arrow</span> <span class="kt">Hom</span> <span class="kr">where</span>  <span class="c1">-- Now, using the &quot;real&quot; Arrow typeclass, by necessity.</span>
     <span class="n">arr</span> <span class="n">f</span>            <span class="ow">=</span> <span class="n">f</span> <span class="kt">:&amp;:</span> <span class="n">arr</span> <span class="p">(</span><span class="n">f</span> <span class="p">`</span><span class="n">prod</span><span class="p">`</span> <span class="n">f</span> <span class="p">)</span>
     <span class="n">first</span> <span class="p">(</span><span class="n">f</span> <span class="kt">:&amp;:</span> <span class="n">fs</span><span class="p">)</span> <span class="ow">=</span> <span class="p">(</span><span class="n">f</span> <span class="p">`</span><span class="n">prod</span><span class="p">`</span> <span class="n">id</span><span class="p">)</span> <span class="kt">:&amp;:</span> <span class="p">(</span><span class="n">arr</span> <span class="n">transpose</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">first</span> <span class="n">fs</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">arr</span> <span class="n">transpose</span><span class="p">)</span> 
-    <span class="c1">-- (&gt;&gt;&gt;) = flip (.)</span>
-    
+
+<span class="p">(</span><span class="o">&gt;&gt;&gt;</span><span class="p">)</span> <span class="ow">=</span> <span class="n">flip</span> <span class="p">(</span><span class="o">.</span><span class="p">)</span>
+
 <span class="nf">transpose</span> <span class="ow">::</span> <span class="p">((</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">),(</span><span class="n">c</span><span class="p">,</span><span class="n">d</span><span class="p">))</span> <span class="ow">-&gt;</span> <span class="p">((</span><span class="n">a</span><span class="p">,</span><span class="n">c</span><span class="p">),(</span><span class="n">b</span><span class="p">,</span><span class="n">d</span><span class="p">))</span>
 <span class="nf">transpose</span> <span class="p">((</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">),(</span><span class="n">c</span><span class="p">,</span><span class="n">d</span><span class="p">))</span> <span class="ow">=</span> <span class="p">((</span><span class="n">a</span><span class="p">,</span><span class="n">c</span><span class="p">),(</span><span class="n">b</span><span class="p">,</span><span class="n">d</span><span class="p">))</span>
 
@@ -2748,7 +2760,7 @@ $$<p>where $(\cdot)$ denotes <em>vector dot product</em>, and $W^m = \{w_m\} \qu
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[33]:</div>
+<div class="prompt input_prompt">In&nbsp;[2]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-haskell"><pre><span class="cm">{-# LANGUAGE GeneralizedNewtypeDeriving</span>
@@ -2995,7 +3007,7 @@ My own attempts at <em>twiddle</em> worked, only for tree depths less than 3. I 
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[38]:</div>
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-haskell"><pre><span class="cm">{-# LANGUAGE FlexibleContexts #-}</span>
@@ -3239,7 +3251,7 @@ instance Arrow α ⇒ Arrow (StateT σ α) where
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[45]:</div>
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-haskell"><pre><span class="kr">newtype</span> <span class="kt">StateT</span> <span class="n">s</span> <span class="n">a</span> <span class="n">b</span> <span class="n">c</span> <span class="ow">=</span> <span class="kt">ST</span> <span class="p">(</span><span class="n">a</span> <span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">c</span><span class="p">))</span>
@@ -3250,12 +3262,17 @@ instance Arrow α ⇒ Arrow (StateT σ α) where
 
 <span class="kr">instance</span> <span class="kt">Arrow</span> <span class="n">a</span> <span class="ow">=&gt;</span> <span class="kt">Arrow</span> <span class="p">(</span><span class="kt">StateT</span> <span class="n">s</span> <span class="n">a</span><span class="p">)</span> <span class="kr">where</span>
     <span class="c1">-- arr f = ST (\(s, b) -&gt; (s, f b))</span>
-    <span class="n">arr</span> <span class="n">f</span>         <span class="ow">=</span> <span class="kt">ST</span> <span class="p">(</span><span class="n">id</span> <span class="p">`</span><span class="n">prod</span><span class="p">`</span> <span class="n">f</span><span class="p">)</span>
+    <span class="c1">-- arr f         = ST (id `prod` f)</span>
+    <span class="n">arr</span> <span class="n">f</span>         <span class="ow">=</span> <span class="kt">ST</span> <span class="p">(</span><span class="n">arr</span> <span class="p">(</span><span class="n">id</span> <span class="p">`</span><span class="n">prod</span><span class="p">`</span> <span class="n">f</span><span class="p">))</span>
     <span class="n">first</span> <span class="p">(</span><span class="kt">ST</span> <span class="n">f</span><span class="p">)</span>  <span class="ow">=</span> <span class="kt">ST</span> <span class="p">(</span> <span class="c1">-- ((proc (s, (b, d)) -&gt; f -&lt; (s, b)) &amp;&amp;&amp; idA) &gt;&gt;&gt; proc ((s&#39;, c), (s, (b, d))) -&gt; (s&#39;, (c, d)))</span>
                          <span class="c1">-- arr dup &gt;&gt;&gt; ((proc (s, (b, d)) -&gt; f -&lt; (s, b)) *** idA) &gt;&gt;&gt; proc ((s&#39;, c), (s, (b, d))) -&gt; (s&#39;, (c, d)))</span>
                          <span class="c1">-- arr dup &gt;&gt;&gt; first (proc (s, (b, d)) -&gt; f -&lt; (s, b)) &gt;&gt;&gt; proc ((s&#39;, c), (s, (b, d))) -&gt; (s&#39;, (c, d)))</span>
                          <span class="c1">-- arr dup &gt;&gt;&gt; first (\(s, (b, d)) -&gt; f (s, b)) &gt;&gt;&gt; \((s&#39;, c), (s, (b, d))) -&gt; (s&#39;, (c, d)))</span>
-                         <span class="p">((</span><span class="n">fst</span> <span class="o">.</span> <span class="n">fst</span><span class="p">)</span> <span class="p">`</span><span class="n">prod</span><span class="p">`</span> <span class="p">((</span><span class="n">snd</span> <span class="o">.</span> <span class="n">fst</span><span class="p">)</span> <span class="p">`</span><span class="n">prod</span><span class="p">`</span> <span class="p">(</span><span class="n">snd</span> <span class="o">.</span> <span class="n">snd</span> <span class="o">.</span> <span class="n">snd</span><span class="p">)))</span> <span class="o">.</span> <span class="n">dup</span> <span class="o">.</span> <span class="p">((</span><span class="n">f</span> <span class="o">.</span> <span class="p">(</span><span class="n">id</span> <span class="p">`</span><span class="n">prod</span><span class="p">`</span> <span class="n">fst</span><span class="p">))</span> <span class="p">`</span><span class="n">prod</span><span class="p">`</span> <span class="n">id</span><span class="p">)</span> <span class="o">.</span> <span class="n">dup</span><span class="p">)</span>
+                         <span class="c1">-- arr ( ((fst . fst . fst) `prod` ((snd . fst) `prod` (snd . snd . snd))) .</span>
+                               <span class="c1">-- dup . ((f . (id `prod` fst)) `prod` id) . dup</span>
+                         <span class="p">(</span><span class="n">arr</span> <span class="p">(</span><span class="n">fst</span> <span class="o">.</span> <span class="n">fst</span> <span class="o">.</span> <span class="n">fst</span><span class="p">)</span> <span class="o">***</span> <span class="p">(</span><span class="n">arr</span> <span class="p">(</span><span class="n">snd</span> <span class="o">.</span> <span class="n">fst</span><span class="p">)</span> <span class="o">***</span> <span class="n">arr</span> <span class="p">(</span><span class="n">snd</span> <span class="o">.</span> <span class="n">snd</span> <span class="o">.</span> <span class="n">snd</span><span class="p">)))</span> <span class="o">.</span>
+                               <span class="n">arr</span> <span class="n">dup</span> <span class="o">.</span> <span class="p">((</span><span class="n">f</span> <span class="o">.</span> <span class="p">(</span><span class="n">arr</span> <span class="n">id</span> <span class="o">***</span> <span class="n">arr</span> <span class="n">fst</span><span class="p">))</span> <span class="o">***</span> <span class="n">arr</span> <span class="n">id</span><span class="p">)</span> <span class="o">.</span> <span class="n">arr</span> <span class="n">dup</span>
+                       <span class="p">)</span>
         <span class="kr">where</span> <span class="n">dup</span> <span class="n">b</span> <span class="ow">=</span> <span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
 </pre></div>
 
@@ -3351,7 +3368,211 @@ color: red;
 .suggestion-name {
 font-weight: bold;
 }
-</style><span class='err-msg'>Couldn't match type ‘a’ with ‘(->)’<br/>  ‘a’ is a rigid type variable bound by the instance declaration at <interactive>:5:10<br/>Expected type: a (s, b) (s, c)<br/>  Actual type: (s, b) -> (s, c)<br/>Relevant bindings include arr :: (b -> c) -> interactive:IHaskell618.StateT s a b c (bound at <interactive>:7:5)<br/>In the first argument of ‘IHaskell618.ST’, namely ‘(id `prod` f)’<br/>In the expression: interactive:IHaskell618.ST (id `prod` f)<br/>In an equation for ‘arr’: arr f = interactive:IHaskell618.ST (id `prod` f)<br/><br/>Couldn't match type ‘d’ with ‘(a1, d)’<br/>  ‘d’ is a rigid type variable bound by the type signature for first :: interactive:IHaskell618.StateT s a b c -> interactive:IHaskell618.StateT s a (b, d) (c, d) at <interactive>:8:5<br/>Expected type: a (s, (b, d)) ((s, (b, d)), (s, (b, (a1, d))))<br/>  Actual type: (s, (b, d)) -> ((s, (b, d)), (s, (b, d)))<br/>Relevant bindings include first :: interactive:IHaskell618.StateT s a b c -> interactive:IHaskell618.StateT s a (b, d) (c, d) (bound at <interactive>:8:5)<br/>In the second argument of ‘(.)’, namely ‘dup’<br/>In the second argument of ‘(.)’, namely ‘((f . (id `prod` fst)) `prod` id) . dup’<br/><br/>No instance for (Category a) arising from a use of ‘.’<br/>In the first argument of ‘IHaskell618.ST’, namely ‘(g . f)’<br/>In the expression: interactive:IHaskell618.ST (g . f)<br/>In an equation for ‘.’: (interactive:IHaskell618.ST g) . (interactive:IHaskell618.ST f) = interactive:IHaskell618.ST (g . f)</span>
+</style><span class='err-msg'>Couldn't match type ‘s’ with ‘(s, b0)’<br/>  ‘s’ is a rigid type variable bound by the instance declaration at <interactive>:5:10<br/>Expected type: ((s, c), (s, (b, (a1, d)))) -> ((s, b0), c)<br/>  Actual type: (((s, b0), c), (s, (b, (a1, d)))) -> ((s, b0), c)<br/>Relevant bindings include<br/>  f :: a (s, b) (s, c) (bound at <interactive>:9:15)<br/>  first :: interactive:IHaskell64.StateT s a b c -> interactive:IHaskell64.StateT s a (b, d) (c, d) (bound at <interactive>:9:5)<br/>In the second argument of ‘(.)’, namely ‘fst’<br/>In the second argument of ‘(.)’, namely ‘fst . fst’<br/><br/>Couldn't match type ‘d’ with ‘(a1, d)’<br/>  ‘d’ is a rigid type variable bound by the type signature for first :: interactive:IHaskell64.StateT s a b c -> interactive:IHaskell64.StateT s a (b, d) (c, d) at <interactive>:9:5<br/>Expected type: (s, (b, d)) -> (s, (b, (a1, d)))<br/>  Actual type: (s, (b, d)) -> (s, (b, d))<br/>Relevant bindings include first :: interactive:IHaskell64.StateT s a b c -> interactive:IHaskell64.StateT s a (b, d) (c, d) (bound at <interactive>:9:5)<br/>In the first argument of ‘arr’, namely ‘id’<br/>In the second argument of ‘(***)’, namely ‘arr id’<br/><br/>No instance for (Category a) arising from a use of ‘.’<br/>In the first argument of ‘IHaskell64.ST’, namely ‘(g . f)’<br/>In the expression: interactive:IHaskell64.ST (g . f)<br/>In an equation for ‘.’: (interactive:IHaskell64.ST g) . (interactive:IHaskell64.ST f) = interactive:IHaskell64.ST (g . f)</span>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre><span class="nf">f</span> <span class="ow">::</span> <span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
+<span class="nf">f</span> <span class="ow">=</span> <span class="n">undefined</span>
+
+<span class="nf">dup</span> <span class="n">x</span> <span class="ow">=</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">x</span><span class="p">)</span>
+
+<span class="kt">:</span><span class="n">t</span> <span class="n">dup</span> <span class="o">.</span> <span class="p">((</span><span class="n">f</span> <span class="o">.</span> <span class="p">(</span><span class="n">id</span> <span class="p">`</span><span class="n">prod</span><span class="p">`</span> <span class="n">fst</span><span class="p">))</span> <span class="p">`</span><span class="n">prod</span><span class="p">`</span> <span class="n">id</span><span class="p">)</span> <span class="o">.</span> <span class="n">dup</span>
+<span class="kt">:</span><span class="n">t</span> <span class="p">((</span><span class="n">fst</span> <span class="o">.</span> <span class="n">fst</span><span class="p">)</span> <span class="p">`</span><span class="n">prod</span><span class="p">`</span> <span class="p">((</span><span class="n">snd</span> <span class="o">.</span> <span class="n">fst</span><span class="p">)</span> <span class="p">`</span><span class="n">prod</span><span class="p">`</span> <span class="p">(</span><span class="n">snd</span> <span class="o">.</span> <span class="n">snd</span> <span class="o">.</span> <span class="n">snd</span><span class="p">)))</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+
+<div class="output_html rendered_html output_subarea ">
+<style>/* Styles used for the Hoogle display in the pager */
+.hoogle-doc {
+display: block;
+padding-bottom: 1.3em;
+padding-left: 0.4em;
+}
+.hoogle-code {
+display: block;
+font-family: monospace;
+white-space: pre;
+}
+.hoogle-text {
+display: block;
+}
+.hoogle-name {
+color: green;
+font-weight: bold;
+}
+.hoogle-head {
+font-weight: bold;
+}
+.hoogle-sub {
+display: block;
+margin-left: 0.4em;
+}
+.hoogle-package {
+font-weight: bold;
+font-style: italic;
+}
+.hoogle-module {
+font-weight: bold;
+}
+.hoogle-class {
+font-weight: bold;
+}
+.get-type {
+color: green;
+font-weight: bold;
+font-family: monospace;
+display: block;
+white-space: pre-wrap;
+}
+.show-type {
+color: green;
+font-weight: bold;
+font-family: monospace;
+margin-left: 1em;
+}
+.mono {
+font-family: monospace;
+display: block;
+}
+.err-msg {
+color: red;
+font-style: italic;
+font-family: monospace;
+white-space: pre;
+display: block;
+}
+#unshowable {
+color: red;
+font-weight: bold;
+}
+.err-msg.in.collapse {
+padding-top: 0.7em;
+}
+.highlight-code {
+white-space: pre;
+font-family: monospace;
+}
+.suggestion-warning { 
+font-weight: bold;
+color: rgb(200, 130, 0);
+}
+.suggestion-error { 
+font-weight: bold;
+color: red;
+}
+.suggestion-name {
+font-weight: bold;
+}
+</style><span class='get-type'>dup . ((f . (id `prod` fst)) `prod` id) . dup :: forall s b c b1. (s, (b, b1)) -> (((s, c), (s, (b, b1))), ((s, c), (s, (b, b1))))</span>
+</div>
+
+</div>
+
+<div class="output_area"><div class="prompt"></div>
+
+<div class="output_html rendered_html output_subarea ">
+<style>/* Styles used for the Hoogle display in the pager */
+.hoogle-doc {
+display: block;
+padding-bottom: 1.3em;
+padding-left: 0.4em;
+}
+.hoogle-code {
+display: block;
+font-family: monospace;
+white-space: pre;
+}
+.hoogle-text {
+display: block;
+}
+.hoogle-name {
+color: green;
+font-weight: bold;
+}
+.hoogle-head {
+font-weight: bold;
+}
+.hoogle-sub {
+display: block;
+margin-left: 0.4em;
+}
+.hoogle-package {
+font-weight: bold;
+font-style: italic;
+}
+.hoogle-module {
+font-weight: bold;
+}
+.hoogle-class {
+font-weight: bold;
+}
+.get-type {
+color: green;
+font-weight: bold;
+font-family: monospace;
+display: block;
+white-space: pre-wrap;
+}
+.show-type {
+color: green;
+font-weight: bold;
+font-family: monospace;
+margin-left: 1em;
+}
+.mono {
+font-family: monospace;
+display: block;
+}
+.err-msg {
+color: red;
+font-style: italic;
+font-family: monospace;
+white-space: pre;
+display: block;
+}
+#unshowable {
+color: red;
+font-weight: bold;
+}
+.err-msg.in.collapse {
+padding-top: 0.7em;
+}
+.highlight-code {
+white-space: pre;
+font-family: monospace;
+}
+.suggestion-warning { 
+font-weight: bold;
+color: rgb(200, 130, 0);
+}
+.suggestion-error { 
+font-weight: bold;
+color: red;
+}
+.suggestion-name {
+font-weight: bold;
+}
+</style><span class='get-type'>((fst . fst) `prod` ((snd . fst) `prod` (snd . snd . snd))) :: forall a' b b1 a'1 b' a b2 a1 a2 a3. (((a', b), b1), (((a, a'1), b2), (a3, (a2, (a1, b'))))) -> (a', (a'1, b'))</span>
 </div>
 
 </div>
@@ -3387,7 +3608,7 @@ font-weight: bold;
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[95]:</div>
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-haskell"><pre><span class="kr">newtype</span> <span class="kt">AutoFunctor</span> <span class="n">a</span> <span class="n">b</span> <span class="n">c</span> <span class="ow">=</span> <span class="kt">A</span> <span class="p">{</span><span class="n">runA</span> <span class="ow">::</span> <span class="n">a</span> <span class="n">b</span> <span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="kt">AutoFunctor</span> <span class="n">a</span> <span class="n">b</span> <span class="n">c</span><span class="p">)}</span>
@@ -3405,9 +3626,6 @@ font-weight: bold;
                        <span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">f&#39;</span><span class="p">)</span> <span class="ow">&lt;-</span> <span class="n">f</span> <span class="o">-&lt;</span> <span class="n">x</span>
                        <span class="n">idA</span> <span class="o">-&lt;</span> <span class="p">((</span><span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">),</span> <span class="n">first</span> <span class="n">f&#39;</span><span class="p">)</span>
                     <span class="p">)</span>
-
-<span class="c1">-- eqA :: ArrowApply a =&gt; AutoFunctor a b c -&gt; AutoFunctor a b c -&gt; b -&gt; Bool</span>
-<span class="c1">-- eqA f g x = app (runA f, x) == app (runA g, x)</span>
 
 <span class="nf">eqAF</span> <span class="ow">::</span> <span class="kt">Eq</span> <span class="n">c</span> <span class="ow">=&gt;</span> <span class="kt">AutoFunctor</span> <span class="p">(</span><span class="ow">-&gt;</span><span class="p">)</span> <span class="n">b</span> <span class="n">c</span> <span class="ow">-&gt;</span> <span class="kt">AutoFunctor</span> <span class="p">(</span><span class="ow">-&gt;</span><span class="p">)</span> <span class="n">b</span> <span class="n">c</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="ow">-&gt;</span> <span class="kt">Bool</span>
 <span class="nf">eqAF</span> <span class="n">f</span> <span class="n">g</span> <span class="n">xs</span> <span class="ow">=</span> <span class="n">procList</span> <span class="p">(</span><span class="n">runA</span> <span class="n">f</span><span class="p">)</span> <span class="n">xs</span> <span class="o">==</span> <span class="n">procList</span> <span class="p">(</span><span class="n">runA</span> <span class="n">g</span><span class="p">)</span> <span class="n">xs</span>
@@ -3505,115 +3723,6 @@ True</pre>
 
 </div>
 </div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[77]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-haskell"><pre><span class="kt">:</span><span class="n">t</span> <span class="n">on</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area"><div class="prompt"></div>
-
-<div class="output_html rendered_html output_subarea ">
-<style>/* Styles used for the Hoogle display in the pager */
-.hoogle-doc {
-display: block;
-padding-bottom: 1.3em;
-padding-left: 0.4em;
-}
-.hoogle-code {
-display: block;
-font-family: monospace;
-white-space: pre;
-}
-.hoogle-text {
-display: block;
-}
-.hoogle-name {
-color: green;
-font-weight: bold;
-}
-.hoogle-head {
-font-weight: bold;
-}
-.hoogle-sub {
-display: block;
-margin-left: 0.4em;
-}
-.hoogle-package {
-font-weight: bold;
-font-style: italic;
-}
-.hoogle-module {
-font-weight: bold;
-}
-.hoogle-class {
-font-weight: bold;
-}
-.get-type {
-color: green;
-font-weight: bold;
-font-family: monospace;
-display: block;
-white-space: pre-wrap;
-}
-.show-type {
-color: green;
-font-weight: bold;
-font-family: monospace;
-margin-left: 1em;
-}
-.mono {
-font-family: monospace;
-display: block;
-}
-.err-msg {
-color: red;
-font-style: italic;
-font-family: monospace;
-white-space: pre;
-display: block;
-}
-#unshowable {
-color: red;
-font-weight: bold;
-}
-.err-msg.in.collapse {
-padding-top: 0.7em;
-}
-.highlight-code {
-white-space: pre;
-font-family: monospace;
-}
-.suggestion-warning { 
-font-weight: bold;
-color: rgb(200, 130, 0);
-}
-.suggestion-error { 
-font-weight: bold;
-color: red;
-}
-.suggestion-name {
-font-weight: bold;
-}
-</style><span class='err-msg'>Not in scope: ‘on’<br/>Perhaps you meant ‘or’ (imported from Prelude)</span>
-</div>
-
-</div>
-
-</div>
-</div>
-
 </div>
 <div class="cell border-box-sizing text_cell rendered">
 <div class="prompt input_prompt">
