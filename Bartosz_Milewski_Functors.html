@@ -304,6 +304,15 @@ Original Date: May 2, 2016</p>
 <li><a href="#natural_transformations_3">Natural Transformations from *Reader Bool* to *Maybe*</a></li>
 </ol>
 </li>
+<li><a href="#limits_and_colimits">Limits and Colimits</a><ol>
+<li><a href="#limits_and_colimits_1">*Pushout*, for C++ classes</a></li>
+<li><a href="#limits_and_colimits_2">Limit of identity functor</a></li>
+<li><a href="#limits_and_colimits_3">Properties of category of subsets</a></li>
+<li><a href="#limits_and_colimits_4">Guess what a *coequalizer* is.</a></li>
+<li><a href="#limits_and_colimits_5">Show that pullback towards terminal object is a product.</a></li>
+<li><a href="#limits_and_colimits_6">Show that pushout from initial object is a coproduct.</a></li>
+</ol>
+</li>
 </ol>
 
 </div>
@@ -3064,6 +3073,178 @@ False</pre>
 
 </div>
 </div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Limits-and-Colimits-">Limits and Colimits <a name="limits_and_colimits" /><a class="anchor-link" href="#Limits-and-Colimits-">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Challenge-1---Pushout,-for-C++-classes-">Challenge 1 - <em>Pushout</em>, for C++ classes <a name="limits_and_colimits_1" /><a class="anchor-link" href="#Challenge-1---Pushout,-for-C++-classes-">&#182;</a></h3><p>How would you describe a pushout in the category of C++ classes?</p>
+<p>First, change the definition of the category, such that morphisms point <em>from</em> superclasses <em>to</em> subclasses.<br>
+Then, the <em>push-out</em> is that class, which is a (the?) superclass of all other possible apexes of the cone (i.e. - all classes, which multiply inherit from the original classes).</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to contents.</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Challenge-2----Limit-of-identity-functor-">Challenge 2 -  Limit of identity functor <a name="limits_and_colimits_2" /><a class="anchor-link" href="#Challenge-2----Limit-of-identity-functor-">&#182;</a></h3><p>Show that the limit of the identity functor Id :: C -&gt; C is the initial object.</p>
+<ol>
+<li>The identity functor maps a category into itself. That is, it maps the objects and morphisms of a category into themselves.</li>
+<li>Since the <em>diagram</em>, in this case, includes the complete set of original objects in <strong>C</strong>, and the <em>limit</em> must have a unique morphism to all the objects in the diagram, the limit and intial object share the same definition, in this case, and are, therefore, the same object.</li>
+</ol>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to contents.</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Challenge-3----Properties-of-category-of-subsets-">Challenge 3 -  Properties of category of subsets <a name="limits_and_colimits_3" /><a class="anchor-link" href="#Challenge-3----Properties-of-category-of-subsets-">&#182;</a></h3><p>Subsets of a given set form a category. A morphism in that category is defined to be an arrow connecting two sets if the first is the subset of the second.</p>
+<ul>
+<li>What is a pullback of two sets in such a category?</li>
+</ul>
+<p>The pullback of two sets, <em>A</em> and <em>B</em>, is that set, <em>C</em>, which contains all elements of A <em>and</em> all elements of B, but no elements belonging to neither A nor B. That is, the <em>union</em> of A and B.</p>
+<ul>
+<li>What’s a pushout?</li>
+</ul>
+<p>The pushout of two sets, <em>A</em> and <em>B</em>, is that set, <em>C</em>, which contains all elements common to A and B. That is, the <em>intersection</em> of A and B.</p>
+<ul>
+<li>What are the initial and terminal objects?</li>
+</ul>
+<p>The initial object is the <em>null</em> set, containing no objects, and the terminal object is the <em>omega</em> set, containing all objects of the given set.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to contents.</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Challenge-4---Guess-what-a-coequalizer-is.-">Challenge 4 - Guess what a <em>coequalizer</em> is. <a name="limits_and_colimits_4" /><a class="anchor-link" href="#Challenge-4---Guess-what-a-coequalizer-is.-">&#182;</a></h3><p>Can you guess what a coequalizer is?</p>
+<p>Inverting the directions of <em>p</em> and <em>q</em>, in the first diagram of the <em>Examples of Limits</em> section, yields:</p>
+
+<pre><code>p = q . f
+p = q . g</code></pre>
+<p>or</p>
+
+<pre><code>q . f = q . g</code></pre>
+<p>Restricting attention to <strong>Set</strong>, as with the <em>equalizer</em>, this equation seems to say that, for some <em>in</em>jection from <em>b</em> selected by <em>q</em>, the two functions, <em>f</em> and <em>g</em>, are equal.</p>
+<p>More here, which I don't really understand:</p>
+<p><a href="https://en.wikipedia.org/wiki/Coequalizer">Wikipedia article on <em>Coequalizer</em></a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to contents.</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Challenge-5---Show-that-pullback-towards-terminal-object-is-a-product.-">Challenge 5 - Show that pullback towards terminal object is a product. <a name="limits_and_colimits_5" /><a class="anchor-link" href="#Challenge-5---Show-that-pullback-towards-terminal-object-is-a-product.-">&#182;</a></h3><p>Show that, in a category with a terminal object, a pullback towards the terminal object is a product.</p>
+<p>Referring to the second diagram after the first mention of the word "pullback" in the text, object <em>d</em>, along with the two morphisms, <em>p</em> and <em>q</em>, form the pullback. For d to be a product, objects <em>a</em> and <em>c</em> must be distinct. This is guaranteed, if object <em>b</em> is the terminal object, as that requires that morphisms <em>f</em> and <em>g</em> each be unique and, therefore, distinct from each other.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to contents.</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Challenge-6---Show-that-pushout-from-initial-object-is-a-coproduct.-">Challenge 6 - Show that pushout from initial object is a coproduct. <a name="limits_and_colimits_6" /><a class="anchor-link" href="#Challenge-6---Show-that-pushout-from-initial-object-is-a-coproduct.-">&#182;</a></h3><p>Similarly, show that a pushout from an initial object (if one exists) is the coproduct.</p>
+<p>Referring to the last diagram in the <em>Colimits</em> section, and noting that there is a missing object, <em>d</em>, which is the initial object, the two objects, <em>a</em> and <em>b</em> are guaranteed distinct by the definition of initial object. Therefore, <em>c</em> is a coproduct.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to contents.</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-haskell"><pre>
+</pre></div>
+
+</div>
+</div>
+</div>
+
 </div>
     </div>
   </div>
