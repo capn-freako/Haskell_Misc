@@ -216,7 +216,7 @@ Original Date: May 2, 2016</p>
 
 
 <div class="output_text output_subarea ">
-<pre>2016-11-22 20:21:57.081656 UTC</pre>
+<pre>2016-12-05 18:59:13.669887 UTC</pre>
 </div>
 
 </div>
@@ -311,6 +311,12 @@ Original Date: May 2, 2016</p>
 <li><a href="#limits_and_colimits_4">Guess what a *coequalizer* is.</a></li>
 <li><a href="#limits_and_colimits_5">Show that pullback towards terminal object is a product.</a></li>
 <li><a href="#limits_and_colimits_6">Show that pushout from initial object is a coproduct.</a></li>
+</ol>
+</li>
+<li><a href="#free_monoids">Free Monoids</a><ol>
+<li><a href="#free_monoids_1">Homomorphisms and Unit</a></li>
+<li><a href="#free_monoids_2">Integer Homomorphism</a></li>
+<li><a href="#free_monoids_3">Monoid of single element set</a></li>
 </ol>
 </li>
 </ol>
@@ -3233,18 +3239,126 @@ p = q . g</code></pre>
 </div>
 </div>
 </div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
 <div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-haskell"><pre>
-</pre></div>
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Free-Monoids-">Free Monoids <a name="free_monoids" /><a class="anchor-link" href="#Free-Monoids-">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Challenge-1---Homomorphisms-and-Unit-">Challenge 1 - Homomorphisms and Unit <a name="free_monoids_1" /><a class="anchor-link" href="#Challenge-1---Homomorphisms-and-Unit-">&#182;</a></h3><p>You might think (as I did, originally) that the requirement that a homomorphism of monoids preserve the unit is redundant. After all, we know that for all a</p>
+
+<pre><code>h a * h e = h (a * e) = h a</code></pre>
+<p>So <code>h e</code> acts like a right unit (and, by analogy, as a left unit). The problem is that <code>h a</code>, for all <code>a</code> might only cover a sub-monoid of the target monoid. There may be a “true” unit outside of the image of <code>h</code>. Show that an isomorphism between monoids that preserves multiplication must automatically preserve unit.</p>
+<p>If <code>f</code> is our multiplication preserving isomorphism (i.e. - invertable morphism) then:</p>
+
+<pre><code>f  :: m1 -&gt; m2
+f' :: m2 -&gt; m1
+(f  . f') y = y
+(f' . f)  x = x
+
+e1 :: m1
+e1 * x  = x
+x  * e1 = x
+
+e2 :: m2
+e2 * y  = y
+y  * e2 = y
+
+f x * f e1 = f (x * e1) = f x = y
+f' y = f' (y * e2) = f' y * f' e2 = x =&gt; f' e2 = e1 =&gt; f e1 = e2</code></pre>
+<p>where the last two implications are due to:</p>
+<ul>
+<li>f' y = x, and</li>
+<li>f and f' form an isomorphic pair,</li>
+</ul>
+<p>respectively.</p>
 
 </div>
 </div>
 </div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to contents.</a></p>
 
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Challenge-2---Integer-Homomorphism-">Challenge 2 - Integer Homomorphism <a name="free_monoids_2" /><a class="anchor-link" href="#Challenge-2---Integer-Homomorphism-">&#182;</a></h3><p>Consider a monoid homomorphism from lists of integers with concatenation to integers with multiplication. What is the image of the empty list []? Assume that all singleton lists are mapped to the integers they contain, that is [3] is mapped to 3, etc. What’s the image of [1, 2, 3, 4]? How many different lists map to the integer 12? Is there any other homomorphism between the two monoids?</p>
+<p>The image of the empty list is zero, which is the unit under multiplication.</p>
+<p>The image of [1, 2, 3, 4] is 1 <em> 2 </em> 3 * 4 = 24.</p>
+<p>The following lists map to 12:</p>
+<ul>
+<li>[1, 2, 6]</li>
+<li>[1, 6, 2]</li>
+<li>[1, 3, 4]</li>
+<li>[1, 4, 3]</li>
+<li>[1, 12]</li>
+<li>[2, 6]</li>
+<li>[6, 2]</li>
+<li>[3, 4]</li>
+<li>[4, 3]</li>
+<li>[12]</li>
+</ul>
+<p>So, 10 lists map to 12.</p>
+<p>I'm at a loss to answer the last question, because I don't even understand how this can be a homomorphism. I thought a homomorphism wasn't allowed to change the fundamental structure of the object, but this one clearly does, collapsing a list down to a multiplication result.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to contents.</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Challenge-3---Monoid-of-single-element-set-">Challenge 3 - Monoid of single element set <a name="free_monoids_3" /><a class="anchor-link" href="#Challenge-3---Monoid-of-single-element-set-">&#182;</a></h3><p>What is the free monoid generated by a one-element set? Can you see what it’s isomorphic to?</p>
+<p>It is the set of all arity tuples of the original element.</p>
+<p>I think it's isomorphic to the set of natural numbers, where the two morphisms are:</p>
+
+<pre><code>f :: [a] -&gt; Int
+f xs = length xs
+
+f' :: Int -&gt; [a]
+f' n = take n (repeat x)</code></pre>
+<p>.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#contents">Back to contents.</a></p>
+
+</div>
+</div>
 </div>
     </div>
   </div>
