@@ -2,9 +2,9 @@
 
 {-# LANGUAGE KindSignatures
            , DataKinds
+           , ScopedTypeVariables
+           , TypeOperators
   #-}
-
-data Proxy a = Proxy
 
 -- Simple Peano numbers, with conversion to/from integers.
 data Nat = Z
@@ -26,16 +26,28 @@ encodeNat :: Integer -> Nat
 encodeNat 0 = Z
 encodeNat n = S $ encodeNat (n - 1)
 
+
 -- Value level arithmetic, via Num instance.
 instance Num Nat where
     fromInteger = encodeNat
     n + m       = encodeNat $ decodeNat n + decodeNat m
 
+
 -- Type level arithmetic and value reflection.
--- KindSignatures and DataKinds language pragmas were added, to support this.
+-- (KindSignatures and DataKinds language pragmas were added, to support this.)
+
+data Proxy a = Proxy
+
+instance Num (Proxy a) where
+    (p1 :: Proxy m) + (p2 :: Proxy n) = Proxy :: Proxy (m + n)
+
+-- Decode a 'Proxy n' to an integer.
+-- decodeProxy :: Integral n => Proxy n -> Integer
+-- decodeProxy (p :: Proxy n) = n
+
 -- newtype NatT i Nat = N i         -- Doesn't work; compiler complains about "Nat".
 -- newtype NatT i (n :: Nat) = N i  -- Works, but 'i' seems superfluous.
-newtype NatT (n :: Nat) = N { unN :: Nat }
+-- newtype NatT (n :: Nat) = N { unN :: Nat }
 
 -- Reflect the implied value of a type of kind, Nat.
 -- GADTs language pragma added, to support this.
