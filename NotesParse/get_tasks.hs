@@ -60,7 +60,9 @@ scanFile fp = catch (do
   ft <- readFile fp
   let strs = lines ft
       tsks = filter (uncurry (&&) . (and &&& (\xs -> length xs > 4)) . zipWith (==) "- [ ]") strs
-  putStr $ unlines tsks)
+  if length tsks > 0 then do putStrLn $ "\n" ++ show fp ++ ":"
+                             putStr $ unlines tsks
+                     else return ())
   (\(SomeException _) -> return ())
 
 
